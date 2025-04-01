@@ -2,6 +2,7 @@ import Settings from "./pages/Settings";
 import Home from "./pages/Home/page";
 import Budgeting from "./pages/Budgeting/page";
 import Dropdowns from "./pages/Dropdowns/page";
+import Payrolls from "./pages/Payrolls/PayrollPage"
 
 export const routes = [
   {
@@ -23,5 +24,10 @@ export const routes = [
     title: "Settings",
     url: "/settings",
     component: Settings,
+  },
+  {
+    title: "Roles de Pago",
+    url: "/payrolls",
+    component: Payrolls,
   },
 ];
