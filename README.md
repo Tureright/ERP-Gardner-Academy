@@ -1,3 +1,3 @@
-# ERP app using React and Google Apps Script
+# CRUD app using React and Google Apps sCript
 
 

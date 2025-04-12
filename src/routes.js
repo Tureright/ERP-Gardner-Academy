@@ -2,7 +2,7 @@ import Settings from "./pages/Settings";
 import Home from "./pages/Home/page";
 import Budgeting from "./pages/Budgeting/page";
 import Dropdowns from "./pages/Dropdowns/page";
-import Payrolls from "./pages/Payrolls/PayrollPage"
+import Invoices from "./pages/Invoices/invoicesPage";
 
 export const routes = [
   {
@@ -26,8 +26,8 @@ export const routes = [
     component: Settings,
   },
   {
-    title: "Roles de Pago",
-    url: "/payrolls",
-    component: Payrolls,
+    title: "Facturación",
+    url: "/invoices",
+    component: Invoices,
   },
 ];

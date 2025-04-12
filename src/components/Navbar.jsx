@@ -8,7 +8,7 @@ export const Navbar = () => {
     <nav>
       <div style={{ margin: 10 }}>
         <img
-          src="https://cdigardnermini.edu.ec/img/header/centro-infantil-gardner-mini-academy-quito-valle-de-los-chillos.png"
+          src="https://drive.google.com/thumbnail?id=1eUwEZQwika0OzusArZe7-cJNUlri2Bzm&sz=w1000"
           alt="logo"
           width={48}
         />
