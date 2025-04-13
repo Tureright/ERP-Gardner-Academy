@@ -14,9 +14,10 @@ export default function PayrollPage() {
       <h1>Roles de Pago</h1>
       <ul>
         {data?.data.map((payroll: any) => (
-          <li key={payroll.employeeId}>
+          <li key={payroll.id}>
             {payroll.employeeId} - {payroll.payrollDate}
             <button onClick={() => deletePayroll.mutate(payroll.id)}>Eliminar</button>
+            <button onClick={()=> (console.log(payroll.id))}>CONSOLA</button>
           </li>
         ))}
       </ul>

@@ -3,6 +3,7 @@ import Home from "./pages/Home/page";
 import Budgeting from "./pages/Budgeting/page";
 import Dropdowns from "./pages/Dropdowns/page";
 import Invoices from "./pages/Invoices/invoicesPage";
+import Payrolls from "./pages/Payrolls/PayrollPage";
 
 export const routes = [
   {
@@ -29,5 +30,10 @@ export const routes = [
     title: "Facturación",
     url: "/invoices",
     component: Invoices,
+  },
+  {
+    title: "Roles de Pago",
+    url: "/payrolls",
+    component: Payrolls,
   },
 ];
