@@ -3,15 +3,15 @@ const schema = {
     fields: [
         {
             title: '👤 Nombre del estudiante',
-            dataIndex: 'studentName',
-            key: 'studentName',
-            type: 'text',
-            rules: [{ required: true, message: 'Por favor ingrese el nombre del estudiante' }]
+            dataIndex: "studentName",
+            key: "studentName",
+            align: "center",
         },
         {
             title: '📱 Teléfono representante',
             dataIndex: 'representativePhone',
             key: 'representativePhone',
+            align: "center",
             type: 'text',
             rules: [{ required: true, message: 'Por favor ingrese el teléfono' }]
         },
@@ -20,6 +20,7 @@ const schema = {
             dataIndex: 'representativeEmail',
             key: 'representativeEmail',
             type: 'text',
+            align: "center",
             rules: [
                 { required: true, message: 'Por favor ingrese el correo' },
                 { type: 'email', message: 'Por favor ingrese un correo válido' }
@@ -29,6 +30,7 @@ const schema = {
             title: '🆔 Identificación representante',
             dataIndex: 'representativeId',
             key: 'representativeId',
+            align: "center",
             type: 'text',
             rules: [{ required: true, message: 'Por favor ingrese la identificación' }]
         }
