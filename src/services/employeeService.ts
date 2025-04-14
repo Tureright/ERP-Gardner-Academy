@@ -1,4 +1,5 @@
-const API_URL = "/api";
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbxDBOfSUnhWKrcvVYN6WpJTEjBOHXfXYC_1wY91u2mufHPrV8FdAJKgf2lJF7rueA-K/exec";
 
 export async function getAllEmployees() {
   const response = await fetch(`${API_URL}?action=getAllEmployees`);
@@ -7,7 +8,9 @@ export async function getAllEmployees() {
 }
 
 export async function getEmployeeById(employeeId: string) {
-  const response = await fetch(`${API_URL}?action=getEmployeeById&id=${employeeId}`);
+  const response = await fetch(
+    `${API_URL}?action=getEmployeeById&id=${employeeId}`
+  );
   if (!response.ok) throw new Error("Error al obtener el empleado");
   return response.json();
 }

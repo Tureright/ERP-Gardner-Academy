@@ -4,6 +4,7 @@ import Budgeting from "./pages/Budgeting/page";
 import Dropdowns from "./pages/Dropdowns/page";
 import Invoices from "./pages/Invoices/invoicesPage";
 import Payrolls from "./pages/Payrolls/PayrollPage";
+import Employees from "./pages/Payrolls/EmployeePage";
 
 export const routes = [
   {
@@ -35,5 +36,10 @@ export const routes = [
     title: "Roles de Pago",
     url: "/payrolls",
     component: Payrolls,
+  },
+  {
+    title: "Empleados",
+    url: "/employees",
+    component: Employees,
   },
 ];
