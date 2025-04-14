@@ -1,4 +1,5 @@
-const API_URL = "/api"; // Reemplaza con la URL de tu API
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbxDBOfSUnhWKrcvVYN6WpJTEjBOHXfXYC_1wY91u2mufHPrV8FdAJKgf2lJF7rueA-K/exec"; // Reemplaza con la URL de tu API
 
 export async function getAllPayrolls() {
   const response = await fetch(`${API_URL}?action=getAllPayrolls`);
