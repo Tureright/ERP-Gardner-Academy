@@ -19,7 +19,7 @@ const schema = {
             dataIndex: 'precio_unitario',
             key: 'precio_unitario',
             align: 'center',
-            render: (_, {precio_unitario}) => {
+            render: (_, { precio_unitario }) => {
                 return (
                     <span>${precio_unitario.toFixed(2)}</span>
                 )
@@ -30,17 +30,17 @@ const schema = {
             dataIndex: 'codigo_iva',
             key: 'codigo_iva',
             align: 'center',
-            render: (_, {codigo_iva}) => {
+            render: (_, { codigo_iva }) => {
                 const ivaMapping = {
                     '0': '0%',
                     '2': '12%',
-                     '3': '14%',
-                     '4': '15%',
-                     '5': '5%',
-                     '6': 'No Objeto de IVA',
-                     '7': 'Exento',
-                     '8': 'IVA Diferenciado',
-                     '10': '13%',     
+                    '3': '14%',
+                    '4': '15%',
+                    '5': '5%',
+                    '6': 'No Objeto de IVA',
+                    '7': 'Exento',
+                    '8': 'IVA Diferenciado',
+                    '10': '13%',
                 };
                 return (
                     <span className="font-medium">{ivaMapping[codigo_iva] || 'No definido'}</span>

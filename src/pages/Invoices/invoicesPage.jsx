@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Tabs} from "antd";
+import { Tabs } from "antd";
 import EmitTab from "./components/EmitTab";
 import ItemTab from "./components/ItemTab";
 
@@ -29,18 +29,16 @@ const Invoices = () => {
     {
       key: "3",
       label: "Items",
-      children: <ItemTab/>,
+      children: <ItemTab />,
     },
   ];
 
   return (
-    <div className="container mx-auto p-6">
-      <Tabs
-        defaultActiveKey="1"
-        items={items}
-        onChange={(key) => setActiveTab(key)}
-      />
-    </div>
+    <Tabs
+      defaultActiveKey="1"
+      items={items}
+      onChange={(key) => setActiveTab(key)}
+    />
   );
 };
 
