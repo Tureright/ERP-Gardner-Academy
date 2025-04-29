@@ -6,7 +6,7 @@ import {
   updateEmployee,
   deleteEmployee,
 } from "../services/employeeService";
-
+import { EmployeeData, EmployeeResponse } from "../types";
 export function useEmployees() {
   return useQuery({ queryKey: ["employees"], queryFn: getAllEmployees });
 }
@@ -22,7 +22,7 @@ export function useCreateEmployee() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createEmployee,
-    onMutate: async (newEmployee) => {
+    onMutate: async (newEmployee: EmployeeResponse) => {
       await queryClient.cancelQueries({ queryKey: ["employees"] });
 
       const previousEmployees = queryClient.getQueryData(["employees"]);
@@ -51,7 +51,7 @@ export function useUpdateEmployee() {
       employeeData,
     }: {
       employeeId: string;
-      employeeData: any;
+      employeeData: EmployeeData;
     }) => updateEmployee(employeeId, employeeData),
     onMutate: async ({ employeeId, employeeData }) => {
       await queryClient.cancelQueries({ queryKey: ["employees"] });
@@ -60,7 +60,7 @@ export function useUpdateEmployee() {
 
       queryClient.setQueryData(["employees"], (old: any) => ({
         ...old,
-        data: old?.data.map((employee: any) =>
+        data: old?.data.map((employee: EmployeeResponse) =>
           employeeId === employee.id
             ? { ...employee, ...employeeData }
             : employee
@@ -88,7 +88,9 @@ export function useDeleteEmployee() {
 
       queryClient.setQueryData(["employees"], (old: any) => ({
         ...old,
-        data: old?.data.filter((employee) => employee.id !== employeeId),
+        data: old?.data.filter(
+          (employee: EmployeeResponse) => employee.id !== employeeId
+        ),
       }));
 
       return { previousEmployees };

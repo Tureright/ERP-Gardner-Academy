@@ -2,35 +2,62 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getAllPayrolls,
   getPayrollById,
+  getAllPayrollsByEmployee,
+  getLatestPayroll,
   createPayroll,
   updatePayroll,
   deletePayroll,
 } from "../services/payrollService";
+import { PayrollData, PayrollResponse } from "../types";
 
 export function usePayrolls() {
   return useQuery({ queryKey: ["payrolls"], queryFn: getAllPayrolls });
 }
 
-export function usePayroll(payrollId: string) {
+export function usePayroll(employeeId: string, payrollId: string) {
   return useQuery({
     queryKey: ["payroll", payrollId],
-    queryFn: () => getPayrollById(payrollId),
+    queryFn: () => getPayrollById(employeeId, payrollId),
     enabled: !!payrollId,
+  });
+}
+export function usePayrollsByEmployee(employeeId: string) {
+  return useQuery({
+    queryKey: ["payrolls", employeeId],
+    queryFn: () => getAllPayrollsByEmployee(employeeId),
+    enabled: !!employeeId,
+  });
+}
+
+export function useLatestPayroll(employeeId: string) {
+  return useQuery({
+    queryKey: ["latestPayroll", employeeId],
+    queryFn: () => getLatestPayroll(employeeId),
+    enabled: !!employeeId,
   });
 }
 
 export function useCreatePayroll() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: createPayroll,
-    onMutate: async (newPayroll) => {
+    mutationFn: ({
+      employeeId,
+      payrollData,
+    }: {
+      employeeId: string;
+      payrollData: PayrollData;
+    }) => createPayroll(employeeId, payrollData),
+    onMutate: async ({ employeeId, payrollData }) => {
       await queryClient.cancelQueries({ queryKey: ["payrolls"] });
 
       const previousPayrolls = queryClient.getQueryData(["payrolls"]);
 
       queryClient.setQueryData(["payrolls"], (old: any) => ({
         ...old,
-        data: [...(old?.data || []), { id: Date.now(), ...newPayroll }],
+        data: [
+          ...(old?.data || []),
+          { id: Date.now(), employeeId, ...payrollData },
+        ],
       }));
 
       return { previousPayrolls };
@@ -48,12 +75,14 @@ export function useUpdatePayroll() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
+      employeeId,
       payrollId,
       payrollData,
     }: {
+      employeeId: string;
       payrollId: string;
       payrollData: any;
-    }) => updatePayroll(payrollId, payrollData),
+    }) => updatePayroll(employeeId, payrollId, payrollData),
     onMutate: async ({ payrollId, payrollData }) => {
       await queryClient.cancelQueries({ queryKey: ["payrolls"] });
 
@@ -61,7 +90,7 @@ export function useUpdatePayroll() {
 
       queryClient.setQueryData(["payrolls"], (old: any) => ({
         ...old,
-        data: old?.data.map((payroll) =>
+        data: old?.data.map((payroll: PayrollResponse) =>
           payroll.id === payrollId ? { ...payroll, ...payrollData } : payroll
         ),
       }));
@@ -80,14 +109,22 @@ export function useUpdatePayroll() {
 export function useDeletePayroll() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deletePayroll,
-    onMutate: async (payrollId) => {
+    mutationFn: ({
+      employeeId,
+      payrollId,
+    }: {
+      employeeId: string;
+      payrollId: string;
+    }) => deletePayroll(employeeId, payrollId),
+    onMutate: async ({ payrollId }) => {
       await queryClient.cancelQueries({ queryKey: ["payrolls"] });
 
       const previousPayrolls = queryClient.getQueryData(["payrolls"]);
       queryClient.setQueryData(["payrolls"], (old: any) => ({
         ...old,
-        data: old?.data.filter((payroll) => payroll.id !== payrollId),
+        data: old?.data.filter(
+          (payroll: PayrollResponse) => payroll.id !== payrollId
+        ),
       }));
 
       return { previousPayrolls };
