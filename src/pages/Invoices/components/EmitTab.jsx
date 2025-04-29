@@ -1,10 +1,33 @@
 import { useState, useEffect } from "react";
 import { Button, Table, Space } from "antd";
 import schema from "../schemas/schemaEmitTable";
+import MonthSelector from "./MonthSelector";
+import InvoiceForm from "./InvoiceForm";
 
 const EmitTab = () => {
   const [loading, setLoading] = useState(false);
   const [studentsRepresentatives, setStudentsRepresentatives] = useState([]);
+  const [isMonthSelectorOpen, setIsMonthSelectorOpen] = useState(false);
+  const [isInvoiceFormOpen, setIsInvoiceFormOpen] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(null);
+
+  const handleGenerateInvoice = (record) => {
+    setSelectedRecord(record);
+    setIsMonthSelectorOpen(true);
+  };
+
+  const handleMonthSelect = (month) => {
+    setSelectedMonth(month);
+    setIsMonthSelectorOpen(false);
+    setIsInvoiceFormOpen(true);
+  };
+
+  const handleCloseInvoiceForm = () => {
+    setIsInvoiceFormOpen(false);
+    setSelectedRecord(null);
+    setSelectedMonth(null);
+  };
 
   const getStudentsRepresentatives = async () => {
     try {
@@ -22,7 +45,7 @@ const EmitTab = () => {
   useEffect(() => {
     getStudentsRepresentatives();
   }, []);
-
+  /*
   const handleGenerateInvoice = async (record) => {
     try {
       setLoading(true);
@@ -33,7 +56,7 @@ const EmitTab = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };*/
 
   // Columnas para la tabla de estudiantes y representantes
   const columns = [
@@ -64,6 +87,21 @@ const EmitTab = () => {
         rowKey="studentId"
         className="w-full"
       />
+
+      <MonthSelector
+        isOpen={isMonthSelectorOpen}
+        onClose={() => setIsMonthSelectorOpen(false)}
+        onSelectMonth={handleMonthSelect}
+      />
+
+      {selectedRecord && selectedMonth && (
+        <InvoiceForm
+          isOpen={isInvoiceFormOpen}
+          onClose={handleCloseInvoiceForm}
+          data={selectedRecord}
+          selectedMonth={selectedMonth}
+        />
+      )}
     </div>
   );
 };
