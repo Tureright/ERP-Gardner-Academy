@@ -2,49 +2,138 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getAllPayrolls,
   getPayrollById,
+  getAllPayrollsByEmployee,
+  getLatestPayroll,
   createPayroll,
   updatePayroll,
   deletePayroll,
 } from "../services/payrollService";
+import { PayrollData, PayrollResponse } from "../types";
 
-// Hook para obtener todos los roles de pago
 export function usePayrolls() {
   return useQuery({ queryKey: ["payrolls"], queryFn: getAllPayrolls });
 }
 
-// Hook para obtener un rol de pago por ID
-export function usePayroll(payrollId: string) {
+export function usePayroll(employeeId: string, payrollId: string) {
   return useQuery({
     queryKey: ["payroll", payrollId],
-    queryFn: () => getPayrollById(payrollId),
+    queryFn: () => getPayrollById(employeeId, payrollId),
     enabled: !!payrollId,
   });
 }
+export function usePayrollsByEmployee(employeeId: string) {
+  return useQuery({
+    queryKey: ["payrolls", employeeId],
+    queryFn: () => getAllPayrollsByEmployee(employeeId),
+    enabled: !!employeeId,
+  });
+}
 
-// Hook para crear un nuevo rol de pago
+export function useLatestPayroll(employeeId: string) {
+  return useQuery({
+    queryKey: ["latestPayroll", employeeId],
+    queryFn: () => getLatestPayroll(employeeId),
+    enabled: !!employeeId,
+  });
+}
+
 export function useCreatePayroll() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: createPayroll,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["payrolls"] }),
+    mutationFn: ({
+      employeeId,
+      payrollData,
+    }: {
+      employeeId: string;
+      payrollData: PayrollData;
+    }) => createPayroll(employeeId, payrollData),
+    onMutate: async ({ employeeId, payrollData }) => {
+      await queryClient.cancelQueries({ queryKey: ["payrolls"] });
+
+      const previousPayrolls = queryClient.getQueryData(["payrolls"]);
+
+      queryClient.setQueryData(["payrolls"], (old: any) => ({
+        ...old,
+        data: [
+          ...(old?.data || []),
+          { id: Date.now(), employeeId, ...payrollData },
+        ],
+      }));
+
+      return { previousPayrolls };
+    },
+    onError: (error, newPayroll, context) => {
+      queryClient.setQueryData(["payrolls"], context?.previousPayrolls);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["payrolls"] });
+    },
   });
 }
 
-// Hook para actualizar un rol de pago
 export function useUpdatePayroll() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ payrollId, payrollData }: { payrollId: string; payrollData: any }) =>
-      updatePayroll(payrollId, payrollData),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["payrolls"] }),
+    mutationFn: ({
+      employeeId,
+      payrollId,
+      payrollData,
+    }: {
+      employeeId: string;
+      payrollId: string;
+      payrollData: any;
+    }) => updatePayroll(employeeId, payrollId, payrollData),
+    onMutate: async ({ payrollId, payrollData }) => {
+      await queryClient.cancelQueries({ queryKey: ["payrolls"] });
+
+      const previousPayrolls = queryClient.getQueryData(["payrolls"]);
+
+      queryClient.setQueryData(["payrolls"], (old: any) => ({
+        ...old,
+        data: old?.data.map((payroll: PayrollResponse) =>
+          payroll.id === payrollId ? { ...payroll, ...payrollData } : payroll
+        ),
+      }));
+
+      return { previousPayrolls };
+    },
+    onError: (error, variables, context) => {
+      queryClient.setQueryData(["payrolls"], context?.previousPayrolls);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["payrolls"] });
+    },
   });
 }
 
-// Hook para eliminar un rol de pago
 export function useDeletePayroll() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deletePayroll,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["payrolls"] }),
+    mutationFn: ({
+      employeeId,
+      payrollId,
+    }: {
+      employeeId: string;
+      payrollId: string;
+    }) => deletePayroll(employeeId, payrollId),
+    onMutate: async ({ payrollId }) => {
+      await queryClient.cancelQueries({ queryKey: ["payrolls"] });
+
+      const previousPayrolls = queryClient.getQueryData(["payrolls"]);
+      queryClient.setQueryData(["payrolls"], (old: any) => ({
+        ...old,
+        data: old?.data.filter(
+          (payroll: PayrollResponse) => payroll.id !== payrollId
+        ),
+      }));
+
+      return { previousPayrolls };
+    },
+    onError: (error, payrollId, context) => {
+      queryClient.setQueryData(["payrolls"], context?.previousPayrolls);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["payrolls"] });
+    },
   });
 }
