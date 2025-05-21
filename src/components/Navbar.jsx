@@ -14,16 +14,19 @@ export const Navbar = () => {
         />
       </div>
       <ul>
-        {routes.map((route) => (
-          <li key={route.title}>
-            <Link
-              to={route.url}
-              className={location.pathname.startsWith(route.url) ? "active" : ""}
-            >
-              {route.title}
-            </Link>
-          </li>
-        ))}
+        {routes
+          .filter(route => route.showInMenu)
+          .map((route) => (
+            <li key={route.title}>
+              <Link
+                to={route.url}
+                className={location.pathname.startsWith(route.url) ? "active" : ""}
+              >
+                {route.title}
+              </Link>
+            </li>
+          ))
+        }
       </ul>
     </nav>
   );
