@@ -9,7 +9,7 @@ import Employees from "./pages/Payrolls/EmployeePage";
 export const routes = [
   {
     title: "Home",
-    url: "/",
+    url: "/home",
     component: Home,
   },
   {

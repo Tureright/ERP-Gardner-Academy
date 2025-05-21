@@ -4,6 +4,9 @@ import { Navbar } from "@/components/Navbar";
 import { routes } from "@/routes";
 import "./App.css";
 
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 function App() {
   return (
     <Router>
@@ -12,7 +15,7 @@ function App() {
         <div className="content">
           <Routes>
             {routes.map((route) => (
-              <Route path={route.url} element={<route.component />} key={route.title} />
+              <Route path={`${route.url}/*`} element={<route.component />} key={route.title} />
             ))}
           </Routes>
         </div>

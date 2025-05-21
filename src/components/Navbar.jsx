@@ -18,7 +18,7 @@ export const Navbar = () => {
           <li key={route.title}>
             <Link
               to={route.url}
-              className={location.pathname === route.url ? "active" : ""}
+              className={location.pathname.startsWith(route.url) ? "active" : ""}
             >
               {route.title}
             </Link>
