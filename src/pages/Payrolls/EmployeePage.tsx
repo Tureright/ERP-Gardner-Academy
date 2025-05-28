@@ -13,7 +13,8 @@ import {
 } from "@/hooks/usePayroll";
 
 import React, { useState } from "react";
-import Calculations from "./PlantillaRolPagos/Calculations";
+import Calculations from "./components/Calculations/Calculations";
+import CardPager from "./components/CardPager/CardPager";
 
 interface Employee {
   id: string;
@@ -110,15 +111,15 @@ export default function EmployeePage() {
         <Calculations
           title={"Ingresos"}
           items={[
-            { name: "lol", value: 5 },
-            { name: "pago", value: 3 },
+            { description: "lol", amount: 5 },
+            { description: "pago", amount: 3 },
           ]}
         />
         <Calculations
           title={"Deducciones"}
           items={[
-            { name: "lol", value: 5 },
-            { name: "lol", value: 5 },
+            { description: "lol", amount: 5 },
+            { description: "lol", amount: 5 },
           ]}
         />
       </div>

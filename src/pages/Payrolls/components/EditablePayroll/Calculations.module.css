@@ -1,0 +1,30 @@
+.calculationsContainer h3 {
+  font-size: 1.5em; /* tamaño específico para el h2 */
+  margin-bottom: 12px;
+}
+
+.calculationsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px;
+  background: #f7f7f7;
+  border-radius: 8px;
+  flex: 1 1 350px;
+  font-size: 1em;
+}
+
+.calculationsItem {
+  display: flex;
+  flex-direction: row;
+}
+.calculationsItem p {
+  flex: 1;
+  font-size: 1em;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #000000;
+  margin: 1rem 0;
+}

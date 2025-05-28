@@ -1,10 +1,17 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import {
   getAllEmployees,
   getEmployeeById,
   createEmployee,
   updateEmployee,
   deleteEmployee,
+  uploadProfilePicture,
+  getProfilePicture,
 } from "../services/employeeService";
 import { EmployeeData, EmployeeResponse } from "../types";
 export function useEmployees() {
@@ -18,6 +25,14 @@ export function useEmployee(employeeId: string) {
     enabled: !!employeeId,
   });
 }
+export function useProfilePicture(employeeId: string) {
+  return useQuery({
+    queryKey: ["profilePicture", employeeId],
+    queryFn: () => getProfilePicture(employeeId),
+    enabled: !!employeeId,
+  });
+}
+
 export function useCreateEmployee() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -99,6 +114,23 @@ export function useDeleteEmployee() {
       queryClient.setQueryData(["employees"], context?.previousEmployees);
     },
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+    },
+  });
+}
+
+export function useUploadProfilePicture() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      employeeId,
+      base64Data,
+    }: {
+      employeeId: string;
+      base64Data: string;
+    }) => uploadProfilePicture(employeeId, base64Data),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employees"] });
     },
   });

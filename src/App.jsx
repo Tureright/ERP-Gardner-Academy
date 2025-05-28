@@ -13,6 +13,9 @@ import ReservarCupo from "./pages/Registration/reservarCupo";
 
 import "./App.css";
 
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 function App() {
   const { idToken, setIdToken, userData, setUserData } = useAuth();
 

@@ -2,8 +2,8 @@ import React from "react";
 import styles from "./Calculations.module.css";
 
 type Item = {
-  name: string;
-  value: number;
+  description: string;
+  amount: number;
 };
 
 type Props = {
@@ -21,8 +21,8 @@ function Calculations({ title, items }: Props) {
           {items.map((item, index) => (
             <li key={index}>
               <div className={styles.calculationsItem}>
-                <p>{item.name}</p>
-                <p>$ {item.value}</p>
+                <p>{item.description}</p>
+                <p>$ {item.amount.toFixed(2)}</p>
               </div>
             </li>
           ))}
@@ -33,7 +33,12 @@ function Calculations({ title, items }: Props) {
 
       <div className="flex flex-row">
         <p className="flex-grow">Total {title}</p>
-        <p>$ 156.25</p>
+        <p className="font-bold">
+          $
+          {items.reduce((acc, item) => {
+            return acc + item.amount;
+          }, 0).toFixed(2)}
+        </p>
       </div>
     </div>
   );
