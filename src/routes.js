@@ -2,6 +2,7 @@ import Settings from "./pages/Settings";
 import Home from "./pages/Home/page";
 import Budgeting from "./pages/Budgeting/page";
 import Dropdowns from "./pages/Dropdowns/page";
+import Invoices from "./pages/Invoices/invoicesPage";
 import Payrolls from "./pages/Payrolls/PayrollPage"
 import Employees from "./pages/Payrolls/EmployeePage";
 import Registration from "./pages/Registration/matriculacion";
@@ -11,32 +12,33 @@ import Formulario from "./pages/Registration/formulario"; // este solo redirige 
 export const routes = [
   {
     title: "Home",
-    url: "/",
+    url: "/home",
     component: Home,
-    showInMenu: true,
+    showInMenu: false,
   },
   {
     title: "Budgeting",
-    url: "/Budgeting",
+    url: "/budgeting",
     component: Budgeting,
-    showInMenu: true,
+    showInMenu: false,
   },
   {
     title: "Manage Dropdowns",
     url: "/dropdowns",
     component: Dropdowns,
-    showInMenu: true,
+    showInMenu: false,
   },
   {
     title: "Settings",
     url: "/settings",
     component: Settings,
-    showInMenu: true,
+    showInMenu: false,
   },
   {
     title: "Facturación",
     url: "/invoices",
     component: Invoices,
+    showInMenu: true,
   },
   {
     title: "Roles de Pago",
@@ -66,5 +68,6 @@ export const routes = [
     title: "Empleados",
     url: "/employees",
     component: Employees,
+    showInMenu: false
   },
 ];

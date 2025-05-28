@@ -1,33 +1,49 @@
-/*import { useEffect } from "react";
-
-export default function FormularioMatricula(){
-    useEffect(() => {
-        window.location.href ="script.google.com/a/macros/gardneracademy.edu.ec/s/AKfycbwESFBRsorsDafn-vPTZp2LxcoOyTf8vmxtRIJJNuzJ4kWjlEQEM_OmvnVukBWrU92LfQ/exec";
-    }, []);
-
-    return (
-        <div>
-            <p>Redirigiendo al formulario de matrícula</p>
-        </div>
-    );
-}
-*/
-// src/pages/Registration/Formulario.jsx
+// src/pages/Registration/formulario.jsx
 import { useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import FormStyles from "../../styles/Reservation.module.css";
 
 export default function Formulario() {
+  const { userData } = useAuth();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // URL de tu Web App apps script, con restricción de dominio
-    window.location.assign(
-        "https://script.google.com/a/macros/gardneracademy.edu.ec/s/AKfycbwESFBRsorsDafn-vPTZp2LxcoOyTf8vmxtRIJJNuzJ4kWjlEQEM_OmvnVukBWrU92LfQ/exec"
+    const ouPermitidas = ["/Alumnos", "/Inscritos", "/Pendiente"];
+    if (userData === null) return; // aún cargando
+
+    if (!ouPermitidas.includes(userData.ouPath)) {
+      return navigate("/unauthorized", { replace: true });
+    }
+
+    // 1) Reemplaza la entrada actual de /matriculacion/formulario
+    //    por /matriculacion en el historial:
+    window.history.replaceState(null, "", "/matriculacion");
+
+    // 2) Luego redirige al formulario externo:
+    window.location.replace(
+      "https://script.google.com/a/macros/gardneracademy.edu.ec/s/AKfycbwESFBRsorsDafn-vPTZp2LxcoOyTf8vmxtRIJJNuzJ4kWjlEQEM_OmvnVukBWrU92LfQ/exec"
     );
-  }, []);
+  }, [userData, navigate]);
 
   return (
-    <div className="p-6 text-center">
-      <p className="text-xl">Redirigiendo al formulario de matrícula…</p>
+    <div className={FormStyles.container}>
+      <h2 className={FormStyles.title}>Formulario de Matrícula</h2>
+      <p className={FormStyles.message}>Redirigiendo al formulario...</p>
       <p className="text-sm text-gray-500">
-        Asegúrate de estar autenticado con tu cuenta de dominio.
+        Si no te redirige automáticamente,&nbsp;
+        <button
+          onClick={() => {
+            window.history.replaceState(null, "", "/matriculacion");
+            window.location.replace(
+              "https://script.google.com/a/macros/gardneracademy.edu.ec/s/AKfycbwESFBRsorsDafn-vPTZp2LxcoOyTf8vmxtRIJJNuzJ4kWjlEQEM_OmvnVukBWrU92LfQ/exec"
+            );
+          }}
+          className="underline"
+        >
+          haz clic aquí
+        </button>
+        .
       </p>
     </div>
   );
