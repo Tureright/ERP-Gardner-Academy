@@ -13,25 +13,25 @@ export const routes = [
     title: "Home",
     url: "/home",
     component: Home,
-    showInMenu: true,
+    showInMenu: false,
   },
   {
     title: "Budgeting",
-    url: "/Budgeting",
+    url: "/budgeting",
     component: Budgeting,
-    showInMenu: true,
+    showInMenu: false,
   },
   {
     title: "Manage Dropdowns",
     url: "/dropdowns",
     component: Dropdowns,
-    showInMenu: true,
+    showInMenu: false,
   },
   {
     title: "Settings",
     url: "/settings",
     component: Settings,
-    showInMenu: true,
+    showInMenu: false,
   },
   {
     title: "Roles de Pago",
@@ -61,5 +61,6 @@ export const routes = [
     title: "Empleados",
     url: "/employees",
     component: Employees,
+    showInMenu: false
   },
 ];

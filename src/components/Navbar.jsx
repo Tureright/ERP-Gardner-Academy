@@ -20,7 +20,7 @@ export const Navbar = () => {
             <li key={route.title}>
               <Link
                 to={route.url}
-                className={location.pathname.startsWith(route.url) ? "active" : ""}
+                className={location.pathname.toLowerCase().startsWith(route.url.toLowerCase()) ? "active" : ""}
               >
                 {route.title}
               </Link>
