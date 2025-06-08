@@ -1,11 +1,9 @@
-// EditablePayroll.tsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { EmployeeResponse, PayrollData } from "@/types";
 import { useLatestPayroll } from "@/hooks/usePayroll";
-import { useCreatePayroll } from "@/hooks/usePayroll";
 import EditableCalculations from "./EditableCalculations";
 import { mathUtils } from "@/utils/math";
-import EditableDate from "./EditableHeader";
+import EditableDates from "./EditableDates";
 
 type Props = {
   teacher: EmployeeResponse;
@@ -13,15 +11,15 @@ type Props = {
     earnings: PayrollData["earnings"];
     deductions: PayrollData["deductions"];
     jobPosition: string;
+    payrollMonth: Date;
+    payrollDate: Date;
   }) => void;
 };
 
 export default function EditablePayroll({ teacher, onChange }: Props) {
   const { data, isLoading } = useLatestPayroll(teacher.id);
-  const { mutate: createPayroll } = useCreatePayroll();
   const [mesAnio, setMesAnio] = useState(new Date());
-const [fechaPago, setFechaPago] = useState(new Date());
-
+  const [fechaPago, setFechaPago] = useState(new Date());
 
   const [earnings, setEarnings] = useState<
     Array<{ description: string; amount: number }>
@@ -41,6 +39,8 @@ const [fechaPago, setFechaPago] = useState(new Date());
         earnings: newEarnings,
         deductions: newDeductions,
         jobPosition: data.data.jobPosition || "",
+        payrollMonth: mesAnio,
+        payrollDate: fechaPago,
       });
     }
   }, [data]);
@@ -50,17 +50,10 @@ const [fechaPago, setFechaPago] = useState(new Date());
       earnings,
       deductions,
       jobPosition: data?.data.jobPosition || "",
+      payrollMonth: mesAnio,
+      payrollDate: fechaPago,
     });
-  }, [earnings, deductions]);
-
-  const handleCreatePayroll = () => {
-    const payrollData: PayrollData = {
-      earnings,
-      deductions,
-      payrollDate: new Date().toISOString().split("T")[0],
-    };
-    createPayroll({ employeeId: teacher.id, payrollData });
-  };
+  }, [earnings, deductions, mesAnio, fechaPago]);
 
   const totalEntregado =
     mathUtils.sumAmounts(earnings) - mathUtils.sumAmounts(deductions);
@@ -69,39 +62,46 @@ const [fechaPago, setFechaPago] = useState(new Date());
 
   return (
     <div className="flex flex-col gap-6 border border-black p-6 bg-gray-50">
-<header className="flex items-center">
-  <div className="flex flex-col items-center justify-center w-full">
-    <h2 className="font-bold text-[2rem]  text-center">Rol de Pagos</h2>
-    <p className="text-2xl text-center">
-      {mathUtils.formatMonthYear(mesAnio)}
-      <EditableDate value={mesAnio} type="mes" onChange={setMesAnio} />
-    </p>
-  </div>
-</header>
+      <header className="flex items-center">
+        <div className="flex flex-col items-center justify-center w-full">
+          <h2 className="font-bold text-[2rem]  text-center">Rol de Pagos</h2>
+          <EditableDates
+            label="Fecha del rol:"
+            value={mesAnio}
+            onChange={setMesAnio}
+            type="monthYear"
+          />
+        </div>
+      </header>
 
-<div className="flex justify-between">
-  <div>
-    <div className="flex gap-1 flex-wrap">
-      <p className="font-bold">Nombre: </p>
-      <p>{teacher.firstName} {teacher.lastName}</p>
-    </div>
-    <div className="flex gap-1 flex-wrap">
-      <p className="font-bold">Cédula: </p>
-      <p>{teacher.nationalId}</p>
-    </div>
-    <div className="flex gap-1 flex-wrap">
-      <p className="font-bold">Cargo: </p>
-      <p>{data.data.jobPosition}</p>
-    </div>
-  </div>
-  <div>
-    <div className="flex gap-1 flex-wrap">
-      <p className="font-bold">Fecha de pago: </p>
-      <p>{mathUtils.formatDateDDMMYYYY(fechaPago)}</p>
-      <EditableDate value={fechaPago} type="fecha" onChange={setFechaPago} />
-    </div>
-  </div>
-</div>
+      <div className="flex justify-between">
+        <div>
+          <div className="flex gap-1 flex-wrap">
+            <p className="font-bold">Nombre: </p>
+            <p>
+              {teacher.firstName} {teacher.lastName}
+            </p>
+          </div>
+          <div className="flex gap-1 flex-wrap">
+            <p className="font-bold">Cédula: </p>
+            <p>{teacher.nationalId}</p>
+          </div>
+          <div className="flex gap-1 flex-wrap">
+            <p className="font-bold">Cargo: </p>
+            <p>{data.data.jobPosition}</p>
+          </div>
+        </div>
+        <div>
+          <div className="flex gap-1 flex-wrap">
+            <EditableDates
+              label="Fecha de pago:"
+              value={fechaPago}
+              onChange={setFechaPago}
+              type="fullDate"
+            />
+          </div>
+        </div>
+      </div>
 
       <div className="flex flex-wrap gap-2">
         <EditableCalculations

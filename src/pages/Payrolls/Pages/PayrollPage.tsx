@@ -10,6 +10,7 @@ import { Plus } from "lucide-react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import NewPayroll_SelectTeacher from "./NewPayroll_SelectTeacher";
 import NewPayroll_FillPayroll from "./NewPayroll_FillPayroll";
+import NewPayroll_PayrollDetails from "./NewPayroll_PayrollDetails";
 
 export default function PayrollPage() {
   return (
@@ -17,6 +18,7 @@ export default function PayrollPage() {
       <Route index element={<PayrollMain />} />
       <Route path="selectTeacher" element={<NewPayroll_SelectTeacher />} />
       <Route path="fillPayroll" element={<NewPayroll_FillPayroll />} /> 
+      <Route path="payrollDetails" element={<NewPayroll_PayrollDetails />} /> 
       {/* Puedes agregar más rutas aquí */}
     </Routes>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CardPager from "./components/CardPager/CardPager";
+import CardPager from "../components/molecules/CardPager/CardPager";
 import ProgressBreadcrumb from "@/components/molecules/ProgressBreadcrumb";
 import Button from "@/components/molecules/Button";
 import { EmployeeResponse } from "@/types";
@@ -38,7 +38,6 @@ export default function NewPayroll_SelectTeacher() {
         variant="text"
         className={`bg-dark-cyan text-white ${!selectedTeacher ? "opacity-50 cursor-not-allowed" : ""}`}
         onClick={handleContinue}
-        // deshabilitado visualmente si no hay selección
       />
     </div>
   );

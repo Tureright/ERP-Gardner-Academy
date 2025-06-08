@@ -8,17 +8,14 @@ export const mathUtils = {
     return items.reduce((acc, item) => acc + item.amount, 0);
   },
   formatMonthYear: function (date: Date): string {
-    const formattedDate = date.toLocaleString("es-ES", {
-      month: "long",
-      year: "numeric",
-    });
+    const formattedDate = new Intl.DateTimeFormat("es-EC", {
+    month: "long",
+    year: "numeric",
+  }).format(date);
     return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
   },
   formatDateDDMMYYYY: function (date: Date): string {
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    return new Intl.DateTimeFormat("es-EC").format(date);
   },
   numberToMoneyWords: numeroALetras,
 

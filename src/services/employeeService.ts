@@ -23,7 +23,6 @@ export async function getProfilePicture(employeeId: string) {
   const res = await fetch(
     `${API_URL_EMP}?action=getProfilePicture&employeeId=${employeeId}`
   );
-  console.log("getprofilePicture");
   return handleResponse(res);
 }
 

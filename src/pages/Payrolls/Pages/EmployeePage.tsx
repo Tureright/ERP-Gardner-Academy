@@ -13,8 +13,8 @@ import {
 } from "@/hooks/usePayroll";
 
 import React, { useState } from "react";
-import Calculations from "./components/Calculations/Calculations";
-import CardPager from "./components/CardPager/CardPager";
+import Calculations from "../components/molecules/PayrollTemplate/Calculations";
+import CardPager from "../components/molecules/CardPager/CardPager";
 
 interface Employee {
   id: string;

@@ -1,13 +1,8 @@
-// src/utils/pdf.ts
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 
 /**
- * Captura el contenido de un elemento y lo descarga como PDF.
- *
- * @param ref React.RefObject<HTMLElement> – referencia al contenedor a imprimir.
- * @param filename string – nombre del archivo PDF (sin extensión).
- * @param options opcionales para html2canvas/jsPDF
+ * Exporta un ref a PDF, con soporte para múltiples páginas.
  */
 export async function exportRefToPdf(
   ref: React.RefObject<HTMLElement>,
@@ -29,12 +24,12 @@ export async function exportRefToPdf(
     return;
   }
 
-  // Valores por defecto
   const html2canvasOpts = {
-    scale: 2,
+    scale: 3, // mayor calidad
     useCORS: true,
     ...(options?.html2canvas || {}),
   };
+
   const jsPDFOpts = {
     orientation: "portrait" as const,
     unit: "mm" as const,
@@ -42,15 +37,28 @@ export async function exportRefToPdf(
     ...(options?.jsPDF || {}),
   };
 
-  // 1) Renderiza a canvas
   const canvas = await html2canvas(ref.current, html2canvasOpts);
   const imgData = canvas.toDataURL("image/png");
 
-  // 2) Crea el PDF
   const pdf = new jsPDF(jsPDFOpts);
   const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = (canvas.height * pageWidth) / canvas.width;
+  const pageHeight = pdf.internal.pageSize.getHeight();
 
-  pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+  const imgWidth = pageWidth;
+  const imgHeight = (canvas.height * pageWidth) / canvas.width;
+
+  let heightLeft = imgHeight;
+  let position = 0;
+
+  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+  heightLeft -= pageHeight;
+
+  while (heightLeft > 0) {
+    position = position - pageHeight;
+    pdf.addPage();
+    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+  }
+
   pdf.save(`${filename}.pdf`);
 }

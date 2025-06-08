@@ -10,7 +10,6 @@ export async function handleResponse(res: Response) {
     console.error(`[API ERROR] ${json.error}`);
     throw new Error(json.error || "Error desconocido del API.");
   }
-  console.log(json);
   return json;
 }
 

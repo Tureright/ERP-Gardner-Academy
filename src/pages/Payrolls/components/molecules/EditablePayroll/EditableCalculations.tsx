@@ -1,6 +1,6 @@
 // EditableCalculations.tsx
 import Button from "@/components/molecules/Button";
-import React from "react";
+import React, { useState } from "react";
 import { Trash, Plus } from "lucide-react";
 
 type Item = {
@@ -14,10 +14,18 @@ type Props = {
   setItems: (items: Item[]) => void;
 };
 
-export default function EditableCalculations({ title, items, setItems }: Props) {
+export default function EditableCalculations({
+  title,
+  items,
+  setItems,
+}: Props) {
+  const [editingAmounts, setEditingAmounts] = useState<{[index: number]: string;}>({});
+
   const handleChange = (index: number, field: keyof Item, value: string) => {
     const updatedItems = [...items];
-    updatedItems[index][field] = field === "amount" ? parseFloat(value) || 0 : value;
+    if (field === "description") {
+      updatedItems[index][field] = value;
+    }
     setItems(updatedItems);
   };
 
@@ -27,9 +35,26 @@ export default function EditableCalculations({ title, items, setItems }: Props) 
   };
 
   const handleAddItem = () => {
-    setItems([...items, { description: "Nuevo", amount: 0.0 }]);
+    setItems([...items, { description: "Nuevo", amount: 0 }]);
   };
   const total = items.reduce((acc, item) => acc + item.amount, 0);
+
+  const handleAmountChange = (index: number, value: string) => {
+    const sanitizedValue = value.replace(",", ".");
+
+    if (/^\d*\.?\d*$/.test(sanitizedValue) || sanitizedValue === "") {
+      // Actualizamos el estado temporal del input
+      setEditingAmounts((prev) => ({ ...prev, [index]: sanitizedValue }));
+
+      // Si el usuario no está en un estado "a medio escribir decimal", actualizamos el número real
+      if (sanitizedValue === "" || /^[0-9]+(\.[0-9]+)?$/.test(sanitizedValue)) {
+        const updatedItems = [...items];
+        updatedItems[index].amount =
+          sanitizedValue === "" ? 0 : parseFloat(sanitizedValue);
+        setItems(updatedItems);
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col grow shrink basis-[350px] p-4 border border-gray-300 rounded-md w-full bg-white">
@@ -40,17 +65,31 @@ export default function EditableCalculations({ title, items, setItems }: Props) 
             <input
               type="text"
               value={item.description}
-              onChange={(e) => handleChange(index, "description", e.target.value)}
+              onChange={(e) =>
+                handleChange(index, "description", e.target.value)
+              }
               className="flex-grow border p-2 rounded"
             />
             <input
-              type="number"
-              step="0.01"
-              value={item.amount}
-              onChange={(e) => handleChange(index, "amount", e.target.value)}
+              type="text"
+              inputMode="decimal"
+              value={
+                editingAmounts[index] !== undefined
+                  ? editingAmounts[index]
+                  : item.amount.toString()
+              }
+              onChange={(e) => handleAmountChange(index, e.target.value)}
+              onBlur={() => {
+                setEditingAmounts((prev) => {
+                  const newEditing = { ...prev };
+                  delete newEditing[index];
+                  return newEditing;
+                });
+              }}
               className="w-20 border p-2 rounded"
             />
-            <Button 
+
+            <Button
               icon={<Trash />}
               variant="icon"
               onClick={() => handleDelete(index)}
@@ -60,13 +99,13 @@ export default function EditableCalculations({ title, items, setItems }: Props) 
         ))}
       </ul>
       <Button
-      variant="icon"
+        variant="icon"
         icon={<Plus />}
         onClick={handleAddItem}
         className="mt-4 text-sm text-success underline bg-payroll-gray flex justify-center items-center hover:bg-success hover:text-white"
       />
 
-            <hr className="my-4 border-t border-gray-300" />
+      <hr className="my-4 border-t border-gray-300" />
 
       <div className="flex justify-between text-gray-800 font-semibold">
         <p>Total {title}</p>

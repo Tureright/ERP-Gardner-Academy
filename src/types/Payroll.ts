@@ -14,4 +14,11 @@ export interface PayrollResponse extends PayrollBase {
   employeeId: string;
 }
 
-export interface PayrollFullTemplate extends PayrollResponse {}
+export interface PayrollFullTemplate extends PayrollResponse {
+  firstName: string;
+  lastName: string;
+  nationalId: string;
+  birthDate: string;
+  jobPosition: string;
+  payrollMonth: string;
+}

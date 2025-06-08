@@ -9,12 +9,10 @@ type Props = {
 export default function Card({ employee }: Props) {
   const { data, isLoading, error } = useProfilePicture(employee.id);
 
-  // Placeholder de avatar mientras carga
-  console.log("data", data);
+
   const avatarSrc = data
     ? `data:${data.data.mimeType};base64,${data.data.base64}`
     : "";
-  console.log("Avatar src:", avatarSrc);
   return (
     <div className="p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow flex flex-col items-center">
       <div className="w-16 h-16 rounded-full mb-2 overflow-hidden">

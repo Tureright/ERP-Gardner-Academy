@@ -6,6 +6,7 @@ type Props = {
   variant?: "text" | "text-icon" | "icon";
   onClick?: () => void;
   className?: string;
+  disabled?: boolean;
 };
 
 export default function Button({
@@ -14,31 +15,18 @@ export default function Button({
   variant = "text",
   onClick,
   className = "",
+  disabled = false,
 }: Props) {
-  let content;
-
-  if (variant === "icon") {
-    content = <span>{icon}</span>;
-  } else if (variant === "text-icon") {
-    content = (
-      <span className="flex items-center justify-between w-full gap-2">
-        <span>{text}</span>
-        <span>{icon}</span>
-      </span>
-    );
-  } else {
-    content = <span>{text}</span>;
-  }
-
   // Detecta si ya se incluyó una clase de fondo (bg-...)
   const hasBgClass = /\bbg-[\w-]+\b/.test(className);
-  const finalClassName = `px-4 py-2 rounded-md font-semibold transition hover:bg-purple-primary hover:text-white ${
+  const finalClassName = `h-[50px] px-4 py-2 rounded-md font-semibold transition hover:bg-purple-primary hover:text-white flex items-center justify-center gap-2 ${
     hasBgClass ? "" : "bg-purple-light"
-  } ${className}`;
+  } ${className} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`;
 
   return (
-    <button onClick={onClick} className={finalClassName}>
-      {content}
+    <button onClick={onClick} className={finalClassName} disabled={disabled}>
+      {variant !== "icon" && !!text && <span>{text}</span>}
+      {icon && <span>{icon}</span>}
     </button>
   );
 }

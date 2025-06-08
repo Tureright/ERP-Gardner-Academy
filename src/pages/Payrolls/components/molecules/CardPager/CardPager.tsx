@@ -7,7 +7,7 @@ import {
   SearchIcon,
 } from "lucide-react";
 import { useEmployees } from "@/hooks/useEmployee";
-import Card from "../Card/Card";
+import Card from "../../atoms/Card/Card";
 import { EmployeeData, EmployeeResponse } from "@/types";
 import Button from "@/components/molecules/Button";
 
