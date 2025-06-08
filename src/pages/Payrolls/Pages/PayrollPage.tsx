@@ -11,6 +11,7 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import NewPayroll_SelectTeacher from "./NewPayroll_SelectTeacher";
 import NewPayroll_FillPayroll from "./NewPayroll_FillPayroll";
 import NewPayroll_PayrollDetails from "./NewPayroll_PayrollDetails";
+import Table from "@/pages/Payrolls/components/atoms/Table/Table";
 
 export default function PayrollPage() {
   return (
@@ -49,6 +50,8 @@ function PayrollMain() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 gap-4">
       <h1>Roles de Pago</h1>
+      contenedor apra table
+        <Table/>
 
       <ul>
         {data?.data.map((payroll: PayrollResponse) => (
