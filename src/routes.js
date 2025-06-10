@@ -6,6 +6,7 @@ import Payrolls from "./pages/Payrolls//Pages/PayrollPage"
 import Registration from "./pages/Registration/matriculacion";
 import ReservaCupo from "./pages/Registration/reservarCupo";
 import Formulario from "./pages/Registration/formulario"; // este solo redirige al formulario externo
+import DashboardMatricula from "./pages/Report/registrationReport";
 
 export const routes = [
   {
@@ -37,12 +38,14 @@ export const routes = [
     url: "/payrolls",
     component: Payrolls,
     showInMenu: true,
+    allowedOUs: ["/GestionAcademica", "/Management", "/Development"],
   },
   {
     title: "Matriculación",
     url: "/matriculacion",
     component: Registration,
     showInMenu: true,
+    allowedOUs: ["/Alumnos", "/Inscritos", "/Pendiente", "/Development"],
   },
   {
     title: "Reserva Cupo",
@@ -55,5 +58,12 @@ export const routes = [
     url: "/formulario",
     component: Formulario,
     showInMenu: false,
+  },
+  {
+    title: "Reportes de Matriculación",
+    url: "/reporte",
+    component: DashboardMatricula,
+    showInMenu: true,
+    allowedOUs: ["/GestionAcademica", "/Management", "/Development"],
   },
 ];

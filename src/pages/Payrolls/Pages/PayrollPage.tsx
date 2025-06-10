@@ -98,7 +98,7 @@ function formatToFullTemplate(
         nationalId: "",
         birthDate: "",
         jobPosition: "", // Puedes definir cómo sacar el jobPosition
-        payrollMonth: payroll.payrollDate, // Suponiendo que payrollMonth sea igual a payrollDate (o lo puedes formatear)
+        payrollMonth: "", // Suponiendo que payrollMonth sea igual a payrollDate (o lo puedes formatear)
       };
     }
     console.log("Employee found:", employee);

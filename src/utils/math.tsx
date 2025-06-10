@@ -8,48 +8,78 @@ export const mathUtils = {
     return items.reduce((acc, item) => acc + item.amount, 0);
   },
   formatMonthYear: function (date: Date): string {
-    const formattedDate = new Intl.DateTimeFormat("es-EC", {
-    month: "long",
-    year: "numeric",
-  }).format(date);
-    return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+    return date.toLocaleString("es-EC", {
+      month: "long",
+      year: "numeric",
+    });
   },
   formatDateDDMMYYYY: function (date: Date): string {
     return new Intl.DateTimeFormat("es-EC").format(date);
   },
   numberToMoneyWords: numeroALetras,
-
 };
-
 
 function numeroALetras(num: number | string): string {
   const UNIDADES = [
-    '', 'Uno', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis', 'Siete', 'Ocho', 'Nueve'
+    "",
+    "Uno",
+    "Dos",
+    "Tres",
+    "Cuatro",
+    "Cinco",
+    "Seis",
+    "Siete",
+    "Ocho",
+    "Nueve",
   ];
   const DECENAS = [
-    '', 'Diez', 'Veinte', 'Treinta', 'Cuarenta', 'Cincuenta',
-    'Sesenta', 'Setenta', 'Ochenta', 'Noventa'
+    "",
+    "Diez",
+    "Veinte",
+    "Treinta",
+    "Cuarenta",
+    "Cincuenta",
+    "Sesenta",
+    "Setenta",
+    "Ochenta",
+    "Noventa",
   ];
   const DIEZ_A_DIECINUEVE = [
-    'Diez', 'Once', 'Doce', 'Trece', 'Catorce', 'Quince',
-    'Dieciséis', 'Diecisiete', 'Dieciocho', 'Diecinueve'
+    "Diez",
+    "Once",
+    "Doce",
+    "Trece",
+    "Catorce",
+    "Quince",
+    "Dieciséis",
+    "Diecisiete",
+    "Dieciocho",
+    "Diecinueve",
   ];
   const CENTENAS = [
-    '', 'Ciento', 'Doscientos', 'Trescientos', 'Cuatrocientos',
-    'Quinientos', 'Seiscientos', 'Setecientos', 'Ochocientos', 'Novecientos'
+    "",
+    "Ciento",
+    "Doscientos",
+    "Trescientos",
+    "Cuatrocientos",
+    "Quinientos",
+    "Seiscientos",
+    "Setecientos",
+    "Ochocientos",
+    "Novecientos",
   ];
 
   function convertirGrupoTresCifras(n: number): string {
     const centenas = Math.floor(n / 100);
     const decenasUnidades = n % 100;
-    let texto = '';
+    let texto = "";
 
-    if (n === 0) return 'Cero';
+    if (n === 0) return "Cero";
 
     if (centenas === 1 && decenasUnidades === 0) {
-      texto += 'Cien';
+      texto += "Cien";
     } else if (centenas > 0) {
-      texto += CENTENAS[centenas] + ' ';
+      texto += CENTENAS[centenas] + " ";
     }
 
     if (decenasUnidades > 0) {
@@ -62,7 +92,7 @@ function numeroALetras(num: number | string): string {
         const unidad = decenasUnidades % 10;
         texto += DECENAS[decena];
         if (unidad > 0) {
-          texto += ' y ' + UNIDADES[unidad];
+          texto += " y " + UNIDADES[unidad];
         }
       }
     }
@@ -71,24 +101,23 @@ function numeroALetras(num: number | string): string {
   }
 
   function seccionesMilesMillones(n: number): string {
-    if (n === 0) return 'Cero';
+    if (n === 0) return "Cero";
 
     const millones = Math.floor(n / 1_000_000);
     const miles = Math.floor((n % 1_000_000) / 1_000);
     const cientos = n % 1_000;
 
-    let texto = '';
+    let texto = "";
 
     if (millones > 0) {
-      texto += millones === 1
-        ? 'Un Millón '
-        : `${convertirGrupoTresCifras(millones)} Millones `;
+      texto +=
+        millones === 1
+          ? "Un Millón "
+          : `${convertirGrupoTresCifras(millones)} Millones `;
     }
 
     if (miles > 0) {
-      texto += miles === 1
-        ? 'Mil '
-        : `${convertirGrupoTresCifras(miles)} Mil `;
+      texto += miles === 1 ? "Mil " : `${convertirGrupoTresCifras(miles)} Mil `;
     }
 
     if (cientos > 0) {
