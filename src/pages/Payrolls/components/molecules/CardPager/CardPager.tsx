@@ -56,7 +56,7 @@ export default function CardPager({
   };
 
   return (
-    <div className="max-w-4xl">
+    <div className="">
       <h2 className="text-[2rem] mb-4 text-gray-500">{title}</h2>
       <div className="mx-auto p-6 bg-purple-light rounded-lg shadow-md">
         <div className="flex justify-end mb-4 space-x-4 flex-wrap">

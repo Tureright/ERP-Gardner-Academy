@@ -4,8 +4,6 @@ import ProgressBreadcrumb from "@/components/molecules/ProgressBreadcrumb";
 import Button from "@/components/molecules/Button";
 import { EmployeeResponse, PayrollFullTemplate } from "@/types";
 import PayrollTemplate from "../components/molecules/PayrollTemplate/PayrollTemplate";
-import { exportRefToPdf } from "@/utils/pdf";
-import exp from "constants";
 import EditablePayroll from "../components/molecules/EditablePayroll/EditablePayroll";
 import { useCreatePayroll } from "@/hooks/usePayroll";
 import { PayrollData } from "@/types";
@@ -83,7 +81,7 @@ export default function NewPayroll_FillPayroll({}: Props) {
   };
 
   return (
-    <div className="max-w-4x2 mx-auto flex flex-col space-y-8 px-4">
+    <div className="max-w-7xl mx-auto flex flex-col space-y-8 px-4">
       <header className="space-y-4">
         <h1 className="text-[2.5rem] mb-4">Nuevo rol de pagos</h1>
         <ProgressBreadcrumb steps={steps} currentStep={1} />

@@ -45,16 +45,6 @@ export default function NewPayroll_PayrollDetails({}: Props) {
             className="bg-dark-cyan text-white"
           />
           <Button
-            text="Editar Rol de Pagos"
-            icon={<Pencil />}
-            variant="icon"
-            onClick={() => {
-              // Aquí puedes implementar la lógica para editar el rol de pagos
-              console.log("Editar Rol de Pagos");
-            }}
-            className="bg-dark-cyan text-white"
-          />
-          <Button
             text="Eliminar Rol de Pagos"
             icon={<Trash />}
             variant="icon"

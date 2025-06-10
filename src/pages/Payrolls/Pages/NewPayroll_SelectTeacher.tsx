@@ -21,7 +21,7 @@ export default function NewPayroll_SelectTeacher() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto flex flex-col space-y-8 px-4">
+    <div className="max-w-7xl mx-auto flex flex-col space-y-8 px-4">
       <header className="space-y-4">
         <h1 className="text-[2.5rem] mb-4 ">Nuevo rol de pagos</h1>
         <ProgressBreadcrumb steps={steps} currentStep={0} />

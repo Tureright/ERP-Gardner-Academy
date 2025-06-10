@@ -6,7 +6,7 @@ import {
 } from "@/hooks/usePayroll";
 import { PayrollResponse, PayrollData, PayrollFullTemplate } from "@/types";
 import Button from "@/components/molecules/Button";
-import { Plus } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import NewPayroll_SelectTeacher from "./NewPayroll_SelectTeacher";
 import NewPayroll_FillPayroll from "./NewPayroll_FillPayroll";
@@ -46,39 +46,35 @@ function PayrollMain() {
     employeesData?.data ?? []
   );
 
-  
-
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100 gap-4">
-      <h1>Roles de Pago</h1>
-      <Table
-      payrolls={payrollFullTemplates}
-      />
-      <ul>
-        {data?.data.map((payroll: PayrollResponse) => (
-          <li key={payroll.id}>
-            {payroll.employeeId} - {payroll.payrollDate}
-            <button
-              onClick={() =>
-                deletePayroll.mutate({
-                  employeeId: payroll.employeeId,
-                  payrollId: payroll.id,
-                })
-              }
-            >
-              Eliminar
-            </button>
-          </li>
-        ))}
-      </ul>
+<div className="max-w-screen-xl mx-auto flex flex-col space-y-8 px-4">
+  <h1 className="text-[2.5rem] mb-4">Roles de Pago</h1>
+  <div className="flex flex-row flex-wrap items-start gap-4">
+    <div className="w-auto flex-1 rounded-sm border border-gray-300 shadow-sm p-4 ">
+    <Table payrolls={payrollFullTemplates} />
+    </div>
+
+    <div className="space-y-4 w-auto w-max-[300px]">
       <Button
         text="Añadir rol de pago"
         icon={<Plus size={20} strokeWidth={2} />}
         variant="text-icon"
-        className="w-[250px]"
+        className="w-full"
         onClick={() => navigate("/payrolls/selectTeacher")}
+        aria-label="Añadir rol de pago"
+      />
+      <Button
+        text="Gestionar profesores"
+        icon={<Users size={20} strokeWidth={2} />}
+        variant="text-icon"
+        className="w-full"
+        onClick={() => ""}
+        aria-label="Gestionar profesores"
       />
     </div>
+  </div>
+</div>
+
   );
 }
 
