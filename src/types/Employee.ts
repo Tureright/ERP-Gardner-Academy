@@ -14,3 +14,9 @@ export interface EmployeeData extends EmployeeBase {}
 export interface EmployeeResponse extends EmployeeBase {
   id: string;
 }
+
+export interface workPeriods {
+  jobPosition: string;
+  startDate: string;
+  endDate: string;
+}

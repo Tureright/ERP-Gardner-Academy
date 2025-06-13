@@ -1,45 +1,44 @@
+
+import Payrolls from "./pages/Payrolls/Pages/PayrollPage";
+import NewPayroll_SelectTeacher from "@/pages/Payrolls/Pages/NewPayroll_SelectTeacher";
+import NewPayroll_FillPayroll from "./pages/Payrolls/Pages/NewPayroll_FillPayroll";
+import NewPayroll_PayrollDetails from "./pages/Payrolls/Pages/NewPayroll_PayrollDetails";
 import Settings from "./pages/Settings";
-import Home from "./pages/Home/page";
-import Budgeting from "./pages/Budgeting/page";
-import Dropdowns from "./pages/Dropdowns/page";
-import Invoices from "./pages/Invoices/invoicesPage";
-import Payrolls from "./pages/Payrolls/PayrollPage";
-import Employees from "./pages/Payrolls/EmployeePage";
 
 export const routes = [
-  {
-    title: "Home",
-    url: "/",
-    component: Home,
-  },
-  {
-    title: "Budgeting",
-    url: "/Budgeting",
-    component: Budgeting,
-  },
-  {
-    title: "Manage Dropdowns",
-    url: "/dropdowns",
-    component: Dropdowns,
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    component: Settings,
-  },
-  {
-    title: "Facturación",
-    url: "/invoices",
-    component: Invoices,
-  },
+
   {
     title: "Roles de Pago",
     url: "/payrolls",
     component: Payrolls,
+    subpages: [
+      {
+        title: "Roles de Pago",
+        url: "/payrolls",
+        component: Payrolls,
+      },
+      {
+        title: "Seleccionar Profesores",
+        url: "/payrolls/select-teacher",
+        component: NewPayroll_SelectTeacher,
+      },
+      {
+        title: "Llenar Rol de Pago",
+        url: "/payrolls/fill-payroll",
+        component: NewPayroll_FillPayroll,
+      },
+      {
+        title: "Detalles del Rol de Pago",
+        url: "/payrolls/payroll-details",
+        component: NewPayroll_PayrollDetails,
+      },
+      
+    ],
   },
+  
   {
-    title: "Empleados",
-    url: "/employees",
-    component: Employees,
+    title: "Configuración",
+    url: "/settings",
+    component: Settings,
   },
 ];
