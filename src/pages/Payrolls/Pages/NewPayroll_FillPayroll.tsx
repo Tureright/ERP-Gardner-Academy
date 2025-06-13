@@ -40,13 +40,14 @@ export default function NewPayroll_FillPayroll({}: Props) {
 
   const confirmCreatePayroll = () => {
     setIsLoading(true);
-    const payrollDate = payrollDateDate.toISOString().split("T")[0];
-    const payrollMonth = payrollMonthDate.toISOString().slice(0, 7);
+    const payrollDate = payrollDateDate.toISOString();
+    const payrollMonth = payrollMonthDate.toISOString();
 
     const payrollData: PayrollData = {
       earnings,
       deductions,
       payrollDate,
+      payrollMonth,
     };
     createPayroll(
       { employeeId: teacher.id, payrollData },

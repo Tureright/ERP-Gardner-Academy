@@ -11,21 +11,13 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import NewPayroll_SelectTeacher from "./NewPayroll_SelectTeacher";
 import NewPayroll_FillPayroll from "./NewPayroll_FillPayroll";
 import NewPayroll_PayrollDetails from "./NewPayroll_PayrollDetails";
-import PayrollPrintPage from "./PayrollPrintPage";
 import Table from "../components/atoms/Table/Table";
 import { useEmployee, useEmployees } from "@/hooks/useEmployee";
 import { mathUtils } from "@/utils/math";
 
 export default function PayrollPage() {
   return (
-    <Routes>
-      <Route index element={<PayrollMain />} />
-      <Route path="selectTeacher" element={<NewPayroll_SelectTeacher />} />
-      <Route path="fillPayroll" element={<NewPayroll_FillPayroll />} />
-      <Route path="payrollDetails" element={<NewPayroll_PayrollDetails />} />
-      <Route path="printPayroll" element={<PayrollPrintPage />} />
-      {/* Puedes agregar más rutas aquí */}
-    </Routes>
+    <PayrollMain />
   );
 }
 
@@ -47,34 +39,33 @@ function PayrollMain() {
   );
 
   return (
-<div className="max-w-screen-xl mx-auto flex flex-col space-y-8 px-4">
-  <h1 className="text-[2.5rem] mb-4">Roles de Pago</h1>
-  <div className="flex flex-row flex-wrap items-start gap-4">
-    <div className="w-auto flex-1 rounded-sm border border-gray-300 shadow-sm p-4 ">
-    <Table payrolls={payrollFullTemplates} />
-    </div>
+    <div className="max-w-screen-xl mx-auto flex flex-col space-y-8 px-4">
+      <h1 className="text-[2.5rem] mb-4">Roles de Pago</h1>
+      <div className="flex flex-row flex-wrap items-start gap-4">
+        <div className="w-auto flex-1 rounded-sm border border-gray-300 shadow-sm p-4 ">
+          <Table payrolls={payrollFullTemplates} />
+        </div>
 
-    <div className="space-y-4 w-auto w-max-[300px]">
-      <Button
-        text="Añadir rol de pago"
-        icon={<Plus size={20} strokeWidth={2} />}
-        variant="text-icon"
-        className="w-full"
-        onClick={() => navigate("/payrolls/selectTeacher")}
-        aria-label="Añadir rol de pago"
-      />
-      <Button
-        text="Gestionar profesores"
-        icon={<Users size={20} strokeWidth={2} />}
-        variant="text-icon"
-        className="w-full"
-        onClick={() => ""}
-        aria-label="Gestionar profesores"
-      />
+        <div className="space-y-4 w-auto w-max-[300px]">
+          <Button
+            text="Añadir rol de pago"
+            icon={<Plus size={20} strokeWidth={2} />}
+            variant="text-icon"
+            className="w-full"
+            onClick={() => navigate("/payrolls/selectTeacher")}
+            aria-label="Añadir rol de pago"
+          />
+          <Button
+            text="Gestionar profesores"
+            icon={<Users size={20} strokeWidth={2} />}
+            variant="text-icon"
+            className="w-full"
+            onClick={() => ""}
+            aria-label="Gestionar profesores"
+          />
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
   );
 }
 
@@ -101,7 +92,6 @@ function formatToFullTemplate(
         payrollMonth: "", // Suponiendo que payrollMonth sea igual a payrollDate (o lo puedes formatear)
       };
     }
-    console.log("Employee found:", employee);
     return {
       ...payroll,
       firstName: employee.firstName,

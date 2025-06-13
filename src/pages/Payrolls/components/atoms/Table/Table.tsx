@@ -39,7 +39,6 @@ function Table({ payrolls = [] }: Props) {
     startIndex,
     startIndex + pageSize
   );
-  console.log("currentPayrolls", currentPayrolls);
 
   const handlePrevious = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));

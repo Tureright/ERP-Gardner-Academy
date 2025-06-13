@@ -59,7 +59,6 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
     mathUtils.sumAmounts(earnings) - mathUtils.sumAmounts(deductions);
 
   if (isLoading) return <div>Cargando datos del rol de pagos...</div>;
-
   return (
     <div className="flex flex-col gap-6 border border-black p-6 bg-gray-50">
       <header className="flex items-center">
@@ -67,7 +66,7 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
           <h2 className="font-bold text-[2rem]  text-center">Rol de Pagos</h2>
           <EditableDates
             label="Fecha del rol:"
-            value={mesAnio}
+            value={mesAnio.toString()}
             onChange={setMesAnio}
             type="monthYear"
           />
@@ -95,7 +94,7 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
           <div className="flex gap-1 flex-wrap">
             <EditableDates
               label="Fecha de pago:"
-              value={fechaPago}
+              value={fechaPago.toString()}
               onChange={setFechaPago}
               type="fullDate"
             />

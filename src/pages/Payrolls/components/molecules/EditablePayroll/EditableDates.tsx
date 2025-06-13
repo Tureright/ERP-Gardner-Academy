@@ -1,57 +1,77 @@
 // components/EditableDates.tsx
 import { useState } from "react";
+import { mathUtils } from "@/utils/math";
 
 type EditableDatesProps = {
   label: string;
-  value: Date;
+  value: string; // ISO string
   onChange: (newDate: Date) => void;
   type: "monthYear" | "fullDate";
 };
 
-const formatMonthYear = (date: Date) => {
-  return date.toLocaleString("es-EC", {
-    month: "long",
-    year: "numeric",
-  });
-};
-
-const formatDateDDMMYYYY = (date: Date) => {
-  return date.toLocaleDateString("es-EC", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-};
-
-export default function EditableDates({ label, value, onChange, type }: EditableDatesProps) {
+export default function EditableDates({
+  label,
+  value,
+  onChange,
+  type,
+}: EditableDatesProps) {
   const [isEditing, setIsEditing] = useState(false);
 
-  // Inicializamos el valor temporal basado en el tipo de input
-const initialValue =
-  type === "monthYear"
-    ? `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}`
-    : `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
+  // Parseamos el string a Date y validamos
+  
+  const parsedDate = new Date(value);
+  const isValidDate = !isNaN(parsedDate.getTime());
 
+  // Función para generar el valor del input según tipo
+  const getInputValue = () => {
+    if (!isValidDate) return "";
 
-  const [tempDate, setTempDate] = useState<string>(initialValue);
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+    const day = String(parsedDate.getDate()).padStart(2, "0");
+    const hours = String(parsedDate.getHours()).padStart(2, "0");
+    const minutes = String(parsedDate.getMinutes()).padStart(2, "0");
+
+    return type === "monthYear"
+      ? `${year}-${month}`
+      : `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  const [tempDate, setTempDate] = useState<string>(getInputValue());
 
   const handleSave = () => {
+    if (!tempDate) return;
+
+    let localDate: Date;
+
     if (type === "monthYear") {
       const [year, month] = tempDate.split("-");
-      const newDate = new Date(parseInt(year), parseInt(month) - 1, 1);
-      onChange(newDate);
+      localDate = new Date(parseInt(year), parseInt(month) - 1, 1, 0, 0);
+      console.log("Fecha de mes y año:", localDate);
     } else {
-      onChange(new Date(tempDate));
+      localDate = new Date(tempDate);
+      console.log("Fecha completa:", localDate);
     }
+
+    if (!isNaN(localDate.getTime())) {
+      onChange(localDate);
+    }
+
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    setTempDate(initialValue);
+    setTempDate(getInputValue());
     setIsEditing(false);
   };
 
-  const displayValue = type === "monthYear" ? formatMonthYear(value) : formatDateDDMMYYYY(value);
+  const getDisplayValue = () => {
+    if (!isValidDate) return "Fecha inválida";
+
+    return type === "monthYear"
+      ? mathUtils.formatMonthYear(parsedDate)
+      : mathUtils.formatDateDDMMYYYY(parsedDate);
+  };
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -79,7 +99,7 @@ const initialValue =
         </>
       ) : (
         <>
-          <p>{displayValue}</p>
+          <p>{getDisplayValue()}</p>
           <button
             onClick={() => setIsEditing(true)}
             className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-sm"

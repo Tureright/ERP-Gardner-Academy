@@ -1,10 +1,11 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import PayrollTemplate from "../components/molecules/PayrollTemplate/PayrollTemplate";
 import { PayrollFullTemplate } from "@/types";
 import Button from "@/components/molecules/Button";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Download, Pencil, Trash } from "lucide-react";
+import { Download, Trash } from "lucide-react";
 import { useDeletePayroll } from "@/hooks/usePayroll";
+import { useGeneratePDF } from "@/hooks/usePDF";
 
 type LocationState = {
   fullPayrollData: PayrollFullTemplate;
@@ -18,9 +19,13 @@ export default function NewPayroll_PayrollDetails({}: Props) {
   const [loading, setLoading] = useState(false);
   const deletePayroll = useDeletePayroll();
   const navigate = useNavigate();
-  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+  const { mutate: generate } = useGeneratePDF();
 
-  console.log("Full Payroll Data:", fullPayrollData);
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+  const handleGenerate = (component: JSX.Element) => {
+    generate(component);
+  };
+
   return (
     <div className="max-w-4x1 mx-auto flex flex-col space-y-8 px-4">
       <header className="space-y-4">
@@ -32,18 +37,9 @@ export default function NewPayroll_PayrollDetails({}: Props) {
             text={loading ? "Generando PDF..." : "Descargar Rol de Pagos"}
             icon={<Download />}
             variant="icon"
-            onClick={async () => {
-              const encodedData = encodeURIComponent(
-                JSON.stringify(fullPayrollData)
-              );
-              const printWindow = window.open(
-                `/payrolls/printPayroll?data=${encodedData}`,
-                "_blank"
-              );
-              printWindow?.focus();
-            }}
+            onClick={() => handleGenerate(<PayrollTemplate payrollFullTemplate={fullPayrollData} />)}
             className="bg-dark-cyan text-white"
-          />
+          /> // Este boton debería generar el PDF del rol de pagos PayrollTemplate
           <Button
             text="Eliminar Rol de Pagos"
             icon={<Trash />}

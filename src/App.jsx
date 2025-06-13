@@ -18,6 +18,9 @@ import ReservarCupo from "./pages/Registration/reservarCupo";
 import DashboardMatricula from "./pages/Report/registrationReport";
 
 import "./App.css";
+import NewPayroll_SelectTeacher from "./pages/Payrolls/Pages/NewPayroll_SelectTeacher";
+import NewPayroll_FillPayroll from "./pages/Payrolls/Pages/NewPayroll_FillPayroll";
+import NewPayroll_PayrollDetails from "./pages/Payrolls/Pages/NewPayroll_PayrollDetails";
 
 // 👇 Este componente sí puede usar useLocation porque ya está dentro de <Router>
 function AppRoutes() {
@@ -26,10 +29,13 @@ function AppRoutes() {
 
   useEffect(() => {
     if (idToken && !userData) {
-      fetch("https://script.google.com/macros/s/AKfycbykD6bVSicqEgX6ok_8PhWuYqftSjcOgQrvNs0DeBKWrf_JJFYDwD0Emr8Q5OZzhvk0Tg/exec", {
-        method: "POST",
-        body: JSON.stringify({ idToken }),
-      })
+      fetch(
+        "https://script.google.com/macros/s/AKfycbykD6bVSicqEgX6ok_8PhWuYqftSjcOgQrvNs0DeBKWrf_JJFYDwD0Emr8Q5OZzhvk0Tg/exec",
+        {
+          method: "POST",
+          body: JSON.stringify({ idToken }),
+        }
+      )
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
@@ -59,7 +65,15 @@ function AppRoutes() {
   const showNavbar = !hideNavbarRoutes.includes(location.pathname);
 
   function getAllowedModules(ouPath) {
-    const allModules = ["home", "settings", "dropdown", "invoices", "payrolls", "registration", "report"];
+    const allModules = [
+      "home",
+      "settings",
+      "dropdown",
+      "invoices",
+      "payrolls",
+      "registration",
+      "report",
+    ];
     const registrationOUs = ["/Alumnos", "/Inscritos", "/Pendiente"];
     const gestionAcademicaOUs = ["/GestionAcademica", "/Management"];
     const docentesOU = "/Docentes";
@@ -103,28 +117,49 @@ function AppRoutes() {
   let defaultRoute = "/home";
   if (allowedModules.includes("invoices")) defaultRoute = "/invoices";
   else if (allowedModules.includes("payrolls")) defaultRoute = "/payrolls";
-  else if (allowedModules.includes("registration")) defaultRoute = "/matriculacion";
+  else if (allowedModules.includes("registration"))
+    defaultRoute = "/matriculacion";
 
   return (
     <div className="app-container">
       {showNavbar && <Navbar />}
-      <div className="content" style={{ marginLeft: showNavbar ? "250px" : "0" }}>
+      <div
+        className="content"
+        style={{ marginLeft: showNavbar ? "250px" : "0" }}
+      >
         <Routes>
           <Route path="/" element={<Navigate to={defaultRoute} replace />} />
 
           {allowedModules.includes("invoices") && (
-            <Route path="/invoices/*" element={<Invoices />} />
+            <Route path="/invoices" element={<Invoices />} />
           )}
           {allowedModules.includes("payrolls") && (
-            <Route path="/payrolls/*" element={<Payrolls />} />
+            <>
+              <Route path="/payrolls" element={<Payrolls />} />
+              <Route
+                path="/payrolls/selectTeacher"
+                element={<NewPayroll_SelectTeacher />}
+              />
+              <Route
+                path="/payrolls/fillPayroll"
+                element={<NewPayroll_FillPayroll />}
+              />
+              <Route
+                path="/payrolls/payrollDetails"
+                element={<NewPayroll_PayrollDetails />}
+              />
+            </>
           )}
           {allowedModules.includes("report") && (
-            <Route path="/reporte/*" element={<DashboardMatricula />} />
+            <Route path="/reporte" element={<DashboardMatricula />} />
           )}
           {allowedModules.includes("registration") && (
             <>
               <Route path="/matriculacion" element={<Registration />} />
-              <Route path="/matriculacion/formulario" element={<Formulario />} />
+              <Route
+                path="/matriculacion/formulario"
+                element={<Formulario />}
+              />
               <Route path="/matriculacion/reserva" element={<ReservarCupo />} />
             </>
           )}
@@ -146,4 +181,3 @@ function App() {
 }
 
 export default App;
-
