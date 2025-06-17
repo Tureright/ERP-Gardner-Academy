@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ProgressBreadcrumb from "@/components/molecules/ProgressBreadcrumb";
 import Button from "@/components/molecules/Button";
-import { EmployeeResponse, PayrollFullTemplate } from "@/types";
+import { EmployeeData, EmployeeResponse, PayrollFullTemplate } from "@/types";
 import PayrollTemplate from "../components/molecules/PayrollTemplate/PayrollTemplate";
 import EditablePayroll from "../components/molecules/EditablePayroll/EditablePayroll";
 import { useCreatePayroll } from "@/hooks/usePayroll";
 import { PayrollData } from "@/types";
+import { useUpdateEmployee } from "@/hooks/useEmployee";
 
 type Props = {};
 
@@ -18,10 +19,12 @@ export default function NewPayroll_FillPayroll({}: Props) {
   const [earnings, setEarnings] = useState<PayrollData["earnings"]>([]);
   const [deductions, setDeductions] = useState<PayrollData["deductions"]>([]);
   const [jobPosition, setJobPosition] = useState<string>("");
+  const [nationalId, setNationalId] = useState<string>("");
   const { mutate: createPayroll } = useCreatePayroll();
   const [payrollMonthDate, setPayrollMonthDate] = useState<Date>(new Date());
   const [payrollDateDate, setPayrollDateDate] = useState<Date>(new Date());
   const [isLoading, setIsLoading] = useState(false);
+  const updateEmployee = useUpdateEmployee();
 
   const steps = [
     "Selección de Profesor",
@@ -56,19 +59,48 @@ export default function NewPayroll_FillPayroll({}: Props) {
           const payrollId = response.data.payrollId;
 
           const fullPayrollData: PayrollFullTemplate = {
-          id: payrollId,
-          employeeId: teacher.id,
-          earnings,
-          deductions,
-          payrollDate,
-          firstName: teacher.firstName,
-          lastName: teacher.lastName,
-          nationalId: teacher.nationalId,
-          birthDate: teacher.birthDate,
-          jobPosition,
-          payrollMonth,
-        };
+            id: payrollId,
+            employeeId: teacher.id,
+            earnings,
+            deductions,
+            payrollDate,
+            firstName: teacher.firstName,
+            lastName: teacher.lastName,
+            nationalId,
+            birthDate: teacher.birthDate,
+            jobPosition,
+            payrollMonth,
+          };
 
+          const employeeData: EmployeeData = {
+            adminId: teacher.adminId,
+            firstName: teacher.firstName,
+            lastName: teacher.lastName,
+            nationalId: nationalId,
+            birthDate: teacher.birthDate,
+            workPeriods: [
+              {
+                jobPosition: jobPosition,
+                startDate: teacher.workPeriods[0].startDate,
+                endDate: teacher.workPeriods[0].endDate,
+              },
+            ],
+            institutionalEmail: teacher.institutionalEmail,
+          };
+
+          setIsLoading(false);
+          updateEmployee.mutate(
+            { employeeId: teacher.id, employeeData },
+            {
+              onSuccess: () => {
+                console.log("Empleado actualizado exitosamente");
+              },
+              onError: (error) => {
+                console.error("Error al actualizar el empleado:", error);
+                alert("Ocurrió un error al actualizar el empleado.");
+              },
+            }
+          );
           setIsLoading(false);
           navigate("/payrolls/payrollDetails", { state: { fullPayrollData } });
         },
@@ -95,12 +127,14 @@ export default function NewPayroll_FillPayroll({}: Props) {
             earnings,
             deductions,
             jobPosition,
+            nationalId,
             payrollMonth,
             payrollDate,
           }) => {
             setEarnings(earnings);
             setDeductions(deductions);
             setJobPosition(jobPosition);
+            setNationalId(nationalId);
             setPayrollMonthDate(payrollMonth);
             setPayrollDateDate(payrollDate);
           }}

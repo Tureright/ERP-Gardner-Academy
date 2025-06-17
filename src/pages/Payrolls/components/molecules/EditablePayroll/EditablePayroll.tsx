@@ -11,6 +11,7 @@ type Props = {
     earnings: PayrollData["earnings"];
     deductions: PayrollData["deductions"];
     jobPosition: string;
+    nationalId?: string;
     payrollMonth: Date;
     payrollDate: Date;
   }) => void;
@@ -20,6 +21,8 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
   const { data, isLoading } = useLatestPayroll(teacher.id);
   const [mesAnio, setMesAnio] = useState(new Date());
   const [fechaPago, setFechaPago] = useState(new Date());
+  const [jobPosition, setJobPosition] = useState<string>("");
+  const [nationalId, setNationalId] = useState<string>("");
 
   const [earnings, setEarnings] = useState<
     Array<{ description: string; amount: number }>
@@ -32,13 +35,17 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
     if (data) {
       const newEarnings = data.data.earnings || [];
       const newDeductions = data.data.deductions || [];
+
       setEarnings(newEarnings);
       setDeductions(newDeductions);
+      setJobPosition(data.data.jobPosition || "Profesor titular");
+      setNationalId(teacher.nationalId || "");
 
       onChange({
         earnings: newEarnings,
         deductions: newDeductions,
-        jobPosition: data.data.jobPosition || "",
+        jobPosition: data.data.jobPosition || "Profesor titular",
+        nationalId: teacher.nationalId,
         payrollMonth: mesAnio,
         payrollDate: fechaPago,
       });
@@ -49,11 +56,12 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
     onChange({
       earnings,
       deductions,
-      jobPosition: data?.data.jobPosition || "",
+      jobPosition,
+      nationalId,
       payrollMonth: mesAnio,
       payrollDate: fechaPago,
     });
-  }, [earnings, deductions, mesAnio, fechaPago]);
+  }, [earnings, deductions, jobPosition, nationalId, mesAnio, fechaPago]);
 
   const totalEntregado =
     mathUtils.sumAmounts(earnings) - mathUtils.sumAmounts(deductions);
@@ -63,7 +71,7 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
     <div className="flex flex-col gap-6 border border-black p-6 bg-gray-50">
       <header className="flex items-center">
         <div className="flex flex-col items-center justify-center w-full">
-          <h2 className="font-bold text-[2rem]  text-center">Rol de Pagos</h2>
+          <h2 className="font-bold text-[2rem] text-center">Rol de Pagos</h2>
           <EditableDates
             label="Fecha del rol:"
             value={mesAnio.toString()}
@@ -74,31 +82,44 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
       </header>
 
       <div className="flex justify-between">
-        <div>
+        <div className="flex flex-col gap-2">
           <div className="flex gap-1 flex-wrap">
-            <p className="font-bold">Nombre: </p>
+            <p className="font-bold">Nombre:</p>
             <p>
               {teacher.firstName} {teacher.lastName}
             </p>
           </div>
-          <div className="flex gap-1 flex-wrap">
-            <p className="font-bold">Cédula: </p>
-            <p>{teacher.nationalId}</p>
-          </div>
-          <div className="flex gap-1 flex-wrap">
-            <p className="font-bold">Cargo: </p>
-            <p>{data.data.jobPosition}</p>
-          </div>
-        </div>
-        <div>
-          <div className="flex gap-1 flex-wrap">
-            <EditableDates
-              label="Fecha de pago:"
-              value={fechaPago.toString()}
-              onChange={setFechaPago}
-              type="fullDate"
+
+          <div className="flex gap-1 flex-wrap items-center">
+            <label className="font-bold" htmlFor="cedula">Cédula:</label>
+            <input
+              id="cedula"
+              type="text"
+              className="border px-2 py-1 rounded"
+              value={nationalId}
+              onChange={(e) => setNationalId(e.target.value)}
             />
           </div>
+
+          <div className="flex gap-1 flex-wrap items-center">
+            <label className="font-bold" htmlFor="cargo">Cargo:</label>
+            <input
+              id="cargo"
+              type="text"
+              className="border px-2 py-1 rounded"
+              value={jobPosition}
+              onChange={(e) => setJobPosition(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div>
+          <EditableDates
+            label="Fecha de pago:"
+            value={fechaPago.toString()}
+            onChange={setFechaPago}
+            type="fullDate"
+          />
         </div>
       </div>
 
@@ -122,7 +143,7 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
 
       <div className="p-4">
         <p>
-          {`Yo, ${teacher.firstName} ${teacher.lastName}, con la cédula de identidad N.° ${teacher.nationalId}, declaro haber recibido a conformidad la cantidad de `}
+          {`Yo, ${teacher.firstName} ${teacher.lastName}, con la cédula de identidad N.° ${nationalId}, declaro haber recibido a conformidad la cantidad de `}
           <span className="font-semibold text-gray-800 italic transition duration-300">
             {mathUtils.numberToMoneyWords(totalEntregado.toFixed(2))}
           </span>

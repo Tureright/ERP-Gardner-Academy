@@ -5,7 +5,7 @@ export const Navbar = () => {
   const location = useLocation();
 
   return (
-    <nav>
+    <nav className="no-print">
       <div style={{ margin: 10 }}>
         <img
           src="https://cdigardnermini.edu.ec/img/header/centro-infantil-gardner-mini-academy-quito-valle-de-los-chillos.png"

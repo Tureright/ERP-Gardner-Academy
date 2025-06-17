@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import PayrollTemplate from "../components/molecules/PayrollTemplate/PayrollTemplate";
 import { PayrollFullTemplate } from "@/types";
 import Button from "@/components/molecules/Button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Download, Trash } from "lucide-react";
 import { useDeletePayroll } from "@/hooks/usePayroll";
-import { useGeneratePDF } from "@/hooks/usePDF";
 
 type LocationState = {
   fullPayrollData: PayrollFullTemplate;
@@ -19,17 +18,13 @@ export default function NewPayroll_PayrollDetails({}: Props) {
   const [loading, setLoading] = useState(false);
   const deletePayroll = useDeletePayroll();
   const navigate = useNavigate();
-  const { mutate: generate } = useGeneratePDF();
-
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
-  const handleGenerate = (component: JSX.Element) => {
-    generate(component);
-  };
+
 
   return (
     <div className="max-w-4x1 mx-auto flex flex-col space-y-8 px-4">
       <header className="space-y-4">
-        <h1 className="text-[2.5rem] mb-4">Detalles del Rol de Pagos</h1>
+        <h1 className="text-[2.5rem] mb-4 no-print" >Detalles del Rol de Pagos</h1>
       </header>
       <section className="bg-white p-6 rounded-lg shadow-md space-y-2 w-fit mx-auto">
         <div className="flex flex-row text-center justify-end text-gray-500 mt-4 gap-2">
@@ -37,9 +32,15 @@ export default function NewPayroll_PayrollDetails({}: Props) {
             text={loading ? "Generando PDF..." : "Descargar Rol de Pagos"}
             icon={<Download />}
             variant="icon"
-            onClick={() => handleGenerate(<PayrollTemplate payrollFullTemplate={fullPayrollData} />)}
+            onClick={      
+              () => {
+                      navigate("/payrolls/printPayroll", {
+                        state: { fullPayrollData: fullPayrollData, showDownload: true },
+                      });
+                    }
+            }
             className="bg-dark-cyan text-white"
-          /> // Este boton debería generar el PDF del rol de pagos PayrollTemplate
+          /> 
           <Button
             text="Eliminar Rol de Pagos"
             icon={<Trash />}
@@ -50,8 +51,10 @@ export default function NewPayroll_PayrollDetails({}: Props) {
             className="bg-dark-cyan text-white"
           />
         </div>
-
-        <PayrollTemplate payrollFullTemplate={fullPayrollData} />
+        
+            <PayrollTemplate payrollFullTemplate={fullPayrollData} />
+        
+        
       </section>
       {showConfirmDeleteModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

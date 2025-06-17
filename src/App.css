@@ -92,3 +92,20 @@ nav {
 }
 
 
+.center-content {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* para que tome toda la altura de la pantalla */
+  box-sizing: border-box;
+}
+
+
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+

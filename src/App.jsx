@@ -1,39 +1,50 @@
 // App.js
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { routes } from "@/routes";
 import "./App.css";
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+  const isPrintRoute = location.pathname === "/payrolls/printPayroll";
+
   return (
-    <Router>
-      <div className="app-container">
-        <Navbar />
-        <div className="content">
-          <Routes>
-            {routes.map((route) => {
-              // If the route has subpages, render them as nested routes
-              if (route.subpages) {
-                return route.subpages.map((subpage) => (
+    <div className="app-container">
+      {!isPrintRoute && <Navbar className="no-print"/>}
+      <div className={isPrintRoute ? "center-content bg-white " : "content"}>
+        <Routes>
+          {routes.map((route) =>
+            route.subpages
+              ? route.subpages.map((subpage) => (
                   <Route
                     path={subpage.url}
                     element={<subpage.component />}
                     key={subpage.title}
                   />
-                ));
-              }
-              // Otherwise, render the main route
-              return (
-                <Route
-                  path={route.url}
-                  element={<route.component />}
-                  key={route.title}
-                />
-              );
-            })}
-          </Routes>
-        </div>
+                )
+              )
+              : (
+                  <Route
+                    path={route.url}
+                    element={<route.component />}
+                    key={route.title}
+                  />
+                )
+          )}
+        </Routes>
       </div>
+    </div>
+  );
+}
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

@@ -4,6 +4,7 @@ import NewPayroll_SelectTeacher from "@/pages/Payrolls/Pages/NewPayroll_SelectTe
 import NewPayroll_FillPayroll from "./pages/Payrolls/Pages/NewPayroll_FillPayroll";
 import NewPayroll_PayrollDetails from "./pages/Payrolls/Pages/NewPayroll_PayrollDetails";
 import Settings from "./pages/Settings";
+import PayrollTemplate from "./pages/Payrolls/components/molecules/PayrollTemplate/PayrollTemplate";
 
 export const routes = [
 
@@ -19,23 +20,27 @@ export const routes = [
       },
       {
         title: "Seleccionar Profesores",
-        url: "/payrolls/select-teacher",
+        url: "/payrolls/selectTeacher",
         component: NewPayroll_SelectTeacher,
       },
       {
         title: "Llenar Rol de Pago",
-        url: "/payrolls/fill-payroll",
+        url: "/payrolls/fillPayroll",
         component: NewPayroll_FillPayroll,
       },
       {
         title: "Detalles del Rol de Pago",
-        url: "/payrolls/payroll-details",
+        url: "/payrolls/payrollDetails",
         component: NewPayroll_PayrollDetails,
+      },
+      {
+        title: "Impresión del Rol de Pago",
+        url: "/payrolls/printPayroll",
+        component: PayrollTemplate,
       },
       
     ],
-  },
-  
+  }, 
   {
     title: "Configuración",
     url: "/settings",

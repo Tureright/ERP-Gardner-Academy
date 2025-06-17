@@ -1,5 +1,6 @@
 // src/types/Employee.ts
 export interface EmployeeBase {
+  adminId?: string;
   firstName: string;
   lastName: string;
   nationalId: string;

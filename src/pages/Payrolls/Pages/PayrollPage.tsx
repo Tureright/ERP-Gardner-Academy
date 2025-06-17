@@ -14,16 +14,10 @@ import NewPayroll_PayrollDetails from "./NewPayroll_PayrollDetails";
 import Table from "../components/atoms/Table/Table";
 import { useEmployee, useEmployees } from "@/hooks/useEmployee";
 import { mathUtils } from "@/utils/math";
+import GenerarPDFButton from "@/pages/Payrolls/Pages/GenerarPDFButton"
 
 export default function PayrollPage() {
   return (<PayrollMain />
-    // <Routes>
-    //   <Route index element={<PayrollMain />} />
-    //   <Route path="selectTeacher" element={<NewPayroll_SelectTeacher />} />
-    //   <Route path="fillPayroll" element={<NewPayroll_FillPayroll />} />
-    //   <Route path="payrollDetails" element={<NewPayroll_PayrollDetails />} />
-    //   {/* Puedes agregar más rutas aquí */}
-    // </Routes>
   );
 }
 
@@ -58,7 +52,7 @@ function PayrollMain() {
             icon={<Plus size={20} strokeWidth={2} />}
             variant="text-icon"
             className="w-full"
-            onClick={() => navigate("/payrolls/select-teacher")}
+            onClick={() => navigate("/payrolls/selectTeacher")}
             aria-label="Añadir rol de pago"
           />
           <Button
@@ -82,7 +76,7 @@ function formatToFullTemplate(
   return payrollResponses.map((payroll) => {
     // Buscar el empleado correspondiente
     const employee = employees.find((emp) => emp.id === payroll.employeeId);
-
+    let [year, month] = payroll.payrollMonth.split("-");
     if (!employee) {
       console.warn(
         `No se encontró empleado para employeeId=${payroll.employeeId}`
@@ -94,8 +88,7 @@ function formatToFullTemplate(
         lastName: "",
         nationalId: "",
         birthDate: "",
-        jobPosition: "", // Puedes definir cómo sacar el jobPosition
-        payrollMonth: "", // Suponiendo que payrollMonth sea igual a payrollDate (o lo puedes formatear)
+        jobPosition: "", 
       };
     }
     return {
@@ -105,7 +98,7 @@ function formatToFullTemplate(
       nationalId: employee.nationalId,
       birthDate: employee.birthDate,
       jobPosition: employee.workPeriods?.[0]?.jobPosition ?? "", // ejemplo si tienes workPeriods con jobPosition
-      payrollMonth: mathUtils.formatMonthYear(new Date(payroll.payrollDate)), // o aquí puedes formatear si lo prefieres
+      payrollMonth: mathUtils.formatMonthYear(new Date(Number(year), Number(month) - 1)), // o aquí puedes formatear si lo prefieres
     };
   });
 }
