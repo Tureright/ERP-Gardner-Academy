@@ -1,8 +1,10 @@
 import { routes } from "../routes";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 export const Navbar = () => {
   const location = useLocation();
+  const { userData } = useAuth();
 
   return (
     <nav>
@@ -14,16 +16,26 @@ export const Navbar = () => {
         />
       </div>
       <ul>
-        {routes.map((route) => (
-          <li key={route.title}>
-            <Link
-              to={route.url}
-              className={location.pathname === route.url ? "active" : ""}
-            >
-              {route.title}
-            </Link>
-          </li>
-        ))}
+        {routes
+          .filter((route) => {
+            if (!route.showInMenu) return false;
+            if (!route.allowedOUs) return true; // público
+            return userData && route.allowedOUs.includes(userData.ouPath);
+          })
+          .map((route) => (
+            <li key={route.title}>
+              <Link
+                to={route.url}
+                className={
+                  location.pathname.toLowerCase().startsWith(route.url.toLowerCase())
+                    ? "active"
+                    : ""
+                }
+              >
+                {route.title}
+              </Link>
+            </li>
+          ))}
       </ul>
     </nav>
   );
