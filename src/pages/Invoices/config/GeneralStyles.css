@@ -1,0 +1,14 @@
+.custom-button:hover {
+  background-color: #5a2e6b !important;
+  color: white !important;
+}
+
+.custom-button-added {
+  background-color: #eadbf0 !important;
+  color: #4b4b4b !important;
+}
+
+.custom-button-addedV:hover {
+  background-color: #d1b8dc !important;
+  color: #4b4b4b !important;
+}

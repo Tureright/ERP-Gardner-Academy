@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { routes } from "@/routes";
+import { Toaster } from "@/components/ui/toaster";
 import "./App.css";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             ))}
           </Routes>
         </div>
+        <Toaster />
       </div>
     </Router>
   );

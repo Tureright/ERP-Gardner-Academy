@@ -1,5 +1,3 @@
-import { record } from "zod";
-
 const schema = {
     fields: [
         {
