@@ -4,7 +4,6 @@ import Budgeting from "./pages/Budgeting/page";
 import Dropdowns from "./pages/Dropdowns/page";
 import Payrolls from "./pages/Payrolls//Pages/PayrollPage";
 import Invoices from "./pages/Invoices/invoicesPage";
-import Employees from "./pages/Payrolls/Pages/EmployeePage";
 import Registration from "./pages/Registration/matriculacion";
 import ReservaCupo from "./pages/Registration/reservarCupo";
 import Formulario from "./pages/Registration/formulario"; // este solo redirige al formulario externo
@@ -34,13 +33,6 @@ export const routes = [
     url: "/settings",
     component: Settings,
     showInMenu: false,
-  },
-  {
-    title: "Facturación",
-    url: "/invoices",
-    component: Invoices,
-    showInMenu: true,
-    allowedOUs: ["/Gestion Academica", "/Development", "/System Manager"],
   },
   {
     title: "Roles de Pago",
