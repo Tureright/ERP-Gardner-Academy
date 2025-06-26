@@ -1,97 +1,45 @@
-import { Table, Space, Button, Card, Row, Col, Input } from "antd";
-import { useState, useEffect } from "react";
-import schema from "../schemas/schemaITemTable";
-import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
+import { Table, Space, Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import schema from "../schemas/schemaItemTable";
+import ItemFilters from "./ItemFilters";
+import ItemEditModal from "./ItemEditModal";
+import { getFilteredData } from "../utils/filterUtils";
+import { useItems } from "@/hooks/useItems";
+import { useMemo, useState, useCallback } from "react";
+import { useEmitFilter } from "../hooks/useEmitFilter";
+import { customButtonStyle } from "../config/constants";
+import '../config/GeneralStyles.css';
 
 const ItemTab = () => {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({});
+  const { items, isLoading } = useItems();
+  const { filters, handleFilterChange, clearFilters } = useEmitFilter();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState(null); // 'create' o 'edit'
+  const [selectedItem, setSelectedItem] = useState(null);
 
-  const getItems = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbzBX-pRQ432e9EWNHIMRK4Z12yKR_sAWjHhilL46kcCkVp1J-z-NuB6QQpDPkj_O0yKgw/exec?path=getItems"
-      );
-      const data = await response.json();
-      const activeItems = data.data.filter((item) => item.activo === true);
-      console.log("items activos: ", activeItems);
-      console.log("Se hace la peticion al renderizar el componente");
-      setItems(activeItems);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEditItem = async (record) => {
-    try {
-      setLoading(true);
-      console.log(record);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getItems();
+  const handleCreateItem = useCallback(() => {
+    setModalMode("create");
+    setSelectedItem(null);
+    setModalOpen(true);
   }, []);
 
-  const renderFilterInput = (field, config) => {
-    switch (config.type) {
-      case "text":
-        return (
-          <Input
-            placeholder={config.placeholder}
-            value={filters[field]}
-            onChange={(e) => handleFilterChange(field, e.target.value)}
-            prefix={<SearchOutlined />}
-          />
-        );
+  const handleEditItem = useCallback((record) => {
+    setModalMode("edit");
+    setSelectedItem(record);
+    setModalOpen(true);
+  }, []);
 
-      default:
-        return null;
-    }
-  };
+  const handleCloseModal = useCallback(() => {
+    setModalOpen(false);
+    setModalMode(null);
+    setSelectedItem(null);
+  }, []);
 
-  const handleFilterChange = (field, value) => {
-    setFilters((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  const filteredData = useMemo(() => {
+    return getFilteredData(items, filters, schema.filterSchema);
+  }, [items, filters]);
 
-  const clearFilters = () => {
-    setFilters({});
-  };
-
-  const getFilteredData = () => {
-    return items.filter((record) => {
-      return Object.entries(filters).every(([field, value]) => {
-        if (!value) return true;
-
-        const filterConfig = schema.filterSchema[field];
-        const recordValue = record[field];
-
-        switch (filterConfig.type) {
-          case "text":
-            console.log(recordValue?.toLowerCase().includes(value.toLowerCase()));
-            return recordValue?.toLowerCase().includes(value.toLowerCase());
-
-          case "select":
-            return recordValue === value;
-
-          default:
-            return true;
-        }
-      });
-    });
-  };
-  // Columnas para la tabla de estudiantes y representantes
+  // Columna para editar el item
   const columns = [
     ...schema.fields,
     {
@@ -103,7 +51,9 @@ const ItemTab = () => {
           <Button
             type="primary"
             onClick={() => handleEditItem(record)}
-            loading={loading}
+            loading={isLoading}
+            style={{ ...customButtonStyle }}
+            className="border-none custom-button font-semibold"
           >
             ✏️ Editar
           </Button>
@@ -111,34 +61,52 @@ const ItemTab = () => {
       ),
     },
   ];
+
   return (
-    <>
+    <div className="space-y-4">
+      {/* Header con botón de crear */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold text-gray-800">
+          Gestión de Items
+        </h2>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={handleCreateItem}
+          style={{ ...customButtonStyle }}
+          className="border-none custom-button font-semibold"
+        >
+          Crear Nuevo Item
+        </Button>
+      </div>
+
+      {/* Filtros */}
       {schema.filterSchema && (
-        <Card style={{ marginBottom: 16 }}>
-          <Row gutter={[16, 16]} align="middle">
-            {Object.entries(schema.filterSchema).map(([field, config]) => (
-              <Col key={field} xs={12} sm={8} md={6} lg={4}>
-                {renderFilterInput(field, config)}
-              </Col>
-            ))}
-            <Col xs={2} sm={2} md={2} lg={2}>
-              <ClearOutlined
-                onClick={clearFilters}
-                style={{ fontSize: "20px", cursor: "pointer", color: "#999" }}
-              />
-            </Col>
-          </Row>
-        </Card>
+        <ItemFilters
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onClearFilters={clearFilters}
+          filterSchema={schema.filterSchema}
+        />
       )}
 
-        <Table
-          columns={columns}
-          dataSource={getFilteredData()}
-          loading={loading}
-          rowKey="id"
-          className="w-full"
-        />
-    </>
+      {/* Tabla */}
+      <Table
+        columns={columns}
+        dataSource={filteredData}
+        loading={isLoading}
+        rowKey="id"
+        className="w-full"
+      />
+
+      {/* Modal */}
+      <ItemEditModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        initialValues={selectedItem}
+        mode={modalMode}
+      />
+    </div>
   );
 };
 

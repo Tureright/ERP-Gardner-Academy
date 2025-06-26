@@ -2,7 +2,7 @@ import Settings from "./pages/Settings";
 import Home from "./pages/Home/page";
 import Budgeting from "./pages/Budgeting/page";
 import Dropdowns from "./pages/Dropdowns/page";
-import Payrolls from "./pages/Payrolls//Pages/PayrollPage"
+import Payrolls from "./pages/Payrolls//Pages/PayrollPage";
 import Invoices from "./pages/Invoices/invoicesPage";
 import Employees from "./pages/Payrolls/Pages/EmployeePage";
 import Registration from "./pages/Registration/matriculacion";
@@ -50,6 +50,13 @@ export const routes = [
     allowedOUs: ["/Gestion Academica", "/Management", "/Development", "/System Manager"],
   },
   {
+    title: "Facturación",
+    url: "/invoices",
+    component: Invoices,
+    showInMenu: true,
+    allowedOUs: ["/Gestion Academica", "/Management", "/Development", "/System Manager"],
+  },
+  {
     title: "Matriculación",
     url: "/matriculacion",
     component: Registration,
@@ -67,12 +74,6 @@ export const routes = [
     url: "/formulario",
     component: Formulario,
     showInMenu: false,
-  },
-  {
-    title: "Empleados",
-    url: "/employees",
-    component: Employees,
-    showInMenu: false
   },
   {
     title: "Reportes de Matriculación",

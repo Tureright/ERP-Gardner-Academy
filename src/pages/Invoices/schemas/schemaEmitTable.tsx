@@ -1,5 +1,4 @@
 const schema = {
-    sheetName: 'Invoices',
     fields: [
         {
             title: '👤 Nombre del estudiante',
@@ -12,33 +11,24 @@ const schema = {
             dataIndex: 'representativePhone',
             key: 'representativePhone',
             align: "center",
-            type: 'text',
-            rules: [{ required: true, message: 'Por favor ingrese el teléfono' }]
         },
         {
             title: '📧 Correo representante',
             dataIndex: 'representativeEmail',
             key: 'representativeEmail',
-            type: 'text',
             align: "center",
-            rules: [
-                { required: true, message: 'Por favor ingrese el correo' },
-                { type: 'email', message: 'Por favor ingrese un correo válido' }
-            ]
         },
         {
             title: '🆔 Identificación representante',
             dataIndex: 'representativeId',
             key: 'representativeId',
             align: "center",
-            type: 'text',
-            rules: [{ required: true, message: 'Por favor ingrese la identificación' }]
         }
     ],
     filterSchema: {
         studentName: {
             type: 'text',
-            placeholder: 'Buscar por nombre...'
+            placeholder: 'Buscar por nombre estudiante...'
         },
         representativeEmail: {
             type: 'text',

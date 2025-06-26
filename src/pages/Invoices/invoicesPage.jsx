@@ -2,24 +2,16 @@ import { useState } from "react";
 import { Tabs } from "antd";
 import EmitTab from "./components/EmitTab";
 import ItemTab from "./components/ItemTab";
+import ViewTab from "./components/ViewTab";
 
 const Invoices = () => {
   const [activeTab, setActiveTab] = useState("1");
 
-  // Items para las pestañas
   const items = [
     {
       key: "1",
       label: "Ver",
-      children: (
-        <div className="p-4">
-          <h2>Vista de Facturas</h2>
-          {
-            /* Aquí irá el componente para ver facturas*/
-            <h2>Componente de vista de facturas</h2>
-          }
-        </div>
-      ),
+      children: <ViewTab />,
     },
     {
       key: "2",

@@ -1,8 +1,7 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import PayrollTemplate from "../components/molecules/PayrollTemplate/PayrollTemplate";
 import { PayrollFullTemplate } from "@/types";
 import Button from "@/components/molecules/Button";
-import { exportRefToPdf } from "@/utils/pdf";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Download, Pencil, Trash } from "lucide-react";
 import { useDeletePayroll } from "@/hooks/usePayroll";
@@ -21,7 +20,6 @@ export default function NewPayroll_PayrollDetails({}: Props) {
   const navigate = useNavigate();
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
 
-  const hiddenPrintRef = useRef<HTMLDivElement>(null);
   console.log("Full Payroll Data:", fullPayrollData);
   return (
     <div className="max-w-4x1 mx-auto flex flex-col space-y-8 px-4">
@@ -35,22 +33,14 @@ export default function NewPayroll_PayrollDetails({}: Props) {
             icon={<Download />}
             variant="icon"
             onClick={async () => {
-              setLoading(true);
-              await exportRefToPdf(
-                hiddenPrintRef,
-                `rol_de_pagos_${fullPayrollData.lastName}`
+              const encodedData = encodeURIComponent(
+                JSON.stringify(fullPayrollData)
               );
-              setLoading(false);
-            }}
-            className="bg-dark-cyan text-white"
-          />
-          <Button
-            text="Editar Rol de Pagos"
-            icon={<Pencil />}
-            variant="icon"
-            onClick={() => {
-              // Aquí puedes implementar la lógica para editar el rol de pagos
-              console.log("Editar Rol de Pagos");
+              const printWindow = window.open(
+                `/payrolls/printPayroll?data=${encodedData}`,
+                "_blank"
+              );
+              printWindow?.focus();
             }}
             className="bg-dark-cyan text-white"
           />
@@ -58,7 +48,9 @@ export default function NewPayroll_PayrollDetails({}: Props) {
             text="Eliminar Rol de Pagos"
             icon={<Trash />}
             variant="icon"
-            onClick={() => { setShowConfirmDeleteModal(true);}}
+            onClick={() => {
+              setShowConfirmDeleteModal(true);
+            }}
             className="bg-dark-cyan text-white"
           />
         </div>
@@ -69,7 +61,9 @@ export default function NewPayroll_PayrollDetails({}: Props) {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-lg font-bold mb-4">Confirmar Eliminación</h2>
-            <p className="mb-6">¿Estás seguro de que deseas eliminar este rol de pagos?</p>
+            <p className="mb-6">
+              ¿Estás seguro de que deseas eliminar este rol de pagos?
+            </p>
             <div className="mt-4 flex justify-end gap-2">
               <Button
                 text="Cancelar"
@@ -92,7 +86,10 @@ export default function NewPayroll_PayrollDetails({}: Props) {
                         navigate("/payrolls");
                       },
                       onError: (error) => {
-                        console.error("Error al eliminar el rol de pagos:", error);
+                        console.error(
+                          "Error al eliminar el rol de pagos:",
+                          error
+                        );
                         alert("Ocurrió un error al eliminar el rol de pagos.");
                       },
                     }
@@ -104,19 +101,6 @@ export default function NewPayroll_PayrollDetails({}: Props) {
           </div>
         </div>
       )}
-      <div
-        ref={hiddenPrintRef}
-        style={{
-          position: "absolute",
-          top: "-9999px",
-          left: "-9999px",
-          width: "1000px",
-          padding: "2rem",
-          background: "white",
-        }}
-      >
-        <PayrollTemplate payrollFullTemplate={fullPayrollData} />
-      </div>
     </div>
   );
 }

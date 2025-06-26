@@ -101,8 +101,9 @@ function AppRoutes() {
   const allowedModules = getAllowedModules(userData.ouPath);
 
   let defaultRoute = "/home";
-  if (allowedModules.includes("invoices")) defaultRoute = "/invoices";
-  else if (allowedModules.includes("payrolls")) defaultRoute = "/payrolls";
+  
+  if (allowedModules.includes("payrolls")) defaultRoute = "/payrolls";
+  else if (allowedModules.includes("invoices")) defaultRoute = "/invoices";
   else if (allowedModules.includes("registration")) defaultRoute = "/matriculacion";
 
   return (
