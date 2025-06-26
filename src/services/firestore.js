@@ -8,3 +8,10 @@ export async function getMatriculaData() {
   snapshot.forEach((doc) => docs.push(doc.data()));
   return docs;
 }
+
+export async function getReservasData() {
+  const snapshot = await getDocs(collection(db, "Reserva de Cupos"));
+  const docs = [];
+  snapshot.forEach((doc) => docs.push(doc.data()));
+  return docs;
+}

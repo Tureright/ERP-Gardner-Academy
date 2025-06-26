@@ -3,6 +3,7 @@ import Home from "./pages/Home/page";
 import Budgeting from "./pages/Budgeting/page";
 import Dropdowns from "./pages/Dropdowns/page";
 import Payrolls from "./pages/Payrolls//Pages/PayrollPage"
+import Invoices from "./pages/Invoices/invoicesPage";
 import Employees from "./pages/Payrolls/Pages/EmployeePage";
 import Registration from "./pages/Registration/matriculacion";
 import ReservaCupo from "./pages/Registration/reservarCupo";
@@ -39,21 +40,21 @@ export const routes = [
     url: "/invoices",
     component: Invoices,
     showInMenu: true,
-    allowedOUs: ["/GestionAcademica", "/Development"],
+    allowedOUs: ["/Gestion Academica", "/Development", "/System Manager"],
   },
   {
     title: "Roles de Pago",
     url: "/payrolls",
     component: Payrolls,
     showInMenu: true,
-    allowedOUs: ["/GestionAcademica", "/Management", "/Development"],
+    allowedOUs: ["/Gestion Academica", "/Management", "/Development", "/System Manager"],
   },
   {
     title: "Matriculación",
     url: "/matriculacion",
     component: Registration,
     showInMenu: true,
-    allowedOUs: ["/Alumnos", "/Inscritos", "/Pendiente", "/Development"],
+    allowedOUs: ["/Alumnos", "/Inscritos", "/Pendiente", "/Development", "/System Manager"],
   },
   {
     title: "Reserva Cupo",
@@ -78,6 +79,6 @@ export const routes = [
     url: "/reporte",
     component: DashboardMatricula,
     showInMenu: true,
-    allowedOUs: ["/GestionAcademica", "/Management", "/Development"],
+    allowedOUs: ["/Gestion Academica", "/Management", "/Development", "/System Manager"],
   },
 ];
