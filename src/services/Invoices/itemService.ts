@@ -26,7 +26,7 @@ export const itemService = {
       }
       return data.data;
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching item:",error);
       throw error;
     }
   },
@@ -41,13 +41,10 @@ export const itemService = {
         }
       );
       const result = await response.json();
-      if (result.errorResponse) {
-        throw new Error(result.errorResponse.message);
-      }
+
       return result;
     } catch (error) {
-      console.log(error);
-      throw error;
+      console.error("Error creating item:",error);
     }
   },
 
@@ -61,13 +58,10 @@ export const itemService = {
         }
       );
       const result = await response.json();
-      if (result.errorResponse) {
-        throw new Error(result.errorResponse.message);
-      }
+console.log("result desde EP update item:", result)
       return result;
     } catch (error) {
-      console.log(error);
-      throw error;
+      console.error("Error updating item:",error);
     }
   },
 };

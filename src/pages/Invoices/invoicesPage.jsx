@@ -26,6 +26,16 @@ const Invoices = () => {
     console.log("Factura creada exitosamente:", result);
   };
 
+  const handleItemCreated = (result) => {
+    // Opcional: Mostrar un mensaje adicional o realizar otras acciones
+    console.log("Item creado/actualizado exitosamente:", result);
+    
+    // lógica adicional como:
+    // - Mostrar un toast adicional
+    // - Refrescar datos específicos
+    // - Registrar la acción en logs
+  };
+
   const items = [
     {
       key: "1",
@@ -40,7 +50,7 @@ const Invoices = () => {
     {
       key: "3",
       label: "Items",
-      children: <ItemTab />,
+      children: <ItemTab onItemCreated={handleItemCreated} />,
     },
   ];
 

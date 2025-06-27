@@ -18,48 +18,79 @@ export const useItems = () => {
 
   // Mutation para actualizar items
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => itemService.updateItem(id, data),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["items"] });
-      toast({
-        title: "Item actualizado",
-        description: data.data.message || "Item actualizado correctamente",
-      });
+    mutationFn: ({ id, data }) =>
+      itemService.updateItem(id, data),
+    onSuccess: (response) => {  
+      console.log("response actualizar item: ", response)    
+      // Verificar si la respuesta tiene el formato esperado
+      if (response.success && response.data) {
+        toast({
+          title: "✅ Item actualizado exitosamente",
+          description: response.data.message || "Item actualizado correctamente",
+        });
+
+        queryClient.invalidateQueries({ queryKey: ["items"] });      
+
+        return { success: true, message: response.data.message };
+      } else {
+        toast({
+          variant: "destructive",
+          title: "❌ Error al actualizar el item",
+          description: response.errorResponse.message || "Ha ocurrido un error inesperado",
+        });
+
+        return { success: false, message: "Ha ocurrido un error inesperado" };
+      }
     },
-    onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Error al actualizar el item",
-        description: error.message,
-      });
-    },
+    // onError: (error: Error) => {
+    //   toast({
+    //     variant: "destructive",
+    //     title: "❌ Error al actualizar el item",
+    //     description: error.message || "Ha ocurrido un error inesperado",
+    //   });
+    //   return { success: false, message: "Ha ocurrido un error inesperado" };
+    // },
   });
 
   // Mutation para crear items
   const createMutation = useMutation({
     mutationFn: (data) => itemService.createItem(data),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["items"] });
-      toast({
-        title: "Item creado",
-        description: data.data.message,
-      });
+    onSuccess: (response) => {
+      console.log("Respuesta del servidor al crear:", response);      
+      // Verificar si la respuesta tiene el formato esperado
+      if (response.success && response.data) {
+        toast({
+          title: "✅ Item creado exitosamente",
+          description: `${response.data.message} - ID: ${response.data.id || 'N/A'}`,
+        });
+        queryClient.invalidateQueries({ queryKey: ["items"] });
+
+        return { success: true, itemId: response.data.id, message: response.data.message };
+      } else {
+        toast({
+          variant: "destructive",
+          title: "❌ Error al crear el item",
+          description: response.errorResponse.message || "Ha ocurrido un error inesperado",
+        });
+        return { success: false, message: "Ha ocurrido un error inesperado" };
+      }
     },
-    onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Error al crear el item",
-        description: error.message,
-      });
-    },
+    // onError: (error: Error) => {
+    //   toast({
+    //     variant: "destructive",
+    //     title: "❌ Error al crear el item",
+    //     description: error.message || "Ha ocurrido un error inesperado",
+    //   });
+    //   return { success: false, error: error.message };
+    // },
   });
 
   return {
     items,
     isLoading,
     error,
-    updateItem: updateMutation.mutate,
-    createItem: createMutation.mutate,
+    updateItem: updateMutation.mutateAsync,
+    createItem: createMutation.mutateAsync,
     isUpdating: updateMutation.isPending,
     isCreating: createMutation.isPending,
   };

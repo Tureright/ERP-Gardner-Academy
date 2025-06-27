@@ -1,19 +1,29 @@
-import { Modal, Form, Button, Input } from 'antd';
-import { PlusCircleOutlined, DeleteOutlined } from '@ant-design/icons';
-import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { Modal, Form, Button, Input } from "antd";
+import { PlusCircleOutlined, DeleteOutlined } from "@ant-design/icons";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 
-import AdditionalInfoModal from './AdditionalInfoModal';
-import ItemSelectionModal from './ItemSelectionModal';
-import ClientInfoForm from './ClientInfoForm';
-import InvoiceItemsTable from './InvoiceItemsTable';
-import InvoiceTotalsPanel from './InvoiceTotalsPanel';
-import { useInvoiceForm } from '../hooks/useInvoiceForm';
-import { useInvoiceCreation } from '../hooks/useInvoiceCreation';
-import { customButtonStyle, customButtonStyleCancel, customCircleButtonStyle } from '../config/constants';
-import '../config/GeneralStyles.css';
+import AdditionalInfoModal from "./AdditionalInfoModal";
+import ItemSelectionModal from "./ItemSelectionModal";
+import ClientInfoForm from "./ClientInfoForm";
+import InvoiceItemsTable from "./InvoiceItemsTable";
+import InvoiceTotalsPanel from "./InvoiceTotalsPanel";
+import { useInvoiceForm } from "../hooks/useInvoiceForm";
+import { useInvoiceCreation } from "../hooks/useInvoiceCreation";
+import {
+  customButtonStyle,
+  customButtonStyleCancel,
+  customCircleButtonStyle,
+} from "../config/constants";
+import "../config/GeneralStyles.css";
 
-const InvoiceForm = ({ isOpen, onClose, data, selectedMonth, onInvoiceCreated }) => {
+const InvoiceForm = ({
+  isOpen,
+  onClose,
+  data,
+  selectedMonth,
+  onInvoiceCreated,
+}) => {
   const {
     form,
     items,
@@ -25,22 +35,23 @@ const InvoiceForm = ({ isOpen, onClose, data, selectedMonth, onInvoiceCreated })
     handleRemoveAdditionalInfo,
     handleAddItem,
     fetchItem,
-    mergedColumns
+    mergedColumns,
   } = useInvoiceForm(data, selectedMonth);
 
   const { createInvoice, isCreating } = useInvoiceCreation();
 
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
-  const [isAdditionalInfoModalOpen, setIsAdditionalInfoModalOpen] = useState(false);
+  const [isAdditionalInfoModalOpen, setIsAdditionalInfoModalOpen] =
+    useState(false);
 
   useEffect(() => {
     if (isOpen && data?.itemCode) {
-      console.log("data",data);
+      console.log("data", data);
       const loadItem = async () => {
         try {
           fetchItem(data.itemCode);
         } catch (error) {
-          console.error('Error loading item:', error);
+          console.error("Error loading item:", error);
           throw Error(error.message);
         }
       };
@@ -50,27 +61,33 @@ const InvoiceForm = ({ isOpen, onClose, data, selectedMonth, onInvoiceCreated })
 
   const handleEmitInvoice = async () => {
     try {
-      const result = await createInvoice(data, items, additionalInfo, paymentInfo, totals);
-
+      const result = await createInvoice(
+        data,
+        items,
+        additionalInfo,
+        paymentInfo,
+        totals
+      );
+      onClose();
       // Si la factura se creó exitosamente, cerrar el modal y notificar al componente padre
-      if (result && result.success) {
-        //onClose();
-        
+      console.log("result en handle emit: ", result)
+      if (result && result.success == true) {
         // Notificar al componente padre que la factura fue creada
         if (onInvoiceCreated) {
           onInvoiceCreated(result);
         }
-      }else{
-        onClose();
+      }
+      if (result && result.errorResponse) {
+        throw new Error(result.errorResponse.message);
       }
     } catch (error) {
-      console.error('Error emitting invoice:', error);
+      console.error(error);
     }
   };
 
   const renderAdditionalInfoFields = () => {
     return Object.entries(additionalInfo).map(([key, value]) => {
-      if (key === 'Mes' || key === 'Alumno') return null;
+      if (key === "Mes" || key === "Alumno") return null;
       return (
         <div key={key} className="flex items-center justify-center space-x-4">
           <Form.Item label={key.toUpperCase()} className="mb-0 flex-1">
@@ -99,7 +116,7 @@ const InvoiceForm = ({ isOpen, onClose, data, selectedMonth, onInvoiceCreated })
     >
       <div className="flex flex-col space-y-6 p-4">
         <ClientInfoForm data={data} />
-        
+
         {/* Items Section */}
         <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 relative">
           <div className="flex justify-between items-center mb-4">
@@ -112,10 +129,7 @@ const InvoiceForm = ({ isOpen, onClose, data, selectedMonth, onInvoiceCreated })
               mergedColumns={mergedColumns}
             />
           </Form>
-          <AddButton 
-            onClick={() => setIsItemModalOpen(true)}
-            label="Agregar"
-          />
+          <AddButton onClick={() => setIsItemModalOpen(true)} label="Agregar" />
         </div>
 
         {/* Two-column layout */}
@@ -135,7 +149,7 @@ const InvoiceForm = ({ isOpen, onClose, data, selectedMonth, onInvoiceCreated })
                 </Form.Item>
                 {renderAdditionalInfoFields()}
               </div>
-              <AddButton 
+              <AddButton
                 onClick={() => setIsAdditionalInfoModalOpen(true)}
                 label="Agregar"
               />
@@ -145,7 +159,7 @@ const InvoiceForm = ({ isOpen, onClose, data, selectedMonth, onInvoiceCreated })
             <PaymentMethodsPanel paymentInfo={paymentInfo} />
 
             {/* Action Buttons */}
-            <ActionButtons 
+            <ActionButtons
               onClose={onClose}
               onEmit={handleEmitInvoice}
               isCreating={isCreating}
@@ -181,7 +195,7 @@ const AddButton = ({ onClick, label }) => (
       shape="circle"
       icon={<PlusCircleOutlined className="text-xl" />}
       onClick={onClick}
-      style={{...customCircleButtonStyle}}
+      style={{ ...customCircleButtonStyle }}
       className="w-12 h-8 border-none custom-button shadow-md flex items-center justify-center"
     />
     <span className="text-sm text-gray-600 font-medium">{label}</span>
@@ -216,7 +230,7 @@ const ActionButtons = ({ onClose, onEmit, isCreating }) => {
     <div className="flex space-x-4">
       <Button
         onClick={onClose}
-        style={{...customButtonStyleCancel}}
+        style={{ ...customButtonStyleCancel }}
         className="w-1/2 h-10 border-none custom-button font-semibold"
         disabled={isCreating}
       >
@@ -225,12 +239,12 @@ const ActionButtons = ({ onClose, onEmit, isCreating }) => {
       <Button
         type="primary"
         onClick={() => setIsConfirmModalOpen(true)}
-        style={{...customButtonStyle}}
+        style={{ ...customButtonStyle }}
         className="w-1/2 h-10 border-none custom-button font-semibold"
         loading={isCreating}
         disabled={isCreating}
       >
-        {isCreating ? 'Emitiendo...' : 'Emitir'}
+        {isCreating ? "Emitiendo..." : "Emitir"}
       </Button>
 
       <Modal
@@ -238,10 +252,10 @@ const ActionButtons = ({ onClose, onEmit, isCreating }) => {
         open={isConfirmModalOpen}
         onCancel={() => setIsConfirmModalOpen(false)}
         footer={[
-          <Button 
-            key="cancel" 
+          <Button
+            key="cancel"
             onClick={() => setIsConfirmModalOpen(false)}
-            style={{...customButtonStyleCancel}}
+            style={{ ...customButtonStyleCancel }}
             className="border-none custom-button font-medium"
           >
             Cancelar
@@ -250,20 +264,23 @@ const ActionButtons = ({ onClose, onEmit, isCreating }) => {
             key="confirm"
             type="primary"
             onClick={handleConfirm}
-            style={{...customButtonStyle}}
+            style={{ ...customButtonStyle }}
             className="border-none custom-button font-medium"
             loading={isCreating}
           >
-            {isCreating ? 'Emitiendo...' : 'Sí, Emitir Factura'}
-          </Button>
+            {isCreating ? "Emitiendo..." : "Sí, Emitir Factura"}
+          </Button>,
         ]}
         width={500}
         centered
       >
         <div className="py-4">
-          <p className="text-base mb-4">¿Estás seguro que deseas emitir esta factura?</p>
+          <p className="text-base mb-4">
+            ¿Estás seguro que deseas emitir esta factura?
+          </p>
           <p className="text-sm text-gray-500">
-            Esta acción no se puede deshacer. Por favor, verifica que toda la información sea correcta antes de continuar.
+            Esta acción no se puede deshacer. Por favor, verifica que toda la
+            información sea correcta antes de continuar.
           </p>
         </div>
       </Modal>

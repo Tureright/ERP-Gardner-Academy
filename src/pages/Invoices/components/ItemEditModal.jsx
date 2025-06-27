@@ -31,7 +31,7 @@ const DEFAULT_CREATE_DATA = {
   proveedores: [],
 };
 
-const ItemEditModal = ({ open, onClose, initialValues, mode }) => {
+const ItemEditModal = ({ open, onClose, initialValues, mode, onItemCreated }) => {
   const [form] = Form.useForm();
   const [additionalDetails, setAdditionalDetails] = useState([]);
   const [showAddDetail, setShowAddDetail] = useState(false);
@@ -114,34 +114,49 @@ const ItemEditModal = ({ open, onClose, initialValues, mode }) => {
           detalles_adicionales: additionalDetails,
         };
         console.log("data para actualizar", data);
-        await updateItem(
-          {
-            id: initialValues.id,
-            data,
-          },
-          {
-            onSuccess: () => {
-              handleCancel();
-            },
+        
+        const result = await updateItem({
+          id: initialValues.id,
+          data,
+        });
+        handleCancel();
+        console.log("result en handle confirm item: ", result)
+
+        // Si la actualización fue exitosa, cerrar el modal y notificar
+        if (result && result.success == true) {
+          
+          // Notificar al componente padre que el item fue actualizado
+          if (onItemCreated) {
+            onItemCreated(result);
           }
-        );
+        }
+        if (result && result.errorResponse) {
+          throw new Error(result.errorResponse.message);
+        }
       } else {
         const data = {
           ...formValues,
-          DEFAULT_CREATE_DATA,
+          ...DEFAULT_CREATE_DATA,
           detalles_adicionales: additionalDetails,
         };
         console.log("data para crear", data);
 
-        await createItem(data, {
-          onSuccess: () => {
-            handleCancel();
-          },
-        });
+        const result = await createItem(data);
+        handleCancel();
+
+        // Si la creación fue exitosa, cerrar el modal y notificar
+        if (result && result.success == true) {          
+          // Notificar al componente padre que el item fue creado
+          if (onItemCreated) {
+            onItemCreated(result);
+          }
+        }
+        if (result && result.errorResponse) {
+          throw new Error(result.errorResponse.message);
+        }
       }
     } catch (error) {
-      console.error("Error:", error);
-      throw Error(error.message);
+      console.error(error);
     }
   };
 
@@ -430,6 +445,7 @@ ItemEditModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   initialValues: PropTypes.object,
   mode: PropTypes.oneOf(["create", "edit"]),
+  onItemCreated: PropTypes.func,
 };
 
 export default ItemEditModal;

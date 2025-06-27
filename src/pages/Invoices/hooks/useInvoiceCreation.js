@@ -43,15 +43,10 @@ const createInvoiceEP = async (data, studentId) => {
       }
     );
     const result = await response.json();
-    if (result.errorResponse) {
-      console.log("result", result.errorResponse);
-      throw new Error(result.errorResponse.message);
-    }
+    
     return result;
   } catch (err) {
-    console.log("Error creating invoice:", err);
-    //console.error("Error creating invoice:", err);
-    throw err;
+    console.error("Error creating invoice:", err);
   }
 };
 
@@ -80,25 +75,26 @@ export const useInvoiceCreation = () => {
       } else {
         // Fallback para respuestas que no siguen el formato esperado
         toast({
-          title: "✅ Factura creada",
-          description: "La factura se ha creado correctamente",
+          variant: "destructive",
+          title: "❌ Error al crear la factura",
+          description: response.errorResponse.message || "Ha ocurrido un error inesperado",
         });
         
         // Invalidar la query de facturas emitidas
-        queryClient.invalidateQueries({ queryKey: ["emittedInvoices"] });
+        //queryClient.invalidateQueries({ queryKey: ["emittedInvoices"] });
         
-        return { success: true, message: "Factura creada correctamente" };
+        return { success: false, message: "Ha ocurrido un error inesperado" };
       }
     },
-    onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "❌ Error al crear la factura",
-        description: error.message || "Ha ocurrido un error inesperado",
-      });
+    // onError: (error) => {
+    //   toast({
+    //     variant: "destructive",
+    //     title: "❌ Error al crear la factura",
+    //     description: error.message || "Ha ocurrido un error inesperado",
+    //   });
       
-      return { success: false, error: error.message };
-    },
+    //   return { success: false, error: error.message };
+    // },
   });
 
   const createInvoice = async (

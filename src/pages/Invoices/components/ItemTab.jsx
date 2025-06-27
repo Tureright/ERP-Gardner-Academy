@@ -1,5 +1,6 @@
 import { Table, Space, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import PropTypes from 'prop-types';
 import schema from "../schemas/schemaItemTable";
 import ItemFilters from "./ItemFilters";
 import ItemEditModal from "./ItemEditModal";
@@ -10,7 +11,7 @@ import { useEmitFilter } from "../hooks/useEmitFilter";
 import { customButtonStyle } from "../config/constants";
 import '../config/GeneralStyles.css';
 
-const ItemTab = () => {
+const ItemTab = ({ onItemCreated }) => {
   const { items, isLoading } = useItems();
   const { filters, handleFilterChange, clearFilters } = useEmitFilter();
   const [modalOpen, setModalOpen] = useState(false);
@@ -34,6 +35,20 @@ const ItemTab = () => {
     setModalMode(null);
     setSelectedItem(null);
   }, []);
+
+  const handleItemCreated = useCallback((result) => {
+    // Limpiar el estado del modal
+    setModalOpen(false);
+    setModalMode(null);
+    setSelectedItem(null);
+    
+    // Notificar al componente padre que el item fue creado/actualizado
+    if (onItemCreated) {
+      onItemCreated(result);
+    }
+    
+    console.log("Item creado/actualizado exitosamente:", result);
+  }, [onItemCreated]);
 
   const filteredData = useMemo(() => {
     return getFilteredData(items, filters, schema.filterSchema);
@@ -105,9 +120,14 @@ const ItemTab = () => {
         onClose={handleCloseModal}
         initialValues={selectedItem}
         mode={modalMode}
+        onItemCreated={handleItemCreated}
       />
     </div>
   );
+};
+
+ItemTab.propTypes = {
+  onItemCreated: PropTypes.func,
 };
 
 export default ItemTab;
