@@ -1,6 +1,6 @@
 import { Table, Space, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import schema from "../schemas/schemaItemTable";
 import ItemFilters from "./ItemFilters";
 import ItemEditModal from "./ItemEditModal";
@@ -9,9 +9,9 @@ import { useItems } from "@/hooks/useItems";
 import { useMemo, useState, useCallback } from "react";
 import { useEmitFilter } from "../hooks/useEmitFilter";
 import { customButtonStyle } from "../config/constants";
-import '../config/GeneralStyles.css';
+import "../config/GeneralStyles.css";
 
-const ItemTab = ({ onItemCreated }) => {
+const ItemTab = ({ onItemCreated, highlightItemId }) => {
   const { items, isLoading } = useItems();
   const { filters, handleFilterChange, clearFilters } = useEmitFilter();
   const [modalOpen, setModalOpen] = useState(false);
@@ -36,24 +36,34 @@ const ItemTab = ({ onItemCreated }) => {
     setSelectedItem(null);
   }, []);
 
-  const handleItemCreated = useCallback((result) => {
-    // Limpiar el estado del modal
-    setModalOpen(false);
-    setModalMode(null);
-    setSelectedItem(null);
-    
-    // Notificar al componente padre que el item fue creado/actualizado
-    if (onItemCreated) {
-      onItemCreated(result);
-    }
-    
-    console.log("Item creado/actualizado exitosamente:", result);
-  }, [onItemCreated]);
+  const handleItemCreated = useCallback(
+    (result) => {
+      // Limpiar el estado del modal
+      setModalOpen(false);
+      setModalMode(null);
+      setSelectedItem(null);
+
+      // Notificar al componente padre que el item fue creado/actualizado
+      if (onItemCreated) {
+        onItemCreated(result);
+      }
+
+      console.log("Item creado/actualizado exitosamente:", result);
+    },
+    [onItemCreated]
+  );
 
   const filteredData = useMemo(() => {
     return getFilteredData(items, filters, schema.filterSchema);
   }, [items, filters]);
 
+  // Función para asignar la clase de resaltado
+  const getRowClassName = (record) => {
+    if (highlightItemId && record.id == highlightItemId) {
+      return "highlighted-row";
+    }
+    return "";
+  };
   // Columna para editar el item
   const columns = [
     ...schema.fields,
@@ -112,6 +122,7 @@ const ItemTab = ({ onItemCreated }) => {
         loading={isLoading}
         rowKey="id"
         className="w-full"
+        rowClassName={getRowClassName}
       />
 
       {/* Modal */}
@@ -128,6 +139,7 @@ const ItemTab = ({ onItemCreated }) => {
 
 ItemTab.propTypes = {
   onItemCreated: PropTypes.func,
+  highlightItemId: PropTypes.string,
 };
 
 export default ItemTab;

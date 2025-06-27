@@ -70,7 +70,8 @@ const InvoiceForm = ({
       );
       onClose();
       // Si la factura se creó exitosamente, cerrar el modal y notificar al componente padre
-      console.log("result en handle emit: ", result)
+      console.log("result en handle emit: ", result);
+
       if (result && result.success == true) {
         // Notificar al componente padre que la factura fue creada
         if (onInvoiceCreated) {

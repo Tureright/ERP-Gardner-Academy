@@ -22,11 +22,12 @@ export const useItems = () => {
       itemService.updateItem(id, data),
     onSuccess: (response) => {  
       console.log("response actualizar item: ", response)    
+      const { id, message } = response.data;
       // Verificar si la respuesta tiene el formato esperado
       if (response.success && response.data) {
         toast({
-          title: "✅ Item actualizado exitosamente",
-          description: response.data.message || "Item actualizado correctamente",
+          title: "✅ Estado",
+          description: `${message || 'N/A'}` ,
         });
 
         queryClient.invalidateQueries({ queryKey: ["items"] });      
@@ -35,8 +36,8 @@ export const useItems = () => {
       } else {
         toast({
           variant: "destructive",
-          title: "❌ Error al actualizar el item",
-          description: response.errorResponse.message || "Ha ocurrido un error inesperado",
+          title: "❌ Estado",
+          description: "Ha ocurrido un error inesperado",
         });
 
         return { success: false, message: "Ha ocurrido un error inesperado" };
@@ -59,9 +60,11 @@ export const useItems = () => {
       console.log("Respuesta del servidor al crear:", response);      
       // Verificar si la respuesta tiene el formato esperado
       if (response.success && response.data) {
+        const { message, id } = response.data;
+
         toast({
           title: "✅ Item creado exitosamente",
-          description: `${response.data.message} - ID: ${response.data.id || 'N/A'}`,
+          description: `${message} - ID: ${id || 'N/A'}`,
         });
         queryClient.invalidateQueries({ queryKey: ["items"] });
 

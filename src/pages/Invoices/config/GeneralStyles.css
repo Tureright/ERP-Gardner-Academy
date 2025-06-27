@@ -15,19 +15,113 @@
 
 /* Estilos para resaltar la factura recién creada */
 .highlighted-row {
-  background-color: #e6f7ff !important;
-  border-left: 4px solid #1890ff !important;
+  background-color: #EADBF0 !important;   /* Pale Purple */
+  border-left: 4px solid #5A2E6B !important; /* Purple */
   animation: highlightFade 2s ease-in-out;
 }
 
 @keyframes highlightFade {
-  0% { background-color: #f0f9ff; }
-  50% { background-color: #e6f7ff; }
-  100% { background-color: #e6f7ff; }
+  0% { background-color: #f8f0fa; }
+  50% { background-color: #EADBF0; }
+  100% { background-color: #EADBF0; }
 }
 
 /* Asegurar que el resaltado funcione en tablas de Ant Design */
 .ant-table-tbody > tr.highlighted-row > td {
-  background-color: #e6f7ff !important;
-  border-left: 4px solid #1890ff !important;
+  background-color: #EADBF0 !important;
+  /*border-left: 4px solid #5A2E6B !important;*/
+}
+
+/* Estilos para el los tabs de Invoices Page */
+
+/* Contenedor principal de tabs */
+.custom-tabs-container .ant-tabs-nav {
+  background: linear-gradient(135deg, #EADBF0 0%, #E6FEFF 100%);
+  border-radius: 12px 12px 0 0;
+  padding: 0px 0px 0 1px;
+  margin-bottom: 0;
+  box-shadow: 0 2px 8px rgba(90, 46, 107, 0.1);
+}
+
+/* Tabs individuales - Aumentar especificidad */
+.custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+  background: rgba(255, 255, 255, 0.2) !important;
+  /*border: 2px solid transparent;*/
+  /*border-radius: 8px 8px 0 0;*/
+  margin-right: 0px !important;
+  padding: 12px 24px !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  color: #5A2E6B !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover state para tabs - Aumentar especificidad */
+.custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab:hover {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #01969C !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(90, 46, 107, 0.15) !important;
+}
+
+/* Tab activo - Aumentar especificidad significativamente */
+.custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #01969C !important;
+  /*box-shadow: 0 4px 16px rgba(90, 46, 107, 0.3)*/;
+  transform: translateY(-2px) !important;
+}
+
+/* Forzar el color del texto del tab activo */
+.custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #01969C !important;
+}
+
+/* Hover en tab activo */
+.custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active:hover {
+  background: rgba(255, 255, 255, 1) !important;
+  color: #01969C !important;
+}
+
+.custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active:hover .ant-tabs-tab-btn {
+  color: #01969C !important;
+}
+
+/* Contenido de los tabs */
+.custom-tabs-container .ant-tabs-content-holder {
+  background: #F5F5F5;
+  /*border-radius: 0 0 12px 12px;*/
+  padding: 24px;
+  /*box-shadow: 0 4px 16px rgba(90, 46, 107, 0.08);*/
+  /*border: 1px solid #EADBF0;*/  
+}
+
+/* Animación de transición entre tabs */
+.custom-tabs-container .ant-tabs-tabpane {
+  animation: tabFadeIn 0.4s ease-in-out;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px) !important;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) !important;
+  }
+}
+
+/* Responsive design para tabs */
+@media (max-width: 768px) {
+  .custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+  }
+  
+  .custom-tabs-container .ant-tabs-nav {
+    padding: 4px 4px 0 4px;
+  }
 }

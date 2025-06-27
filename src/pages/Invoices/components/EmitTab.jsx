@@ -63,8 +63,8 @@ const EmitTab = ({ onInvoiceCreated }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-gray-800">
+      <div className="flex">
+        <h2 className="text-xl font-semibold text-gray-800 mt-3 mb-3">
           Emitir Facturas
         </h2>
       </div>

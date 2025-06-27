@@ -63,7 +63,7 @@ export const useInvoiceCreation = () => {
         
         // Mostrar toast de éxito con información de la factura
         toast({
-          title: "✅ Factura creada exitosamente",
+          title: "✅ Estado",
           description: `${message} - ID: ${id}`,
         });
 
@@ -74,10 +74,14 @@ export const useInvoiceCreation = () => {
         return { success: true, invoiceId: id, message };
       } else {
         // Fallback para respuestas que no siguen el formato esperado
+        // let message = '';
+        // if(response.errorResponse.message == "Bad Request"){
+        //   message = "Algo ha ocurrido mal"
+        // }
         toast({
           variant: "destructive",
-          title: "❌ Error al crear la factura",
-          description: response.errorResponse.message || "Ha ocurrido un error inesperado",
+          title: "❌ Estado",
+          description: "Ha ocurrido un error inesperado",
         });
         
         // Invalidar la query de facturas emitidas
