@@ -10,7 +10,7 @@ import { useAuth } from "./context/AuthContext";
 import { Navbar } from "./components/Navbar";
 import LoginButton from "./components/LoginButton";
 import Unauthorized from "./pages/Unauthorized";
-import Invoices from "./pages/Invoices/InvoicesPage";
+import Invoices from "./pages/Invoices/invoicesPage";
 import Payrolls from "./pages/Payrolls/Pages/PayrollPage";
 import Registration from "./pages/Registration/matriculacion";
 import Formulario from "./pages/Registration/formulario";
@@ -61,10 +61,10 @@ function AppRoutes() {
 
   function getAllowedModules(ouPath) {
     const allModules = ["home", "settings", "dropdown", "invoices", "payrolls", "registration", "report"];
-    const registrationOUs = ["/Alumnos", "/Inscritos", "/Pendiente"];
-    const gestionAcademicaOUs = ["/GestionAcademica", "/Management"];
-    const docentesOU = "/Docentes";
-    const developmentOUs = ["/Development", "/PruebasDev"];
+    const registrationOUs = ["/Alumnos", "/Inscritos", "/Pendiente", "/System Manager"];
+    const gestionAcademicaOUs = ["/Gestion Academica", "/Management", "/System Manager"];
+    const docentesOU = ["/Docentes", "/System Manager"];
+    const developmentOUs = ["/Development", "/PruebasDev", "/System Manager"];
 
     if (developmentOUs.includes(ouPath)) {
       return allModules;
