@@ -13,7 +13,7 @@ import { useInvoiceCreation } from '../hooks/useInvoiceCreation';
 import { customButtonStyle, customButtonStyleCancel, customCircleButtonStyle } from '../config/constants';
 import '../config/GeneralStyles.css';
 
-const InvoiceForm = ({ isOpen, onClose, data, selectedMonth }) => {
+const InvoiceForm = ({ isOpen, onClose, data, selectedMonth, onInvoiceCreated }) => {
   const {
     form,
     items,
@@ -50,8 +50,19 @@ const InvoiceForm = ({ isOpen, onClose, data, selectedMonth }) => {
 
   const handleEmitInvoice = async () => {
     try {
-      await createInvoice(data, items, additionalInfo, paymentInfo, totals);
-      onClose();
+      const result = await createInvoice(data, items, additionalInfo, paymentInfo, totals);
+
+      // Si la factura se creó exitosamente, cerrar el modal y notificar al componente padre
+      if (result && result.success) {
+        //onClose();
+        
+        // Notificar al componente padre que la factura fue creada
+        if (onInvoiceCreated) {
+          onInvoiceCreated(result);
+        }
+      }else{
+        onClose();
+      }
     } catch (error) {
       console.error('Error emitting invoice:', error);
     }
@@ -260,6 +271,25 @@ const ActionButtons = ({ onClose, onEmit, isCreating }) => {
   );
 };
 
+// PropTypes para los componentes pequeños
+AddButton.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  label: PropTypes.string.isRequired,
+};
+
+PaymentMethodsPanel.propTypes = {
+  paymentInfo: PropTypes.shape({
+    otros: PropTypes.number.isRequired,
+    plazo: PropTypes.number.isRequired,
+  }).isRequired,
+};
+
+ActionButtons.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  onEmit: PropTypes.func.isRequired,
+  isCreating: PropTypes.bool.isRequired,
+};
+
 InvoiceForm.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
@@ -273,6 +303,7 @@ InvoiceForm.propTypes = {
     itemCode: PropTypes.string,
   }).isRequired,
   selectedMonth: PropTypes.string.isRequired,
+  onInvoiceCreated: PropTypes.func,
 };
 
 export default InvoiceForm;

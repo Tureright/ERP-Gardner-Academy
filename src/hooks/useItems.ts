@@ -18,13 +18,13 @@ export const useItems = () => {
 
   // Mutation para actualizar items
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data:any }) =>
+    mutationFn: ({ id, data }: { id: string; data: any }) =>
       itemService.updateItem(id, data),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["items"] });
+      queryClient.invalidateQueries({ queryKey: ["items"] });      
       toast({
         title: "Item actualizado",
-        description: data.data.message,
+        description: data.data?.message || "Item actualizado exitosamente",
       });
     },
     onError: (error: Error) => {
@@ -40,10 +40,11 @@ export const useItems = () => {
   const createMutation = useMutation({
     mutationFn: (data: any) => itemService.createItem(data),
     onSuccess: (data) => {
+      console.log("Respuesta del servidor al crear:", data);
       queryClient.invalidateQueries({ queryKey: ["items"] });
       toast({
         title: "Item creado",
-        description: data.data.message,
+        description: data.data?.message || "Item creado exitosamente",
       });
     },
     onError: (error: Error) => {

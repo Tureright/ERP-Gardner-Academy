@@ -54,7 +54,7 @@ export const itemService = {
   async updateItem(id: string, itemData) {
     try {
       const response = await fetch(
-        `https://script.google.com/macros/s/AKfycbx2odZBM133mu7Fafoe6A0D6M1EIpwZg5vL_wJNDe9MBHapRQGldtEzlQVgBs3I3MPHmA/exec?path=updateItem&method=PATCH&idItem=${id}`,
+        `${API_ENDPOINTS.UPDATE_ITEM}&idItem=${id}`,
         {
           method: "POST",
           body: JSON.stringify(itemData),

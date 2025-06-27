@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import PropTypes from 'prop-types';
 import { useEmitFilter } from "../hooks/useEmitFilter";
 import { Table, Button } from "antd";
 import { getFilteredData } from "../utils/filterUtils";
@@ -10,21 +11,29 @@ import '../config/GeneralStyles.css';
 //import { exportToExcel } from "../utils/exportToExcel";
 import { useExportToExcel } from "../utils/exportToExcel";
 
+
 const cleanColumns = schema.fields.map(({ title, dataIndex }) => ({
   title,
   dataIndex,
 }));
 
-const ViewTab = () => {
+const ViewTab = ({ highlightInvoiceId }) => {
   const { filters, handleFilterChange, clearFilters } = useEmitFilter();
   const { emittedInvoices, isLoading, pagination, handleTableChange } =
-    useEmittedInvoices();
+    useEmittedInvoices(highlightInvoiceId);
 
   const filteredData = useMemo(() => {
     return getFilteredData(emittedInvoices, filters, schema.filterSchema);
   }, [emittedInvoices, filters]);
   const {isLoadingURL, fecthXLSXUrl} = useExportToExcel();
 
+  // Configurar las filas de la tabla para resaltar la factura recién creada
+  const getRowClassName = (record) => {
+    if (highlightInvoiceId && (record.id === highlightInvoiceId || record.numero === highlightInvoiceId)) {
+      return 'highlighted-row';
+    }
+    return '';
+  };
 
   const tablePagination = {
     current: pagination.page,
@@ -69,9 +78,14 @@ const ViewTab = () => {
         className="w-full"
         pagination={tablePagination}
         onChange={handleTableChange}
+        rowClassName={getRowClassName}
       />
     </div>
   );
+};
+
+ViewTab.propTypes = {
+  highlightInvoiceId: PropTypes.string,
 };
 
 export default ViewTab;

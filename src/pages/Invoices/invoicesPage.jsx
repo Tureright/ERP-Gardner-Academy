@@ -6,17 +6,36 @@ import ViewTab from "./components/ViewTab";
 
 const Invoices = () => {
   const [activeTab, setActiveTab] = useState("1");
+  const [highlightInvoiceId, setHighlightInvoiceId] = useState(null);
+
+  const handleInvoiceCreated = (result) => {
+    // Redirigir al ViewTab para mostrar la nueva factura creada
+    setActiveTab("1");
+    
+    // Establecer el ID de la factura para resaltarla
+    if (result && result.invoiceId) {
+      setHighlightInvoiceId(result.invoiceId);
+      
+      // Limpiar el ID de resaltado después de 5 segundos
+      setTimeout(() => {
+        setHighlightInvoiceId(null);
+      }, 5000);
+    }
+    
+    // Opcional: Mostrar un mensaje adicional o realizar otras acciones
+    console.log("Factura creada exitosamente:", result);
+  };
 
   const items = [
     {
       key: "1",
       label: "Ver",
-      children: <ViewTab />,
+      children: <ViewTab highlightInvoiceId={highlightInvoiceId} />,
     },
     {
       key: "2",
       label: "Emitir",
-      children: <EmitTab />,
+      children: <EmitTab onInvoiceCreated={handleInvoiceCreated} />,
     },
     {
       key: "3",
@@ -27,7 +46,7 @@ const Invoices = () => {
 
   return (
     <Tabs
-      defaultActiveKey="1"
+      activeKey={activeTab}
       items={items}
       onChange={(key) => setActiveTab(key)}
     />

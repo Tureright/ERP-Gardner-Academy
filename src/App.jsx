@@ -16,6 +16,7 @@ import Registration from "./pages/Registration/matriculacion";
 import Formulario from "./pages/Registration/formulario";
 import ReservarCupo from "./pages/Registration/reservarCupo";
 import DashboardMatricula from "./pages/Report/registrationReport";
+import { Toaster } from "@/components/ui/toaster";
 
 import "./App.css";
 
@@ -142,6 +143,7 @@ function App() {
   return (
     <Router>
       <AppRoutes />
+      <Toaster />
     </Router>
   );
 }

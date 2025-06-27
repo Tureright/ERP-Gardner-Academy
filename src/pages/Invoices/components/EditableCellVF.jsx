@@ -10,12 +10,6 @@ const EditableCell = ({
   // Resto de props (sin valores por defecto)
   dataIndex,
   record,
-  form,
-  isEditing,
-  edit,
-  save,
-  cancel,
-  handleRemoveItem,
   ...restProps
 }) => {
   // Filtramos props que no deben ir al elemento td
@@ -69,12 +63,6 @@ const EditableCell = ({
 // Mantenemos PropTypes para documentación y validación en desarrollo
 EditableCell.propTypes = {
   children: PropTypes.node,
-  form: PropTypes.object.isRequired,
-  isEditing: PropTypes.func.isRequired,
-  edit: PropTypes.func.isRequired,
-  save: PropTypes.func.isRequired,
-  cancel: PropTypes.func.isRequired,
-  handleRemoveItem: PropTypes.func.isRequired,
   inputType: PropTypes.oneOf(['text', 'number']),
 };
 

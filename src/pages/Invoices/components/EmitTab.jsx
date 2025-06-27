@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Table } from "antd";
+import PropTypes from 'prop-types';
 import MonthSelector from "./MonthSelector";
 import InvoiceForm from "./InvoiceForm";
 import schema from "../schemas/schemaEmitTable";
@@ -9,7 +10,7 @@ import { getTableColumns } from "../config/tableConfig";
 import { getFilteredData } from "../utils/filterUtils";
 import { useEmitFilter } from "../hooks/useEmitFilter";
 
-const EmitTab = () => {
+const EmitTab = ({ onInvoiceCreated }) => {
   const { isLoading, studentsRepresentatives } = useStudentsRepresentatives();
   const [isMonthSelectorOpen, setIsMonthSelectorOpen] = useState(false);
   const [isInvoiceFormOpen, setIsInvoiceFormOpen] = useState(false);
@@ -35,6 +36,18 @@ const EmitTab = () => {
     setIsInvoiceFormOpen(false);
     setSelectedRecord(null);
     setSelectedMonth(null);
+  };
+
+  const handleInvoiceCreated = (result) => {
+    // Limpiar el estado del formulario
+    setIsInvoiceFormOpen(false);
+    setSelectedRecord(null);
+    setSelectedMonth(null);
+    
+    // Notificar al componente padre que la factura fue creada
+    if (onInvoiceCreated) {
+      onInvoiceCreated(result);
+    }
   };
 
   const filteredData = useMemo(() => {
@@ -86,10 +99,15 @@ const EmitTab = () => {
           onClose={handleCloseInvoiceForm}
           data={selectedRecord}
           selectedMonth={selectedMonth}
+          onInvoiceCreated={handleInvoiceCreated}
         />
       )}
     </div>
   );
+};
+
+EmitTab.propTypes = {
+  onInvoiceCreated: PropTypes.func,
 };
 
 export default EmitTab;

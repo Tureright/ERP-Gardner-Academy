@@ -23,7 +23,7 @@ export const useItems = () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
       toast({
         title: "Item actualizado",
-        description: data.data.message,
+        description: data.data.message || "Item actualizado correctamente",
       });
     },
     onError: (error) => {
