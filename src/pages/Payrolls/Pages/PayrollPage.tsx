@@ -16,13 +16,6 @@ import { useEmployee, useEmployees } from "@/hooks/useEmployee";
 import { mathUtils } from "@/utils/math";
 
 export default function PayrollPage() {
-  return (
-    <PayrollMain />
-  );
-}
-
-// Vista principal como componente separado
-function PayrollMain() {
   const { data, isLoading, error } = usePayrolls();
   const { data: employeesData, isLoading: isLoadingEmployees } = useEmployees();
   const createPayroll = useCreatePayroll();
