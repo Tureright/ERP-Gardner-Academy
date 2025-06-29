@@ -5,9 +5,15 @@ import Button from "@/components/molecules/Button";
 import { EmployeeData, EmployeeResponse, PayrollFullTemplate } from "@/types";
 import PayrollTemplate from "../components/molecules/PayrollTemplate/PayrollTemplate";
 import EditablePayroll from "../components/molecules/EditablePayroll/EditablePayroll";
-import { useCreatePayroll } from "@/hooks/usePayroll";
+import {
+  useCreatePayroll,
+  useDeletePayroll,
+  usePayrollsByEmployee,
+  useSetPayrollTemplate,
+} from "@/hooks/usePayroll";
 import { PayrollData } from "@/types";
 import { useUpdateEmployee } from "@/hooks/useEmployee";
+import { Undo } from "lucide-react";
 
 type Props = {};
 
@@ -23,8 +29,28 @@ export default function NewPayroll_FillPayroll({}: Props) {
   const { mutate: createPayroll } = useCreatePayroll();
   const [payrollMonthDate, setPayrollMonthDate] = useState<Date>(new Date());
   const [payrollDateDate, setPayrollDateDate] = useState<Date>(new Date());
+  const [summary, setSummary] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const updateEmployee = useUpdateEmployee();
+  const {
+    mutate: setPayrollTemplate,
+    isSuccess,
+    isError,
+    error,
+  } = useSetPayrollTemplate();
+
+  useEffect(() => {
+    if (!teacher) {
+      navigate("/payrolls", { replace: true });
+    }
+  }, [teacher, navigate]);
+
+  if (!teacher) {
+    return null;
+  }
+
+  const { data: existingPayrolls } = usePayrollsByEmployee(teacher?.id || "");
+  const { mutateAsync: deletePayroll } = useDeletePayroll();
 
   const steps = [
     "Selección de Profesor",
@@ -32,89 +58,133 @@ export default function NewPayroll_FillPayroll({}: Props) {
     "Detalles de Rol de Pagos",
   ];
 
-  useEffect(() => {
-    if (!teacher) {
-      console.error("No se encontró el profesor en el estado de la ubicación.");
-      navigate("/payrolls/selectTeacher");
-    }
-  }, [teacher, navigate]);
-
-  if (!teacher) return null;
-
-  const confirmCreatePayroll = () => {
+  const confirmCreatePayroll = async () => {
     setIsLoading(true);
-    const payrollDate = payrollDateDate.toISOString();
-    const payrollMonth = payrollMonthDate.toISOString();
+    try {
+      const payrollDate = payrollDateDate.toISOString();
+      const payrollMonth = payrollMonthDate.toISOString();
 
-    const payrollData: PayrollData = {
-      earnings,
-      deductions,
-      payrollDate,
-      payrollMonth,
-    };
-    createPayroll(
-      { employeeId: teacher.id, payrollData },
-      {
-        onSuccess: (response) => {
-          const payrollId = response.data.payrollId;
+      const payrollData: PayrollData = {
+        earnings,
+        deductions,
+        payrollDate,
+        payrollMonth,
+        volatile: false, 
+      };
 
-          const fullPayrollData: PayrollFullTemplate = {
-            id: payrollId,
-            employeeId: teacher.id,
-            earnings,
-            deductions,
-            payrollDate,
-            firstName: teacher.firstName,
-            lastName: teacher.lastName,
-            nationalId,
-            birthDate: teacher.birthDate,
-            jobPosition,
-            payrollMonth,
-          };
+      await new Promise<void>((resolve, reject) => {
+        createPayroll(
+          { employeeId: teacher.id, payrollData },
+          {
+            onSuccess: async (response) => {
+              const payrollId = response.data.payrollId;
 
-          const employeeData: EmployeeData = {
-            adminId: teacher.adminId,
-            firstName: teacher.firstName,
-            lastName: teacher.lastName,
-            nationalId: nationalId,
-            birthDate: teacher.birthDate,
-            workPeriods: [
-              {
-                jobPosition: jobPosition,
-                startDate: teacher.workPeriods[0].startDate,
-                endDate: teacher.workPeriods[0].endDate,
-              },
-            ],
-            institutionalEmail: teacher.institutionalEmail,
-          };
+              const fullPayrollData: PayrollFullTemplate = {
+                id: payrollId,
+                employeeId: teacher.id,
+                earnings,
+                deductions,
+                payrollDate,
+                firstName: teacher.firstName,
+                lastName: teacher.lastName,
+                nationalId,
+                birthDate: teacher.birthDate,
+                jobPosition,
+                payrollMonth,
+                summary,
+              };
 
-          setIsLoading(false);
-          updateEmployee.mutate(
-            { employeeId: teacher.id, employeeData },
-            {
-              onSuccess: () => {
-                console.log("Empleado actualizado exitosamente");
-              },
-              onError: (error) => {
-                console.error("Error al actualizar el empleado:", error);
-                alert("Ocurrió un error al actualizar el empleado.");
-              },
-            }
-          );
-          setIsLoading(false);
-          navigate("/payrolls/payrollDetails", { state: { fullPayrollData } });
-        },
-        onError: (error) => {
-          setIsLoading(false);
-          console.error("Error al crear el payroll:", error);
-          alert("Ocurrió un error al crear el payroll. Inténtalo nuevamente.");
-        },
+              const employeeData: EmployeeData = {
+                adminId: teacher.adminId,
+                firstName: teacher.firstName,
+                lastName: teacher.lastName,
+                nationalId,
+                birthDate: teacher.birthDate,
+                workPeriods: [
+                  {
+                    jobPosition,
+                    startDate: teacher.workPeriods[0].startDate,
+                    endDate: teacher.workPeriods[0].endDate,
+                  },
+                ],
+                institutionalEmail: teacher.institutionalEmail,
+              };
+
+              // Actualizar empleado
+              updateEmployee.mutate(
+                { employeeId: teacher.id, employeeData },
+                {
+                  onSuccess: () =>
+                    console.log("Empleado actualizado exitosamente"),
+                  onError: (error) =>
+                    console.error("Error al actualizar empleado", error),
+                }
+              );
+
+              // Enviar plantilla
+              setPayrollTemplate({ newPayroll: fullPayrollData });
+
+              // ✅ Solo ahora, eliminar el payroll volatile (si existe)
+              if (existingPayrolls?.data?.length > 0) {
+                const volatilePayroll = existingPayrolls.data.find(
+                  (p) => p.volatile === true
+                );
+                if (volatilePayroll) {
+                  console.log(
+                    "🗑️ Eliminando payroll volatile:",
+                    volatilePayroll.id
+                  );
+                  await deletePayroll({
+                    employeeId: teacher.id,
+                    payrollId: volatilePayroll.id,
+                  });
+                }
+              }
+
+              // Navegar al detalle
+              navigate("/payrolls/payrollDetails", {
+                state: { fullPayrollData },
+              });
+
+              resolve(); // Terminar la promesa correctamente
+            },
+            onError: (error) => {
+              console.error("❌ Error al crear el nuevo payroll:", error);
+              alert(
+                "Ocurrió un error al crear el nuevo rol de pagos. Intenta nuevamente."
+              );
+              reject(error); // lanzar para ir al catch
+            },
+          }
+        );
+      });
+    } catch (err) {
+      console.error("❌ Error general en confirmCreatePayroll:", err);
+
+      // Mostrar error amigable si fue un error de red
+      if (err instanceof TypeError && err.message.includes("Failed to fetch")) {
+        alert(
+          "No se pudo conectar con el servidor. Verifica tu conexión a internet o inténtalo nuevamente en unos minutos."
+        );
+      } else {
+        alert("Ocurrió un error inesperado. Revisa la consola.");
       }
-    );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="max-w-7xl mx-auto flex flex-col space-y-8 px-4">
+      <div>
+        <Button
+          icon={<Undo size={20} />}
+          variant="icon"
+          onClick={() => window.history.back()}
+          className="mb-2 "
+        />
+      </div>
+
       <header className="space-y-4">
         <h1 className="text-[2.5rem] mb-4">Nuevo rol de pagos</h1>
         <ProgressBreadcrumb steps={steps} currentStep={1} />
@@ -130,6 +200,7 @@ export default function NewPayroll_FillPayroll({}: Props) {
             nationalId,
             payrollMonth,
             payrollDate,
+            summary,
           }) => {
             setEarnings(earnings);
             setDeductions(deductions);
@@ -137,6 +208,7 @@ export default function NewPayroll_FillPayroll({}: Props) {
             setNationalId(nationalId);
             setPayrollMonthDate(payrollMonth);
             setPayrollDateDate(payrollDate);
+            setSummary(summary);
           }}
         />
       </section>

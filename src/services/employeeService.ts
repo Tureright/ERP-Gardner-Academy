@@ -26,6 +26,11 @@ export async function getProfilePicture(employeeId: string) {
   return handleResponse(res);
 }
 
+export async function getEmployees13erSueldo() {
+  const res = await fetch(`${API_URL_EMP}?action=getEmployees13erSueldo`);
+  return handleResponse(res);
+}
+
 // --- DO POST ---
 export async function createEmployee(employeeData: any) {
   const res = await fetch(
@@ -65,6 +70,16 @@ export async function uploadProfilePicture(
       action: "setProfilePicture",
       employeeId,
       base64Data,
+    })
+  );
+  return handleResponse(res);
+}
+// --- NUEVA FUNCIÓN DE SINCRONIZACIÓN ---
+export async function syncNewDocentes() {
+  const res = await fetch(
+    API_URL_EMP,
+    defaultPostOpts({
+      action: "syncNewDocentes",
     })
   );
   return handleResponse(res);

@@ -7,8 +7,10 @@ import {
   createPayroll,
   updatePayroll,
   deletePayroll,
+  setPayrollTemplate,
+  downloadPayroll,
 } from "../services/payrollService";
-import { PayrollData, PayrollResponse } from "../types";
+import { PayrollData, PayrollFullTemplate, PayrollResponse } from "../types";
 
 export function usePayrolls() {
   return useQuery({ queryKey: ["payrolls"], queryFn: getAllPayrolls });
@@ -34,6 +36,14 @@ export function useLatestPayroll(employeeId: string) {
     queryKey: ["latestPayroll", employeeId],
     queryFn: () => getLatestPayroll(employeeId),
     enabled: !!employeeId,
+  });
+}
+
+export function useDownloadPayroll(employeeId: string, payrollId: string) {
+  return useQuery({
+    queryKey: ["downloadPayroll", employeeId, payrollId],
+    queryFn: () => downloadPayroll(employeeId, payrollId),
+    enabled: !!employeeId && !!payrollId,
   });
 }
 
@@ -134,6 +144,25 @@ export function useDeletePayroll() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["payrolls"] });
+    },
+  });
+}
+
+export function useSetPayrollTemplate() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ newPayroll }: { newPayroll: PayrollFullTemplate }) =>
+      setPayrollTemplate(newPayroll),
+
+    onSuccess: (response) => {
+      console.log("✅ Respuesta completa:", response);
+      console.log("📩 Mensaje:", response.data.message);
+      console.log("🧾 Payroll:", response.data.formattedPayroll);
+    },
+
+    onError: (error) => {
+      console.error("❌ Error al enviar plantilla de nómina:", error);
     },
   });
 }

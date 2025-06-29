@@ -27,9 +27,12 @@ export default {
         "purple-light": "#EADBF0",
         "cyan-light": "#E6FEFF",
         "payroll-gray": "#F7F7F7",
+        
+        "calendar": "#F0F4F9",
         // Indicadores
         success: "#16A34A", // Éxito
-        danger: "#DC2626", // Error
+        danger: "#EE6352", // Error 
+        dangerHover: "#8E1601", // Error 
         // Textos alto contraste
         black: "#000000",
         white: "#FFFFFF",

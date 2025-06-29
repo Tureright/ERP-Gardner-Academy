@@ -1,13 +1,15 @@
-
 import Payrolls from "./pages/Payrolls/Pages/PayrollPage";
 import NewPayroll_SelectTeacher from "@/pages/Payrolls/Pages/NewPayroll_SelectTeacher";
 import NewPayroll_FillPayroll from "./pages/Payrolls/Pages/NewPayroll_FillPayroll";
 import NewPayroll_PayrollDetails from "./pages/Payrolls/Pages/NewPayroll_PayrollDetails";
+import CalendarManager from "./pages/Calendar/Pages/CalendarManager";
+import NewCalendar_Calendar from "@/pages/Calendar/Pages/NewCalendar_Calendar";
+import CalendarDetails from "@/pages/Calendar/Pages/CalendarDetails";
+import TeachersMain from "@/pages/Teachers/Pages/TeachersMain";
+import TeachersPayrollDetails from "@/pages/Teachers/Pages/TeachersPayrollDetails"
 import Settings from "./pages/Settings";
-import PayrollTemplate from "./pages/Payrolls/components/molecules/PayrollTemplate/PayrollTemplate";
 
 export const routes = [
-
   {
     title: "Roles de Pago",
     url: "/payrolls",
@@ -33,14 +35,48 @@ export const routes = [
         url: "/payrolls/payrollDetails",
         component: NewPayroll_PayrollDetails,
       },
-      {
-        title: "Impresión del Rol de Pago",
-        url: "/payrolls/printPayroll",
-        component: PayrollTemplate,
-      },
-      
     ],
-  }, 
+  },
+  {
+    title: "Calendarios",
+    url: "/calendar",
+    component: CalendarManager,
+    subpages: [
+      {
+        title: "Calendarios",
+        url: "/calendar",
+        component: CalendarManager,
+      },
+      {
+        title: "Crear Calendario",
+        url: "/calendar/addCalendar",
+        component: NewCalendar_Calendar,
+      },
+      {
+        title: "Detalles Horario",
+        url: "/calendar/CalendarDetails",
+        component: CalendarDetails,
+      },
+    ],
+  },
+
+  {
+    title: "Perfil de Docente",
+    url: "/teachersProfile",
+    component: TeachersMain,
+    subpages: [
+      {
+        title: "Perfil de Docente",
+        url: "/teachersProfile",
+        component: TeachersMain,
+      },
+      {
+        title: "Datalles del rol de pagos del docente",
+        url: "/teachersProfile/payrollDetails",
+        component: TeachersPayrollDetails,
+      },
+    ],
+  },
   {
     title: "Configuración",
     url: "/settings",

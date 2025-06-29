@@ -7,6 +7,8 @@ export interface EmployeeBase {
   birthDate: string;
   workPeriods: any[]; // De momento `any[]`, luego podemos definir mejor este tipo.
   institutionalEmail: string;
+  suspended?: boolean;
+  calendarId?: string;
 }
 
 export interface EmployeeData extends EmployeeBase {}
