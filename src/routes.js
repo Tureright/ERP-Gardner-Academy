@@ -3,7 +3,7 @@ import Home from "./pages/Home/page";
 import Budgeting from "./pages/Budgeting/page";
 import Dropdowns from "./pages/Dropdowns/page";
 import Payrolls from "./pages/Payrolls//Pages/PayrollPage";
-import Invoices from "./pages/Invoices/invoicesPage";
+import Invoices from "./pages/Invoices/InvoicesPage";
 import Registration from "./pages/Registration/matriculacion";
 import ReservaCupo from "./pages/Registration/reservarCupo";
 import Formulario from "./pages/Registration/formulario"; // este solo redirige al formulario externo

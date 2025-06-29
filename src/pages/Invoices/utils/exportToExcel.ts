@@ -126,7 +126,7 @@ export const useExportToExcel = () => {
       }
       handleGenerarFactura(result);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw error;
     } finally {
       setLoading(false);

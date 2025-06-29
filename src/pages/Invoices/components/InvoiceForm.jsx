@@ -68,12 +68,10 @@ const InvoiceForm = ({
         paymentInfo,
         totals
       );
-      onClose();
-      // Si la factura se creó exitosamente, cerrar el modal y notificar al componente padre
-      console.log("result en handle emit: ", result);
 
+      console.log("result en handle emit: ", result);
+      onClose();
       if (result && result.success == true) {
-        // Notificar al componente padre que la factura fue creada
         if (onInvoiceCreated) {
           onInvoiceCreated(result);
         }
@@ -133,7 +131,6 @@ const InvoiceForm = ({
           <AddButton onClick={() => setIsItemModalOpen(true)} label="Agregar" />
         </div>
 
-        {/* Two-column layout */}
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-6">
             {/* Additional Info */}
@@ -188,7 +185,6 @@ const InvoiceForm = ({
   );
 };
 
-// Componentes pequeños adicionales
 const AddButton = ({ onClick, label }) => (
   <div className="absolute top-2 right-4 flex flex-col items-center">
     <Button
@@ -223,8 +219,12 @@ const ActionButtons = ({ onClose, onEmit, isCreating }) => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const handleConfirm = async () => {
-    setIsConfirmModalOpen(false);
-    await onEmit();
+    try {
+      await onEmit();
+      setIsConfirmModalOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -258,6 +258,7 @@ const ActionButtons = ({ onClose, onEmit, isCreating }) => {
             onClick={() => setIsConfirmModalOpen(false)}
             style={{ ...customButtonStyleCancel }}
             className="border-none custom-button font-medium"
+            disabled={isCreating}
           >
             Cancelar
           </Button>,
@@ -268,12 +269,14 @@ const ActionButtons = ({ onClose, onEmit, isCreating }) => {
             style={{ ...customButtonStyle }}
             className="border-none custom-button font-medium"
             loading={isCreating}
+            disabled={isCreating}
           >
             {isCreating ? "Emitiendo..." : "Sí, Emitir Factura"}
           </Button>,
         ]}
         width={500}
         centered
+        //destroyOnClose={true}
       >
         <div className="py-4">
           <p className="text-base mb-4">
@@ -289,7 +292,6 @@ const ActionButtons = ({ onClose, onEmit, isCreating }) => {
   );
 };
 
-// PropTypes para los componentes pequeños
 AddButton.propTypes = {
   onClick: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,

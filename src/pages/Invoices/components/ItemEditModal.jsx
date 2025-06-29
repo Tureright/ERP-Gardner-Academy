@@ -3,7 +3,7 @@ import { Modal, Form, Input, Select, Checkbox, Button } from "antd";
 import PropTypes from "prop-types";
 import { useState, useEffect, useMemo } from "react";
 import { useItems } from "@/hooks/useItems";
-import { IVA_OPTIONS } from "@/pages/Invoices/config/constants";
+import { IVA_OPTIONS, TAX_RATES } from "@/pages/Invoices/config/constants";
 import { customButtonStyle, customButtonStyleCancel } from "../config/constants";
 import '../config/GeneralStyles.css';
 
@@ -67,7 +67,6 @@ const ItemEditModal = ({ open, onClose, initialValues, mode, onItemCreated }) =>
     }
   }, [open, initialValues, mode, form]);
 
-  // Posiblemente quitar por compatibilidad con CastorDocs
   const handleAddDetail = () => {
     if (newDetail.nombre && newDetail.valor) {
       setAdditionalDetails([...additionalDetails, newDetail]);
@@ -76,7 +75,6 @@ const ItemEditModal = ({ open, onClose, initialValues, mode, onItemCreated }) =>
     }
   };
 
-  // Posiblemente quitar por compatibilidad con CastorDocs
   const handleRemoveDetail = (index) => {
     setAdditionalDetails(additionalDetails.filter((_, i) => i !== index));
   };
@@ -98,7 +96,7 @@ const ItemEditModal = ({ open, onClose, initialValues, mode, onItemCreated }) =>
       await form.validateFields();
       setIsConfirmModalOpen(true);
     } catch (error) {
-      console.error("Error:", error);
+      console.error(error);
       throw Error(error.message);
     }
   };
@@ -122,10 +120,7 @@ const ItemEditModal = ({ open, onClose, initialValues, mode, onItemCreated }) =>
         handleCancel();
         console.log("result en handle confirm item: ", result)
 
-        // Si la actualización fue exitosa, cerrar el modal y notificar
-        if (result && result.success == true) {
-          
-          // Notificar al componente padre que el item fue actualizado
+        if (result && result.success == true) {          
           if (onItemCreated) {
             onItemCreated(result);
           }
@@ -144,9 +139,7 @@ const ItemEditModal = ({ open, onClose, initialValues, mode, onItemCreated }) =>
         const result = await createItem(data);
         handleCancel();
 
-        // Si la creación fue exitosa, cerrar el modal y notificar
         if (result && result.success == true) {          
-          // Notificar al componente padre que el item fue creado
           if (onItemCreated) {
             onItemCreated(result);
           }
@@ -162,6 +155,7 @@ const ItemEditModal = ({ open, onClose, initialValues, mode, onItemCreated }) =>
 
   const validationRules = useMemo(
     () => ({
+      codigo_principal: [{required: true, message: "Ingrese el código principal"}],
       tipo: [{ required: true, message: "Seleccione el tipo" }],
       descripcion: [{ required: true, message: "Ingrese la descripción" }],
       precio_unitario: [
@@ -185,8 +179,22 @@ const ItemEditModal = ({ open, onClose, initialValues, mode, onItemCreated }) =>
           message: "La tarifa debe ser mayor o igual a 0",
         },
       ],
+      checkboxGroup: [
+        {
+          validator: () => {
+            const formValues = form.getFieldsValue();
+            const esParaVenta = formValues.es_para_venta;
+            const esParaInventario = formValues.es_para_inventario;
+            
+            if (!esParaVenta && !esParaInventario) {
+              return Promise.reject(new Error("Debe seleccionar al menos una opción"));
+            }
+            return Promise.resolve();
+          },
+        },
+      ],
     }),
-    []
+    [form]
   );
 
   return (
@@ -209,11 +217,11 @@ const ItemEditModal = ({ open, onClose, initialValues, mode, onItemCreated }) =>
               Información General
             </h3>
             {/* Primera fila de campos */}
-            <div className="grid grid-cols-6 gap-4 mb-4">
+            <div className="grid grid-cols-10 gap-4 mb-4">
               <Form.Item
                 label="Tipo"
                 name="tipo"
-                className="col-span-1"
+                className="col-span-2"
                 rules={validationRules.tipo}
               >
                 <Select
@@ -225,21 +233,22 @@ const ItemEditModal = ({ open, onClose, initialValues, mode, onItemCreated }) =>
               <Form.Item
                 label="Código Principal"
                 name="codigo_principal"
-                className="col-span-1"
+                className="col-span-2"
+                rules={validationRules.codigo_principal}
               >
-                <Input />
+                <Input placeholder="Cod. Principal"/>
               </Form.Item>
               <Form.Item
                 label="Código Auxiliar"
                 name="codigo_auxiliar"
-                className="col-span-1"
+                className="col-span-2"
               >
-                <Input placeholder="Auxiliar" />
+                <Input placeholder="Cod. Auxiliar" />
               </Form.Item>
               <Form.Item
                 label="Descripción"
                 name="descripcion"
-                className="col-span-3"
+                className="col-span-4"
                 rules={validationRules.descripcion}
               >
                 <Input placeholder="Descripción del item" />
@@ -281,25 +290,45 @@ const ItemEditModal = ({ open, onClose, initialValues, mode, onItemCreated }) =>
                 className="col-span-1"
                 rules={validationRules.tarifa_iva}
               >
-                <Input placeholder="15.00" value={15.0} disabled />
+                <Input placeholder="15.00" value={TAX_RATES.IVA_15 * 100} disabled />
               </Form.Item>
             </div>
 
             {/* Fila de checkboxes */}
-            <div className="grid grid-cols-5 gap-4 mt-2 pt-4 border-t border-gray-100">
+            <div className="grid grid-cols-5 gap-4 mt-2 pt-4 border-t border-gray-200">
               <Form.Item
-                name="es_para_venta"
-                valuePropName="checked"
-                className="col-span-1"
+                name="checkboxGroup"
+                className="col-span-3"
+                rules={validationRules.checkboxGroup}
               >
-                <Checkbox>Ítem para venta</Checkbox>
-              </Form.Item>
-              <Form.Item
-                name="es_para_inventario"
-                valuePropName="checked"
-                className="col-span-2"
-              >
-                <Checkbox>Disponible para inventario</Checkbox>
+                <div className="flex gap-4">
+                  <Form.Item
+                    name="es_para_venta"
+                    valuePropName="checked"
+                    className="mb-0"
+                  >
+                    <Checkbox 
+                      onChange={() => {
+                        form.validateFields(['checkboxGroup']);
+                      }}
+                    >
+                      Ítem para venta
+                    </Checkbox>
+                  </Form.Item>
+                  <Form.Item
+                    name="es_para_inventario"
+                    valuePropName="checked"
+                    className="mb-0"
+                  >
+                    <Checkbox 
+                      onChange={() => {
+                        form.validateFields(['checkboxGroup']);
+                      }}
+                    >
+                      Disponible para inventario
+                    </Checkbox>
+                  </Form.Item>
+                </div>
               </Form.Item>
             </div>
           </div>

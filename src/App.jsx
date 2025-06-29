@@ -10,7 +10,7 @@ import { useAuth } from "./context/AuthContext";
 import { Navbar } from "./components/Navbar";
 import LoginButton from "./components/LoginButton";
 import Unauthorized from "./pages/Unauthorized";
-import Invoices from "./pages/Invoices/invoicesPage";
+import Invoices from "./pages/Invoices/InvoicesPage";
 import Payrolls from "./pages/Payrolls/Pages/PayrollPage";
 import Registration from "./pages/Registration/matriculacion";
 import Formulario from "./pages/Registration/formulario";

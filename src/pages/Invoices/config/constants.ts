@@ -60,6 +60,8 @@ export const PAYMENT_CONSTANTS = {
 export const DEFAULT_VALUES = {
   INITIAL_DISCOUNT: 0,
   INITIAL_QUANTITY: 1,
+  ESTABLECIMIENTO: "001",
+  PUNTO_EMISION: "001"
 };
 
 export const customButtonStyle = {

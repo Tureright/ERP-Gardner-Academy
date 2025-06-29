@@ -2,17 +2,13 @@ import PropTypes from 'prop-types';
 import { Form, InputNumber, Input } from 'antd';
 
 const EditableCell = ({
-  // Props con valores por defecto directamente en la destructuración
   children = null,
   editing = false,
   inputType = 'text',
-  
-  // Resto de props (sin valores por defecto)
   dataIndex,
   record,
   ...restProps
 }) => {
-  // Filtramos props que no deben ir al elemento td
   const { inputType: _, ...tdProps } = restProps;
 
   const inputNode = inputType === 'number' ? (
@@ -60,11 +56,9 @@ const EditableCell = ({
   );
 };
 
-// Mantenemos PropTypes para documentación y validación en desarrollo
 EditableCell.propTypes = {
   children: PropTypes.node,
   inputType: PropTypes.oneOf(['text', 'number']),
 };
-
 
 export default EditableCell;

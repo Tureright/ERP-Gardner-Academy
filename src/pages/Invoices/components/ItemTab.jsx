@@ -2,20 +2,20 @@ import { Table, Space, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import PropTypes from "prop-types";
 import schema from "../schemas/schemaItemTable";
-import ItemFilters from "./ItemFilters";
+import Filters from "./Filters";
 import ItemEditModal from "./ItemEditModal";
 import { getFilteredData } from "../utils/filterUtils";
 import { useItems } from "@/hooks/useItems";
 import { useMemo, useState, useCallback } from "react";
-import { useEmitFilter } from "../hooks/useEmitFilter";
+import { useFilters } from "../hooks/useFilters";
 import { customButtonStyle } from "../config/constants";
 import "../config/GeneralStyles.css";
 
 const ItemTab = ({ onItemCreated, highlightItemId }) => {
-  const { items, isLoading } = useItems();
-  const { filters, handleFilterChange, clearFilters } = useEmitFilter();
+  const { items, isLoading, handleTableChange } = useItems();
+  const { filters, handleFilterChange, clearFilters } = useFilters();
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState(null); // 'create' o 'edit'
+  const [modalMode, setModalMode] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
 
   const handleCreateItem = useCallback(() => {
@@ -38,17 +38,13 @@ const ItemTab = ({ onItemCreated, highlightItemId }) => {
 
   const handleItemCreated = useCallback(
     (result) => {
-      // Limpiar el estado del modal
       setModalOpen(false);
       setModalMode(null);
-      setSelectedItem(null);
+      setSelectedItem(null)
 
-      // Notificar al componente padre que el item fue creado/actualizado
       if (onItemCreated) {
         onItemCreated(result);
       }
-
-      console.log("Item creado/actualizado exitosamente:", result);
     },
     [onItemCreated]
   );
@@ -57,14 +53,13 @@ const ItemTab = ({ onItemCreated, highlightItemId }) => {
     return getFilteredData(items, filters, schema.filterSchema);
   }, [items, filters]);
 
-  // Función para asignar la clase de resaltado
   const getRowClassName = (record) => {
     if (highlightItemId && record.id == highlightItemId) {
       return "highlighted-row";
     }
     return "";
   };
-  // Columna para editar el item
+
   const columns = [
     ...schema.fields,
     {
@@ -107,7 +102,7 @@ const ItemTab = ({ onItemCreated, highlightItemId }) => {
 
       {/* Filtros */}
       {schema.filterSchema && (
-        <ItemFilters
+        <Filters
           filters={filters}
           onFilterChange={handleFilterChange}
           onClearFilters={clearFilters}
@@ -121,8 +116,10 @@ const ItemTab = ({ onItemCreated, highlightItemId }) => {
         dataSource={filteredData}
         loading={isLoading}
         rowKey="id"
-        className="w-full"
+        className="border border-gray-200 rounded-lg w-full"
         rowClassName={getRowClassName}
+        bordered
+        onChange={handleTableChange}
       />
 
       {/* Modal */}

@@ -4,24 +4,21 @@ import PropTypes from 'prop-types';
 import MonthSelector from "./MonthSelector";
 import InvoiceForm from "./InvoiceForm";
 import schema from "../schemas/schemaEmitTable";
-import ItemFilters from "./ItemFilters";
+import Filters from "./Filters";
 import useStudentsRepresentatives from "../hooks/useStudentsRepresentatives";
 import { getTableColumns } from "../config/tableConfig";
 import { getFilteredData } from "../utils/filterUtils";
-import { useEmitFilter } from "../hooks/useEmitFilter";
+import { useFilters } from "../hooks/useFilters";
 
 const EmitTab = ({ onInvoiceCreated }) => {
-  const { isLoading, studentsRepresentatives } = useStudentsRepresentatives();
+  const { isLoading, studentsRepresentatives, handleTableChange } = useStudentsRepresentatives();
   const [isMonthSelectorOpen, setIsMonthSelectorOpen] = useState(false);
   const [isInvoiceFormOpen, setIsInvoiceFormOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
-  const { filters, handleFilterChange, clearFilters } = useEmitFilter();
+  const { filters, handleFilterChange, clearFilters } = useFilters();
 
   const handleGenerateInvoice = (record) => {
-    {
-      /*console.log("registro escogido de la tabla: ", record);*/
-    }
     setSelectedRecord(record);
     setIsMonthSelectorOpen(true);
   };
@@ -39,12 +36,10 @@ const EmitTab = ({ onInvoiceCreated }) => {
   };
 
   const handleInvoiceCreated = (result) => {
-    // Limpiar el estado del formulario
     setIsInvoiceFormOpen(false);
     setSelectedRecord(null);
     setSelectedMonth(null);
-    
-    // Notificar al componente padre que la factura fue creada
+        
     if (onInvoiceCreated) {
       onInvoiceCreated(result);
     }
@@ -58,7 +53,6 @@ const EmitTab = ({ onInvoiceCreated }) => {
     );
   }, [studentsRepresentatives, filters]);
 
-  // Columnas para la tabla de estudiantes y representantes
   const columns = getTableColumns(handleGenerateInvoice, isLoading);
 
   return (
@@ -70,7 +64,7 @@ const EmitTab = ({ onInvoiceCreated }) => {
       </div>
       {/* Filtros */}
       {schema.filterSchema && (
-        <ItemFilters
+        <Filters
           filters={filters}
           onFilterChange={handleFilterChange}
           onClearFilters={clearFilters}
@@ -83,7 +77,9 @@ const EmitTab = ({ onInvoiceCreated }) => {
         dataSource={filteredData}
         loading={isLoading}
         rowKey={(record) => `${record.representativeId}-${record.studentName}`}
-        className="w-full"
+        className="border border-gray-200 rounded-lg w-full"
+        bordered
+        onChange={handleTableChange}
       />
 
       <MonthSelector
