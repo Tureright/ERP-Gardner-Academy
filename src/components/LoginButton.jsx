@@ -18,7 +18,7 @@ const [error, setError] = useState("");
     try {
       const credential = GoogleAuthProvider.credential(res.credential);
       const result = await signInWithCredential(auth, credential);
-      console.log("Usuario autenticado:", result.user);
+      //console.log("Usuario autenticado:", result.user);
       setError("");
       onToken(res.credential); // Puedes seguir usándolo si lo necesitas
     } catch (err) {

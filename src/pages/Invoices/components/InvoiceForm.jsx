@@ -1,160 +1,109 @@
-import { Modal, Form, Input, Button, Table } from "antd";
-import { PlusCircleOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import { Modal, Form, Button, Input } from "antd";
+import { PlusCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 
-const InvoiceForm = ({ isOpen, onClose, data, selectedMonth }) => {
-  const [form] = Form.useForm();
-  const [items, setItems] = useState([]);
-  const [totals, setTotals] = useState({
-    subtotalIva15: 0,
-    subtotalIvaDiferenciado: 0,
-    subtotal0: 0,
-    subtotalNoObjetoIva: 0,
-    subtotalExentoIva: 0,
-    subtotalSinImpuestos: 0,
-    totalDescuento: 0,
-    ice: 0,
-    iva15: 0,
-    propina: 0,
-    valorTotal: 0
-  });
+import AdditionalInfoModal from "./AdditionalInfoModal";
+import ItemSelectionModal from "./ItemSelectionModal";
+import ClientInfoForm from "./ClientInfoForm";
+import InvoiceItemsTable from "./InvoiceItemsTable";
+import InvoiceTotalsPanel from "./InvoiceTotalsPanel";
+import { useInvoiceForm } from "../hooks/useInvoiceForm";
+import { useInvoiceCreation } from "../hooks/useInvoiceCreation";
+import {
+  customButtonStyle,
+  customButtonStyleCancel,
+  customCircleButtonStyle,
+} from "../config/constants";
+import "../config/GeneralStyles.css";
 
-  const [additionalInfo, setAdditionalInfo] = useState({
-    mes: "",
-    alumno: "",
-  });
+const InvoiceForm = ({
+  isOpen,
+  onClose,
+  data,
+  selectedMonth,
+  onInvoiceCreated,
+}) => {
+  const {
+    form,
+    items,
+    loading,
+    totals,
+    additionalInfo,
+    paymentInfo,
+    handleAddAdditionalInfo,
+    handleRemoveAdditionalInfo,
+    handleAddItem,
+    fetchItem,
+    mergedColumns,
+  } = useInvoiceForm(data, selectedMonth);
 
-  const [paymentInfo, setPaymentInfo] = useState({
-    otros: 200,
-    plazo: 0
-  });
-  // Efecto para actualizar el formulario cuando cambian los datos
+  const { createInvoice, isCreating } = useInvoiceCreation();
+
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [isAdditionalInfoModalOpen, setIsAdditionalInfoModalOpen] =
+    useState(false);
+
   useEffect(() => {
-    if (data && selectedMonth) {
-      form.setFieldsValue({
-        razonSocial: data.representativeName,
-        identificacion: data.representativeId,
-        direccion: data.representativeAddress,
-        telefono: data.representativePhone,
-        correo: data.representativeEmail,
-        mes: selectedMonth,
-        alumno: data.studentName,
-      });
+    if (isOpen && data?.itemCode) {
+      console.log("data", data);
+      const loadItem = async () => {
+        try {
+          fetchItem(data.itemCode);
+        } catch (error) {
+          console.error("Error loading item:", error);
+          throw Error(error.message);
+        }
+      };
+      loadItem();
     }
-  }, [data, selectedMonth, form]);
+  }, [isOpen, data?.itemCode]);
 
-  const handleEmitInvoice = () => {
-    // Obtener todos los datos necesarios para la factura
-    const invoiceData = {
-      // Información del cliente/representante
-      clientInfo: {
-        razonSocial: data.representativeName,
-        identificacion: data.representativeId,
-        direccion: data.address,
-        telefono: data.phone,
-        correo: data.email,
-        fechaEmision: new Date().toISOString(),
-        guiaRemision: form.getFieldValue('guiaRemision') || ''
-      },
-
-      // Información del estudiante
-      studentInfo: {
-        nombre: data.studentName,
-        mes: selectedMonth
-      },
-
-      // Items de la factura
-      items: items,
-
-      // Información adicional
-      additionalInfo: {
-        mes: selectedMonth,
-        alumno: data.studentName,
-        // Aquí puedes agregar más información adicional si es necesario
-      },
-
-      // Formas de pago
-      paymentInfo: {
-        otros: paymentInfo.otros,
-        plazo: paymentInfo.plazo
-      },
-
-      // Totales
-      totals: {
-        subtotalIva15: totals.subtotalIva15,
-        subtotalIvaDiferenciado: totals.subtotalIvaDiferenciado,
-        subtotal0: totals.subtotal0,
-        subtotalNoObjetoIva: totals.subtotalNoObjetoIva,
-        subtotalExentoIva: totals.subtotalExentoIva,
-        subtotalSinImpuestos: totals.subtotalSinImpuestos,
-        totalDescuento: totals.totalDescuento,
-        ice: totals.ice,
-        iva15: totals.iva15,
-        propina: totals.propina,
-        valorTotal: totals.valorTotal
-      }
-    };
-
-    // Log para verificar los datos
-    console.log('Datos de la factura:', invoiceData);
-
-    // Aquí puedes agregar la lógica para enviar los datos al servidor
+  const handleEmitInvoice = async () => {
     try {
-      // Ejemplo de llamada a API
+      const result = await createInvoice(
+        data,
+        items,
+        additionalInfo,
+        paymentInfo,
+        totals
+      );
 
+      console.log("result en handle emit: ", result);
+      onClose();
+      if (result && result.success == true) {
+        if (onInvoiceCreated) {
+          onInvoiceCreated(result);
+        }
+      }
+      if (result && result.errorResponse) {
+        throw new Error(result.errorResponse.message);
+      }
     } catch (error) {
-      console.error('Error al emitir la factura:', error);
+      console.error(error);
     }
   };
 
+  const renderAdditionalInfoFields = () => {
+    return Object.entries(additionalInfo).map(([key, value]) => {
+      if (key === "Mes" || key === "Alumno") return null;
+      return (
+        <div key={key} className="flex items-center justify-center space-x-4">
+          <Form.Item label={key.toUpperCase()} className="mb-0 flex-1">
+            <Input value={value} disabled className="w-48" />
+          </Form.Item>
+          <Button
+            type="text"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleRemoveAdditionalInfo(key)}
+            className="mt-2"
+          />
+        </div>
+      );
+    });
+  };
 
-  // Columnas para la tabla de items
-  const itemColumns = [
-    {
-      title: "CÓDIGO PRINCIPAL",
-      dataIndex: "codigoPrincipal",
-      key: "codigoPrincipal",
-      width: "15%",
-    },
-    {
-      title: "CANTIDAD",
-      dataIndex: "cantidad",
-      key: "cantidad",
-      width: "10%",
-    },
-    {
-      title: "DESCRIPCIÓN",
-      dataIndex: "descripcion",
-      align:"center",
-      key: "descripcion",
-      width: "30%",
-    },
-    {
-      title: "DETALLE ADICIONAL",
-      dataIndex: "detalleAdicional",
-      key: "detalleAdicional",
-      width: "15%",
-    },
-    {
-      title: "PRECIO UNITARIO",
-      dataIndex: "precioUnitario",
-      key: "precioUnitario",
-      width: "15%",
-    },
-    {
-      title: "DESCUENTO",
-      dataIndex: "descuento",
-      key: "descuento",
-      width: "10%",
-    },
-    {
-      title: "PRECIO TOTAL",
-      dataIndex: "precioTotal",
-      key: "precioTotal",
-      width: "15%",
-    },
-  ];
   return (
     <Modal
       open={isOpen}
@@ -165,165 +114,200 @@ const InvoiceForm = ({ isOpen, onClose, data, selectedMonth }) => {
       destroyOnClose={true}
     >
       <div className="flex flex-col space-y-6 p-4">
-        {/* Sección de información principal */}
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="col-span-3">
-              <Form.Item label="RAZÓN SOCIAL/NOMBRES Y APELLIDOS">
-                <Input value={data?.representativeName} disabled />
-              </Form.Item>
-            </div>
-            <Form.Item label="IDENTIFICACIÓN">
-              <Input value={data?.representativeId} disabled />
-            </Form.Item>
-            <Form.Item label="FECHA EMISIÓN">
-              <Input value={new Date().toLocaleDateString()} disabled />
-            </Form.Item>
-            <Form.Item label="GUÍA REMISIÓN">
-              <Input />
-            </Form.Item>
-            <Form.Item label="DIRECCIÓN">
-              <Input value={data?.representativeAddress} disabled />
-            </Form.Item>
-            <Form.Item label="TELÉFONO">
-              <Input value={data?.representativePhone} disabled />
-            </Form.Item>
-            <Form.Item label="CORREO">
-              <Input value={data?.representativeEmail} disabled />
-            </Form.Item>
-          </div>
-        </div>
+        <ClientInfoForm data={data} />
 
-        {/* Sección de items */}
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+        {/* Items Section */}
+        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 relative">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium">Items</h3>
-            <Button
-              type="primary"
-              icon={<PlusCircleOutlined />}
-              className="bg-blue-500"
-            >
-              Agregar Item
-            </Button>
+            <h3 className="text-lg font-medium text-gray-700">ITEMS</h3>
           </div>
-          <Table
-            columns={itemColumns}
-            dataSource={items}
-            pagination={false}
-            size="small"
-          />
+          <Form form={form} component={false}>
+            <InvoiceItemsTable
+              items={items}
+              loading={loading}
+              mergedColumns={mergedColumns}
+            />
+          </Form>
+          <AddButton onClick={() => setIsItemModalOpen(true)} label="Agregar" />
         </div>
 
-        {/* Grid de 2 columnas para información adicional, totales y formas de pago */}
         <div className="grid grid-cols-2 gap-6">
-          {/* Columna izquierda */}
           <div className="space-y-6">
-            {/* Información Adicional */}
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+            {/* Additional Info */}
+            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 relative">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-medium">INFORMACIÓN ADICIONAL</h3>
-                <Button
-                  type="text"
-                  icon={<PlusCircleOutlined />}
-                  className="text-blue-500"
-                />
               </div>
               <div className="space-y-4">
-                <Form.Item label="MES">
-                  <Input value={selectedMonth} disabled />
+                <Form.Item label="Mes" className="mb-0">
+                  <Input value={selectedMonth} disabled className="w-48" />
                 </Form.Item>
-                <Form.Item label="ALUMNO">
-                  <Input value={data?.studentName} disabled />
+                <Form.Item label="Alumno" className="mb-0">
+                  <Input value={data?.studentName} disabled className="w-48" />
                 </Form.Item>
+                {renderAdditionalInfoFields()}
               </div>
+              <AddButton
+                onClick={() => setIsAdditionalInfoModalOpen(true)}
+                label="Agregar"
+              />
             </div>
 
-            {/* Formas de Pago */}
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-              <h3 className="text-lg font-medium mb-4">FORMAS DE PAGO</h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span>OTROS:</span>
-                  <span>$200</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>PLAZO:</span>
-                  <span>0 DÍAS</span>
-                </div>
-              </div>
-            </div>
+            {/* Payment Methods */}
+            <PaymentMethodsPanel paymentInfo={paymentInfo} />
 
-            {/* Botones de acción */}
-            <div className="flex space-x-4">
-              <Button
-                onClick={onClose}
-                className="w-1/2 h-10 text-gray-700 border-gray-300 hover:bg-gray-50"
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="primary"
-                onClick={handleEmitInvoice}
-                className="w-1/2 h-10 bg-yellow-500 hover:bg-yellow-600 border-none"
-              >
-                Emitir
-              </Button>
-            </div>
+            {/* Action Buttons */}
+            <ActionButtons
+              onClose={onClose}
+              onEmit={handleEmitInvoice}
+              isCreating={isCreating}
+            />
           </div>
 
-          {/* Columna derecha - Totales */}
-          <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">SUBTOTAL IVA 15%</span>
-                <span className="font-medium">$0.00</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">SUBTOTAL IVA DIFERENCIADO</span>
-                <span className="font-medium">$0.00</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">SUBTOTAL 0%</span>
-                <span className="font-medium">$0.00</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">SUBTOTAL NO OBJETO IVA</span>
-                <span className="font-medium">$0.00</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">SUBTOTAL EXENTO DE IVA</span>
-                <span className="font-medium">$0.00</span>
-              </div>
-              <div className="flex justify-between text-sm font-medium border-t border-b border-gray-200 py-2 my-2">
-                <span>SUBTOTAL SIN IMPUESTOS</span>
-                <span>$0.00</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">TOTAL DESCUENTO</span>
-                <span className="font-medium">$0.00</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">ICE</span>
-                <span className="font-medium">$0.00</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">IVA 15%</span>
-                <span className="font-medium">$0.00</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">PROPINA</span>
-                <span className="font-medium">$0.00</span>
-              </div>
-              <div className="flex justify-between text-lg font-bold border-t border-gray-200 pt-2 mt-2">
-                <span>VALOR TOTAL</span>
-                <span>$0.00</span>
-              </div>
-            </div>
-          </div>
+          {/* Totals Panel */}
+          <InvoiceTotalsPanel totals={totals} />
         </div>
       </div>
+
+      {/* Modals */}
+      <AdditionalInfoModal
+        isOpen={isAdditionalInfoModalOpen}
+        onClose={() => setIsAdditionalInfoModalOpen(false)}
+        onAdd={handleAddAdditionalInfo}
+      />
+      <ItemSelectionModal
+        isOpen={isItemModalOpen}
+        onClose={() => setIsItemModalOpen(false)}
+        onSelect={handleAddItem}
+        currentItems={items}
+      />
     </Modal>
   );
+};
+
+const AddButton = ({ onClick, label }) => (
+  <div className="absolute top-2 right-4 flex flex-col items-center">
+    <Button
+      type="primary"
+      shape="circle"
+      icon={<PlusCircleOutlined className="text-xl" />}
+      onClick={onClick}
+      style={{ ...customCircleButtonStyle }}
+      className="w-12 h-8 border-none custom-button shadow-md flex items-center justify-center"
+    />
+    <span className="text-sm text-gray-600 font-medium">{label}</span>
+  </div>
+);
+
+const PaymentMethodsPanel = ({ paymentInfo }) => (
+  <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+    <h3 className="text-lg font-medium mb-4">FORMAS DE PAGO</h3>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <span>OTROS CON UTILIZACIÓN DEL SISTEMA FINANCIERO:</span>
+        <span>${paymentInfo.otros.toFixed(2)}</span>
+      </div>
+      <div className="flex justify-between items-center">
+        <span>PLAZO:</span>
+        <span>{paymentInfo.plazo} DÍAS</span>
+      </div>
+    </div>
+  </div>
+);
+
+const ActionButtons = ({ onClose, onEmit, isCreating }) => {
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+  const handleConfirm = async () => {
+    try {
+      await onEmit();
+      setIsConfirmModalOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div className="flex space-x-4">
+      <Button
+        onClick={onClose}
+        style={{ ...customButtonStyleCancel }}
+        className="w-1/2 h-10 border-none custom-button font-semibold"
+        disabled={isCreating}
+      >
+        Cancelar
+      </Button>
+      <Button
+        type="primary"
+        onClick={() => setIsConfirmModalOpen(true)}
+        style={{ ...customButtonStyle }}
+        className="w-1/2 h-10 border-none custom-button font-semibold"
+        loading={isCreating}
+        disabled={isCreating}
+      >
+        {isCreating ? "Emitiendo..." : "Emitir"}
+      </Button>
+
+      <Modal
+        title="Confirmar Emisión de Factura"
+        open={isConfirmModalOpen}
+        onCancel={() => setIsConfirmModalOpen(false)}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => setIsConfirmModalOpen(false)}
+            style={{ ...customButtonStyleCancel }}
+            className="border-none custom-button font-medium"
+            disabled={isCreating}
+          >
+            Cancelar
+          </Button>,
+          <Button
+            key="confirm"
+            type="primary"
+            onClick={handleConfirm}
+            style={{ ...customButtonStyle }}
+            className="border-none custom-button font-medium"
+            loading={isCreating}
+            disabled={isCreating}
+          >
+            {isCreating ? "Emitiendo..." : "Sí, Emitir Factura"}
+          </Button>,
+        ]}
+        width={500}
+        centered
+        //destroyOnClose={true}
+      >
+        <div className="py-4">
+          <p className="text-base mb-4">
+            ¿Estás seguro que deseas emitir esta factura?
+          </p>
+          <p className="text-sm text-gray-500">
+            Esta acción no se puede deshacer. Por favor, verifica que toda la
+            información sea correcta antes de continuar.
+          </p>
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
+AddButton.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  label: PropTypes.string.isRequired,
+};
+
+PaymentMethodsPanel.propTypes = {
+  paymentInfo: PropTypes.shape({
+    otros: PropTypes.number.isRequired,
+    plazo: PropTypes.number.isRequired,
+  }).isRequired,
+};
+
+ActionButtons.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  onEmit: PropTypes.func.isRequired,
+  isCreating: PropTypes.bool.isRequired,
 };
 
 InvoiceForm.propTypes = {
@@ -332,12 +316,14 @@ InvoiceForm.propTypes = {
   data: PropTypes.shape({
     representativeName: PropTypes.string,
     representativeId: PropTypes.string,
-    address: PropTypes.string,
-    phone: PropTypes.string,
-    email: PropTypes.string,
+    representativeAddress: PropTypes.string,
+    representativePhone: PropTypes.string,
+    representativeEmail: PropTypes.string,
     studentName: PropTypes.string,
+    itemCode: PropTypes.string,
   }).isRequired,
   selectedMonth: PropTypes.string.isRequired,
+  onInvoiceCreated: PropTypes.func,
 };
 
 export default InvoiceForm;

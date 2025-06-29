@@ -2,10 +2,8 @@ import Settings from "./pages/Settings";
 import Home from "./pages/Home/page";
 import Budgeting from "./pages/Budgeting/page";
 import Dropdowns from "./pages/Dropdowns/page";
-import Payrolls from "./pages/Payrolls/Pages/PayrollPage";
-import NewPayroll_SelectTeacher from "@/pages/Payrolls/Pages/NewPayroll_SelectTeacher";
-import NewPayroll_FillPayroll from "./pages/Payrolls/Pages/NewPayroll_FillPayroll";
-import NewPayroll_PayrollDetails from "./pages/Payrolls/Pages/NewPayroll_PayrollDetails";
+import Payrolls from "./pages/Payrolls//Pages/PayrollPage";
+import Invoices from "./pages/Invoices/InvoicesPage";
 import Registration from "./pages/Registration/matriculacion";
 import ReservaCupo from "./pages/Registration/reservarCupo";
 import Formulario from "./pages/Registration/formulario"; // este solo redirige al formulario externo
@@ -41,36 +39,21 @@ export const routes = [
     url: "/payrolls",
     component: Payrolls,
     showInMenu: true,
-    subpages: [
-      {
-        title: "Roles de Pago",
-        url: "/payrolls",
-        component: Payrolls,
-      },
-      {
-        title: "Seleccionar Profesores",
-        url: "/payrolls/selectTeacher",
-        component: NewPayroll_SelectTeacher,
-      },
-      {
-        title: "Llenar Rol de Pago",
-        url: "/payrolls/fillPayroll",
-        component: NewPayroll_FillPayroll,
-      },
-      {
-        title: "Detalles del Rol de Pago",
-        url: "/payrolls/payrollDetails",
-        component: NewPayroll_PayrollDetails,
-      },
-    ],
-    allowedOUs: ["/GestionAcademica", "/Management", "/Development"],
+    allowedOUs: ["/Gestion Academica", "/Management", "/Development", "/System Manager"],
+  },
+  {
+    title: "Facturación",
+    url: "/invoices",
+    component: Invoices,
+    showInMenu: true,
+    allowedOUs: ["/Gestion Academica", "/Management", "/Development", "/System Manager"],
   },
   {
     title: "Matriculación",
     url: "/matriculacion",
     component: Registration,
     showInMenu: true,
-    allowedOUs: ["/Alumnos", "/Inscritos", "/Pendiente", "/Development"],
+    allowedOUs: ["/Alumnos", "/Inscritos", "/Pendiente", "/Development", "/System Manager"],
   },
   {
     title: "Reserva Cupo",
@@ -89,6 +72,6 @@ export const routes = [
     url: "/reporte",
     component: DashboardMatricula,
     showInMenu: true,
-    allowedOUs: ["/GestionAcademica", "/Management", "/Development"],
+    allowedOUs: ["/Gestion Academica", "/Management", "/Development", "/System Manager"],
   },
 ];

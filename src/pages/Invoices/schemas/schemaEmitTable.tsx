@@ -1,44 +1,48 @@
 const schema = {
-    sheetName: 'Invoices',
     fields: [
         {
             title: '👤 Nombre del estudiante',
             dataIndex: "studentName",
             key: "studentName",
             align: "center",
+            sorter: true,
+            render: (studentName: string) => (
+                <span className="font-medium">{studentName}</span>
+            ),
         },
         {
             title: '📱 Teléfono representante',
             dataIndex: 'representativePhone',
             key: 'representativePhone',
             align: "center",
-            type: 'text',
-            rules: [{ required: true, message: 'Por favor ingrese el teléfono' }]
+            render: (representativePhone: string) => (
+                <span className="font-medium">{representativePhone || 'N/A'}</span>
+            ),
         },
         {
             title: '📧 Correo representante',
             dataIndex: 'representativeEmail',
             key: 'representativeEmail',
-            type: 'text',
             align: "center",
-            rules: [
-                { required: true, message: 'Por favor ingrese el correo' },
-                { type: 'email', message: 'Por favor ingrese un correo válido' }
-            ]
+            sorter: true,
+            render: (representativeEmail: string) => (
+                <span className="font-medium">{representativeEmail || 'N/A'}</span>
+            ),
         },
         {
             title: '🆔 Identificación representante',
             dataIndex: 'representativeId',
             key: 'representativeId',
             align: "center",
-            type: 'text',
-            rules: [{ required: true, message: 'Por favor ingrese la identificación' }]
+            render: (representativeId: string) => (
+                <span className="font-medium">{representativeId || 'N/A'}</span>
+            ),
         }
     ],
     filterSchema: {
         studentName: {
             type: 'text',
-            placeholder: 'Buscar por nombre...'
+            placeholder: 'Buscar por nombre estudiante...'
         },
         representativeEmail: {
             type: 'text',

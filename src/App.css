@@ -86,7 +86,7 @@ nav {
 /* Content adjusts based on sidebar */
 .content {
   flex-grow: 1;
-  padding: 20px;
+  padding: 0px;
   margin-left: 250px; /* Same as the sidebar width */
   overflow-x: auto;
 }

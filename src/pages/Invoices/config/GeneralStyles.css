@@ -1,0 +1,239 @@
+.custom-button:hover {
+  background-color: #5a2e6b !important;
+  color: white !important;
+}
+
+.custom-button-added {
+  background-color: #eadbf0 !important;
+  color: #4b4b4b !important;
+}
+
+.custom-button-addedV:hover {
+  background-color: #d1b8dc !important;
+  color: #4b4b4b !important;
+}
+
+/* Estilos para resaltar la factura recién creada */
+.highlighted-row {
+  background-color: #EADBF0 !important;   /* Pale Purple */
+  border-left: 4px solid #5A2E6B !important; /* Purple */
+  animation: highlightFade 2s ease-in-out;
+}
+
+@keyframes highlightFade {
+  0% { background-color: #f8f0fa; }
+  50% { background-color: #EADBF0; }
+  100% { background-color: #EADBF0; }
+}
+
+/* Asegurar que el resaltado funcione en tablas de Ant Design */
+.ant-table-tbody > tr.highlighted-row > td {
+  background-color: #EADBF0 !important;
+  /*border-left: 4px solid #5A2E6B !important;*/
+}
+
+/* Estilos para el los tabs de Invoices Page */
+
+/* Contenedor principal de tabs */
+.custom-tabs-container .ant-tabs-nav {
+  background: linear-gradient(135deg, #EADBF0 0%, #E6FEFF 100%);
+  border-radius: 12px 12px 0 0;
+  padding: 0px 0px 0 1px;
+  margin-bottom: 0;
+  box-shadow: 0 2px 8px rgba(90, 46, 107, 0.1);
+}
+
+/* Tabs individuales - Aumentar especificidad */
+.custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+  background: rgba(255, 255, 255, 0.2) !important;
+  /*border: 2px solid transparent;*/
+  /*border-radius: 8px 8px 0 0;*/
+  margin-right: 0px !important;
+  padding: 12px 24px !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  color: #5A2E6B !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover state para tabs - Aumentar especificidad */
+.custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab:hover {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #01969C !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(90, 46, 107, 0.15) !important;
+}
+
+/* Tab activo - Aumentar especificidad significativamente */
+.custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #01969C !important;
+  /*box-shadow: 0 4px 16px rgba(90, 46, 107, 0.3)*/;
+  transform: translateY(-2px) !important;
+}
+
+/* Forzar el color del texto del tab activo */
+.custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #01969C !important;
+}
+
+/* Hover en tab activo */
+.custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active:hover {
+  background: rgba(255, 255, 255, 1) !important;
+  color: #01969C !important;
+}
+
+.custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active:hover .ant-tabs-tab-btn {
+  color: #01969C !important;
+}
+
+/* Contenido de los tabs */
+.custom-tabs-container .ant-tabs-content-holder {
+  background: #F5F5F5;
+  /*border-radius: 0 0 12px 12px;*/
+  padding: 24px;
+  /*box-shadow: 0 4px 16px rgba(90, 46, 107, 0.08);*/
+  /*border: 1px solid #EADBF0;*/  
+}
+
+/* Animación de transición entre tabs */
+.custom-tabs-container .ant-tabs-tabpane {
+  animation: tabFadeIn 0.4s ease-in-out;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px) !important;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .custom-tabs-container .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+  }
+  
+  .custom-tabs-container .ant-tabs-nav {
+    padding: 4px 4px 0 4px;
+  }
+}
+
+
+/* Toast de Éxito (Success) */
+.group[data-variant="success"] {
+  background: linear-gradient(135deg, #EADBF0 0%, #f8f0fa 100%) !important;
+  border: 2px solid #5A2E6B !important;
+  color: #2d1b36 !important;
+  box-shadow: 0 8px 25px rgba(90, 46, 107, 0.15) !important;
+}
+
+.group[data-variant="success"] .text-sm {
+  color: #2d1b36 !important;
+}
+
+.group[data-variant="success"] .text-sm.font-semibold {
+  color: #5A2E6B !important;
+}
+
+/* Toast de Error */
+.group[data-variant="destructive"] {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%) !important;
+  border: 2px solid #dc2626 !important;
+  color: #991b1b !important;
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.15) !important;
+}
+
+.group[data-variant="destructive"] .text-sm {
+  color: #991b1b !important;
+}
+
+.group[data-variant="destructive"] .text-sm.font-semibold {
+  color: #dc2626 !important;
+}
+
+/* Toast Informativo */
+.group[data-variant="info"] {
+  background: linear-gradient(135deg, #E6FEFF 0%, #f0fdfd 100%) !important;
+  border: 2px solid #01969C !important;
+  color: #0f4c4e !important;
+  box-shadow: 0 8px 25px rgba(1, 150, 156, 0.15) !important;
+}
+
+.group[data-variant="info"] .text-sm {
+  color: #0f4c4e !important;
+}
+
+.group[data-variant="info"] .text-sm.font-semibold {
+  color: #01969C !important;
+}
+
+/* Toast de Advertencia */
+.group[data-variant="warning"] {
+  background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%) !important;
+  border: 2px solid #CE6596 !important;
+  color: #92400e !important;
+  box-shadow: 0 8px 25px rgba(206, 101, 150, 0.15) !important;
+}
+
+.group[data-variant="warning"] .text-sm {
+  color: #92400e !important;
+}
+
+.group[data-variant="warning"] .text-sm.font-semibold {
+  color: #CE6596 !important;
+}
+
+.group {
+  border-radius: 12px !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.group:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1) !important;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.group[data-state="open"] {
+  animation: toastSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.group .absolute.right-2.top-2 {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 50% !important;
+  transition: all 0.2s ease !important;
+}
+
+.group .absolute.right-2.top-2:hover {
+  background: rgba(255, 255, 255, 1) !important;
+  transform: scale(1.1) !important;
+}
+
+@media (max-width: 768px) {
+  .group {
+    margin: 8px !important;
+    border-radius: 8px !important;
+  }
+  
+  .group .text-sm {
+    font-size: 13px !important;
+  }
+}

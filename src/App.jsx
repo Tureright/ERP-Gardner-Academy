@@ -10,12 +10,13 @@ import { useAuth } from "./context/AuthContext";
 import { Navbar } from "./components/Navbar";
 import LoginButton from "./components/LoginButton";
 import Unauthorized from "./pages/Unauthorized";
-import Invoices from "./pages/Invoices/invoicesPage";
+import Invoices from "./pages/Invoices/InvoicesPage";
 import Payrolls from "./pages/Payrolls/Pages/PayrollPage";
 import Registration from "./pages/Registration/matriculacion";
 import Formulario from "./pages/Registration/formulario";
 import ReservarCupo from "./pages/Registration/reservarCupo";
 import DashboardMatricula from "./pages/Report/registrationReport";
+import { Toaster } from "@/components/ui/toaster";
 
 import "./App.css";
 import NewPayroll_SelectTeacher from "./pages/Payrolls/Pages/NewPayroll_SelectTeacher";
@@ -65,19 +66,11 @@ function AppRoutes() {
   const showNavbar = !hideNavbarRoutes.includes(location.pathname);
 
   function getAllowedModules(ouPath) {
-    const allModules = [
-      "home",
-      "settings",
-      "dropdown",
-      "invoices",
-      "payrolls",
-      "registration",
-      "report",
-    ];
-    const registrationOUs = ["/Alumnos", "/Inscritos", "/Pendiente"];
-    const gestionAcademicaOUs = ["/GestionAcademica", "/Management"];
-    const docentesOU = "/Docentes";
-    const developmentOUs = ["/Development", "/PruebasDev"];
+    const allModules = ["home", "settings", "dropdown", "invoices", "payrolls", "registration", "report"];
+    const registrationOUs = ["/Alumnos", "/Inscritos", "/Pendiente", "/System Manager"];
+    const gestionAcademicaOUs = ["/Gestion Academica", "/Management", "/System Manager"];
+    const docentesOU = ["/Docentes", "/System Manager"];
+    const developmentOUs = ["/Development", "/PruebasDev", "/System Manager"];
 
     if (developmentOUs.includes(ouPath)) {
       return allModules;
@@ -115,10 +108,10 @@ function AppRoutes() {
   const allowedModules = getAllowedModules(userData.ouPath);
 
   let defaultRoute = "/home";
-  if (allowedModules.includes("invoices")) defaultRoute = "/invoices";
-  else if (allowedModules.includes("payrolls")) defaultRoute = "/payrolls";
-  else if (allowedModules.includes("registration"))
-    defaultRoute = "/matriculacion";
+  
+  if (allowedModules.includes("payrolls")) defaultRoute = "/payrolls";
+  else if (allowedModules.includes("invoices")) defaultRoute = "/invoices";
+  else if (allowedModules.includes("registration")) defaultRoute = "/matriculacion";
 
   return (
     <div className="app-container">
@@ -176,6 +169,7 @@ function App() {
   return (
     <Router>
       <AppRoutes />
+      <Toaster />
     </Router>
   );
 }

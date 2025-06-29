@@ -1,16 +1,22 @@
-import { useState, useEffect } from "react";
-import { Button, Table, Space } from "antd";
-import schema from "../schemas/schemaEmitTable";
+import { useState, useMemo } from "react";
+import { Table } from "antd";
+import PropTypes from 'prop-types';
 import MonthSelector from "./MonthSelector";
 import InvoiceForm from "./InvoiceForm";
+import schema from "../schemas/schemaEmitTable";
+import Filters from "./Filters";
+import useStudentsRepresentatives from "../hooks/useStudentsRepresentatives";
+import { getTableColumns } from "../config/tableConfig";
+import { getFilteredData } from "../utils/filterUtils";
+import { useFilters } from "../hooks/useFilters";
 
-const EmitTab = () => {
-  const [loading, setLoading] = useState(false);
-  const [studentsRepresentatives, setStudentsRepresentatives] = useState([]);
+const EmitTab = ({ onInvoiceCreated }) => {
+  const { isLoading, studentsRepresentatives, handleTableChange } = useStudentsRepresentatives();
   const [isMonthSelectorOpen, setIsMonthSelectorOpen] = useState(false);
   const [isInvoiceFormOpen, setIsInvoiceFormOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
+  const { filters, handleFilterChange, clearFilters } = useFilters();
 
   const handleGenerateInvoice = (record) => {
     setSelectedRecord(record);
@@ -29,69 +35,58 @@ const EmitTab = () => {
     setSelectedMonth(null);
   };
 
-  const getStudentsRepresentatives = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbzBX-pRQ432e9EWNHIMRK4Z12yKR_sAWjHhilL46kcCkVp1J-z-NuB6QQpDPkj_O0yKgw/exec?path=getRepStudents"
-      );
-      const data = await response.json();
-      setStudentsRepresentatives(data.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error al obtener representantes de estudiantes:", error);
+  const handleInvoiceCreated = (result) => {
+    setIsInvoiceFormOpen(false);
+    setSelectedRecord(null);
+    setSelectedMonth(null);
+        
+    if (onInvoiceCreated) {
+      onInvoiceCreated(result);
     }
   };
-  useEffect(() => {
-    getStudentsRepresentatives();
-  }, []);
-  /*
-  const handleGenerateInvoice = async (record) => {
-    try {
-      setLoading(true);
-      console.log(record);
-      // Manejar la respuesta
-    } catch (error) {
-      console.error("Error al generar factura:", error);
-    } finally {
-      setLoading(false);
-    }
-  };*/
 
-  // Columnas para la tabla de estudiantes y representantes
-  const columns = [
-    ...schema.fields,
-    {
-      title: "Acción",
-      key: "action",
-      align: "center",
-      render: (_, record) => (
-        <Space size="middle">
-          <Button
-            type="primary"
-            onClick={() => handleGenerateInvoice(record)}
-            loading={loading}
-          >
-            Generar Factura
-          </Button>
-        </Space>
-      ),
-    },
-  ];
+  const filteredData = useMemo(() => {
+    return getFilteredData(
+      studentsRepresentatives,
+      filters,
+      schema.filterSchema
+    );
+  }, [studentsRepresentatives, filters]);
+
+  const columns = getTableColumns(handleGenerateInvoice, isLoading);
+
   return (
-    <div className="p-4">
+    <div className="space-y-4">
+      <div className="flex">
+        <h2 className="text-xl font-semibold text-gray-800 mt-3 mb-3">
+          Emitir Facturas
+        </h2>
+      </div>
+      {/* Filtros */}
+      {schema.filterSchema && (
+        <Filters
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onClearFilters={clearFilters}
+          filterSchema={schema.filterSchema}
+        />
+      )}
+
       <Table
         columns={columns}
-        dataSource={studentsRepresentatives}
-        loading={loading}
-        rowKey="studentId"
-        className="w-full"
+        dataSource={filteredData}
+        loading={isLoading}
+        rowKey={(record) => `${record.representativeId}-${record.studentName}`}
+        className="border border-gray-200 rounded-lg w-full"
+        bordered
+        onChange={handleTableChange}
       />
 
       <MonthSelector
         isOpen={isMonthSelectorOpen}
         onClose={() => setIsMonthSelectorOpen(false)}
         onSelectMonth={handleMonthSelect}
+        record={selectedRecord}
       />
 
       {selectedRecord && selectedMonth && (
@@ -100,10 +95,15 @@ const EmitTab = () => {
           onClose={handleCloseInvoiceForm}
           data={selectedRecord}
           selectedMonth={selectedMonth}
+          onInvoiceCreated={handleInvoiceCreated}
         />
       )}
     </div>
   );
+};
+
+EmitTab.propTypes = {
+  onInvoiceCreated: PropTypes.func,
 };
 
 export default EmitTab;
