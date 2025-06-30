@@ -2,12 +2,16 @@ import Settings from "./pages/Settings";
 import Home from "./pages/Home/page";
 import Budgeting from "./pages/Budgeting/page";
 import Dropdowns from "./pages/Dropdowns/page";
-import Payrolls from "./pages/Payrolls//Pages/PayrollPage";
+
+import Payrolls from "./pages/Payrolls/Pages/PayrollPage";
 import Invoices from "./pages/Invoices/InvoicesPage";
 import Registration from "./pages/Registration/matriculacion";
 import ReservaCupo from "./pages/Registration/reservarCupo";
-import Formulario from "./pages/Registration/formulario"; // este solo redirige al formulario externo
+import Formulario from "./pages/Registration/formulario";
 import DashboardMatricula from "./pages/Report/registrationReport";
+
+import CalendarManager from "./pages/Calendar/Pages/CalendarManager";
+import TeachersMain from "./pages/Teachers/Pages/TeachersMain";
 
 export const routes = [
   {
@@ -33,6 +37,7 @@ export const routes = [
     url: "/settings",
     component: Settings,
     showInMenu: false,
+    allowedOUs: ["/System Manager"],
   },
   {
     title: "Roles de Pago",
@@ -57,13 +62,13 @@ export const routes = [
   },
   {
     title: "Reserva Cupo",
-    url: "/reserva",
+    url: "/matriculacion/reserva",
     component: ReservaCupo,
     showInMenu: false,
   },
   {
     title: "Formulario Matrícula",
-    url: "/formulario",
+    url: "/matriculacion/formulario",
     component: Formulario,
     showInMenu: false,
   },
@@ -73,5 +78,19 @@ export const routes = [
     component: DashboardMatricula,
     showInMenu: true,
     allowedOUs: ["/Gestion Academica", "/Management", "/Development", "/System Manager"],
+  },
+  {
+    title: "Calendarios",
+    url: "/calendar",
+    component: CalendarManager,
+    showInMenu: true,
+    allowedOUs: ["/Development", "/System Manager"],
+  },
+  {
+    title: "Perfil de Docente",
+    url: "/teachersProfile",
+    component: TeachersMain,
+    showInMenu: true,
+    allowedOUs: ["/Docentes"],
   },
 ];

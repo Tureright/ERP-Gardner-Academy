@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -10,6 +13,7 @@ import { useEmployees } from "@/hooks/useEmployee";
 import Card from "../../atoms/Card/Card";
 import { EmployeeData, EmployeeResponse } from "@/types";
 import Button from "@/components/molecules/Button";
+import SyncEmployees from "@/pages/Calendar/components/atoms/SyncEmployees/SyncEmployees";
 
 type Props = {
   title: string;
@@ -31,6 +35,7 @@ export default function CardPager({
   if (error) return <p>Error cargando empleados.</p>;
 
   const filteredEmployees = data?.data.filter((employee: EmployeeResponse) => {
+    if (employee.suspended) return false;
     const fullName = `${employee.firstName} ${employee.lastName}`;
     return fullName.toLowerCase().includes(searchTerm.toLowerCase());
   });
@@ -70,6 +75,9 @@ export default function CardPager({
             />
             <SearchIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           </div>
+          <div className="flex items-center justify-end gap-4">
+            <SyncEmployees className="w-full bg-dark-cyan text-white" />
+          </div>
 
           {showAddButton && (
             <Button
@@ -83,7 +91,9 @@ export default function CardPager({
         </div>
 
         {filteredEmployees?.length === 0 ? (
-          <p className="text-center text-gray-500">No se encontraron empleados.</p>
+          <p className="text-center text-gray-500">
+            No se encontraron empleados.
+          </p>
         ) : (
           <Slider {...settings}>
             {filteredEmployees.map((employee: EmployeeResponse) => (

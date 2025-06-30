@@ -12,6 +12,9 @@ import {
   deleteEmployee,
   uploadProfilePicture,
   getProfilePicture,
+  syncNewDocentes,
+  getEmployees13erSueldo,
+  getEmployeeByAdminId,
 } from "../services/employeeService";
 import { EmployeeData, EmployeeResponse } from "../types";
 export function useEmployees() {
@@ -25,6 +28,14 @@ export function useEmployee(employeeId: string) {
     enabled: !!employeeId,
   });
 }
+
+export function useGetEmployeeByAdminId(adminId: string) {
+  return useQuery({
+    queryKey: ["employee", adminId],
+    queryFn: () => getEmployeeByAdminId(adminId),
+    enabled: !!adminId,
+  });
+}
 export function useProfilePicture(employeeId: string) {
   return useQuery({
     queryKey: ["profilePicture", employeeId],
@@ -33,8 +44,16 @@ export function useProfilePicture(employeeId: string) {
   });
 }
 
+export function useGetEmployees13erSueldo() {
+  return useQuery({
+    queryKey: ["employees13er"],
+    queryFn: getEmployees13erSueldo,
+  });
+}
+
 export function useCreateEmployee() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: createEmployee,
     onMutate: async (newEmployee: EmployeeResponse) => {
@@ -42,10 +61,14 @@ export function useCreateEmployee() {
 
       const previousEmployees = queryClient.getQueryData(["employees"]);
 
-      queryClient.setQueryData(["employees"], (old: any) => ({
-        ...old,
-        data: [...(old?.data || []), { id: Date.now(), ...newEmployee }],
-      }));
+      queryClient.setQueryData(["employees"], (old: any) => {
+        const existingData = old?.data || [];
+        return {
+          ...old,
+          data: [...existingData, { id: Date.now(), ...newEmployee }],
+        };
+      });
+
       return { previousEmployees };
     },
     onError: (error, newEmployee, context) => {
@@ -73,14 +96,18 @@ export function useUpdateEmployee() {
 
       const previousEmployees = queryClient.getQueryData(["employees"]);
 
-      queryClient.setQueryData(["employees"], (old: any) => ({
-        ...old,
-        data: old?.data.map((employee: EmployeeResponse) =>
-          employeeId === employee.id
-            ? { ...employee, ...employeeData }
-            : employee
-        ),
-      }));
+      queryClient.setQueryData(["employees"], (old: any) => {
+        const existingData = old?.data || [];
+        return {
+          ...old,
+          data: existingData.map((employee: EmployeeResponse) =>
+            employeeId === employee.id
+              ? { ...employee, ...employeeData }
+              : employee
+          ),
+        };
+      });
+
       return { previousEmployees };
     },
     onError: (error, variables, context) => {
@@ -94,6 +121,7 @@ export function useUpdateEmployee() {
 
 export function useDeleteEmployee() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteEmployee,
     onMutate: async (employeeId) => {
@@ -101,12 +129,15 @@ export function useDeleteEmployee() {
 
       const previousEmployees = queryClient.getQueryData(["employees"]);
 
-      queryClient.setQueryData(["employees"], (old: any) => ({
-        ...old,
-        data: old?.data.filter(
-          (employee: EmployeeResponse) => employee.id !== employeeId
-        ),
-      }));
+      queryClient.setQueryData(["employees"], (old: any) => {
+        const existingData = old?.data || [];
+        return {
+          ...old,
+          data: existingData.filter(
+            (employee: EmployeeResponse) => employee.id !== employeeId
+          ),
+        };
+      });
 
       return { previousEmployees };
     },
@@ -132,6 +163,22 @@ export function useUploadProfilePicture() {
     }) => uploadProfilePicture(employeeId, base64Data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employees"] });
+    },
+  });
+}
+
+export function useSyncNewDocentes() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => syncNewDocentes(),
+    onSuccess: (data) => {
+      console.log("Docentes sincronizados:", data);
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+    },
+    onError: (error) => {
+      console.error("Error al sincronizar docentes:", error);
+      alert("Error al sincronizar docentes.");
     },
   });
 }

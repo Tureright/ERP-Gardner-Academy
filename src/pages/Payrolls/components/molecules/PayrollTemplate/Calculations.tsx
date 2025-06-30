@@ -17,14 +17,16 @@ function Calculations({ title, items }: Props) {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
+      flexWrap: "wrap",
       justifyContent: 'space-between',
       gap: '16px',
       padding: '16px',
       backgroundColor: '#f2f2f2',
       borderRadius: '8px',
       flex: 1,
-      minWidth: '350px',
-      fontSize: '16px'
+      maxWidth: '418px',
+      fontSize: '16px',
+      outline: '2px solid #f2f2f2'
     }}>
       <div>
         <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>{title}</h3>

@@ -4,6 +4,9 @@ export interface PayrollBase {
   deductions: Array<{ description: string; amount: number }> | null;
   payrollDate: string;
   payrollMonth?: string; // Opcional, si no se envía se calcula automáticamente
+  summary?: string;
+  volatile?: boolean;
+  driveId?: string;
 }
 
 // Payload para crear/actualizar

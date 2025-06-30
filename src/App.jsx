@@ -10,20 +10,28 @@ import { useAuth } from "./context/AuthContext";
 import { Navbar } from "./components/Navbar";
 import LoginButton from "./components/LoginButton";
 import Unauthorized from "./pages/Unauthorized";
-import Invoices from "./pages/Invoices/InvoicesPage";
-import Payrolls from "./pages/Payrolls/Pages/PayrollPage";
+import DashboardMatricula from "./pages/Report/registrationReport";
 import Registration from "./pages/Registration/matriculacion";
 import Formulario from "./pages/Registration/formulario";
 import ReservarCupo from "./pages/Registration/reservarCupo";
-import DashboardMatricula from "./pages/Report/registrationReport";
-import { Toaster } from "@/components/ui/toaster";
+import Invoices from "./pages/Invoices/InvoicesPage";
 
-import "./App.css";
+import Payrolls from "./pages/Payrolls/Pages/PayrollPage";
 import NewPayroll_SelectTeacher from "./pages/Payrolls/Pages/NewPayroll_SelectTeacher";
 import NewPayroll_FillPayroll from "./pages/Payrolls/Pages/NewPayroll_FillPayroll";
 import NewPayroll_PayrollDetails from "./pages/Payrolls/Pages/NewPayroll_PayrollDetails";
 
-// 👇 Este componente sí puede usar useLocation porque ya está dentro de <Router>
+import CalendarManager from "./pages/Calendar/Pages/CalendarManager";
+import NewCalendar_Calendar from "./pages/Calendar/Pages/NewCalendar_Calendar";
+import CalendarDetails from "./pages/Calendar/Pages/CalendarDetails";
+
+import TeachersMain from "./pages/Teachers/Pages/TeachersMain";
+import TeachersPayrollDetails from "./pages/Teachers/Pages/TeachersPayrollDetails";
+
+import { Toaster } from "@/components/ui/toaster";
+import "./App.css";
+import CenteredSpinner from "./components/atoms/CenteredSpinner";
+
 function AppRoutes() {
   const { idToken, setIdToken, userData, setUserData } = useAuth();
   const location = useLocation();
@@ -49,6 +57,7 @@ function AppRoutes() {
               nombres: data.nombres,
               apellidos: data.apellidos,
               nivel: data.nivel,
+              adminId: data.adminId,
             });
           } else {
             console.error("Error backend:", data.error);
@@ -61,29 +70,29 @@ function AppRoutes() {
         });
     }
   }, [idToken, userData, setUserData, setIdToken]);
-
   const hideNavbarRoutes = ["/login"];
   const showNavbar = !hideNavbarRoutes.includes(location.pathname);
 
   function getAllowedModules(ouPath) {
-    const allModules = ["home", "settings", "dropdown", "invoices", "payrolls", "registration", "report"];
+    const allModules = [
+      "home",
+      "settings",
+      "dropdown",
+      "invoices",
+      "payrolls",
+      "registration",
+      "report",
+      "calendar"
+    ];
     const registrationOUs = ["/Alumnos", "/Inscritos", "/Pendiente", "/System Manager"];
     const gestionAcademicaOUs = ["/Gestion Academica", "/Management", "/System Manager"];
-    const docentesOU = ["/Docentes", "/System Manager"];
+    const docentesOUs = ["/Docentes", "/System Manager"];
     const developmentOUs = ["/Development", "/PruebasDev", "/System Manager"];
 
-    if (developmentOUs.includes(ouPath)) {
-      return allModules;
-    }
-    if (gestionAcademicaOUs.includes(ouPath)) {
-      return allModules;
-    }
-    if (registrationOUs.includes(ouPath)) {
-      return ["registration"];
-    }
-    if (ouPath === docentesOU) {
-      return ["payrolls"];
-    }
+    if (developmentOUs.includes(ouPath)) return allModules;
+    if (gestionAcademicaOUs.includes(ouPath)) return allModules;
+    if (registrationOUs.includes(ouPath)) return ["registration"];
+    if (docentesOUs.includes(ouPath)) return ["teachersProfile"];
     return [];
   }
 
@@ -98,20 +107,16 @@ function AppRoutes() {
   }
 
   if (!userData) {
-    return (
-      <div className="loading-screen">
-        <p>Cargando datos de usuario...</p>
-      </div>
-    );
+    return (<CenteredSpinner text="Cargando datos de usuario..." />);
   }
 
   const allowedModules = getAllowedModules(userData.ouPath);
 
   let defaultRoute = "/home";
-  
   if (allowedModules.includes("payrolls")) defaultRoute = "/payrolls";
   else if (allowedModules.includes("invoices")) defaultRoute = "/invoices";
   else if (allowedModules.includes("registration")) defaultRoute = "/matriculacion";
+  else if (allowedModules.includes("teachersProfile")) defaultRoute = "/teachersProfile";
 
   return (
     <div className="app-container">
@@ -129,33 +134,35 @@ function AppRoutes() {
           {allowedModules.includes("payrolls") && (
             <>
               <Route path="/payrolls" element={<Payrolls />} />
-              <Route
-                path="/payrolls/selectTeacher"
-                element={<NewPayroll_SelectTeacher />}
-              />
-              <Route
-                path="/payrolls/fillPayroll"
-                element={<NewPayroll_FillPayroll />}
-              />
-              <Route
-                path="/payrolls/payrollDetails"
-                element={<NewPayroll_PayrollDetails />}
-              />
+              <Route path="/payrolls/selectTeacher" element={<NewPayroll_SelectTeacher />} />
+              <Route path="/payrolls/fillPayroll" element={<NewPayroll_FillPayroll />} />
+              <Route path="/payrolls/payrollDetails" element={<NewPayroll_PayrollDetails />} />
+            </>
+          )}
+          {allowedModules.includes("calendar") && (
+            <>
+              <Route path="/calendar" element={<CalendarManager />} />
+              <Route path="/calendar/addCalendar" element={<NewCalendar_Calendar />} />
+              <Route path="/calendar/CalendarDetails" element={<CalendarDetails />} />
+            </>
+          )}
+          {allowedModules.includes("teachersProfile") && (
+            <>
+              <Route path="/teachersProfile" element={<TeachersMain />} />
+              <Route path="/teachersProfile/payrollDetails" element={<TeachersPayrollDetails />} />
+            </>
+          )}
+          {allowedModules.includes("registration") && (
+            <>
+              <Route path="/matriculacion" element={<Registration />} />
+              <Route path="/matriculacion/formulario" element={<Formulario />} />
+              <Route path="/matriculacion/reserva" element={<ReservarCupo />} />
             </>
           )}
           {allowedModules.includes("report") && (
             <Route path="/reporte" element={<DashboardMatricula />} />
           )}
-          {allowedModules.includes("registration") && (
-            <>
-              <Route path="/matriculacion" element={<Registration />} />
-              <Route
-                path="/matriculacion/formulario"
-                element={<Formulario />}
-              />
-              <Route path="/matriculacion/reserva" element={<ReservarCupo />} />
-            </>
-          )}
+
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="*" element={<Navigate to={defaultRoute} replace />} />
         </Routes>
@@ -164,7 +171,6 @@ function AppRoutes() {
   );
 }
 
-// 👇 Este es el componente principal que monta <Router>
 function App() {
   return (
     <Router>

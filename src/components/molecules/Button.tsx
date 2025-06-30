@@ -19,9 +19,14 @@ export default function Button({
 }: Props) {
   // Detecta si ya se incluyó una clase de fondo (bg-...)
   const hasBgClass = /\bbg-[\w-]+\b/.test(className);
-  const finalClassName = `h-[50px] px-4 py-2 rounded-md font-semibold transition hover:bg-purple-primary hover:text-white flex items-center justify-center gap-2 ${
-    hasBgClass ? "" : "bg-purple-light"
-  } ${className} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`;
+  const hasHovertextClass = /\bhover:text-[\w-]+\b/.test(className);
+  const hasHoverBgClass = /\bhover:bg-[\w-]+\b/.test(className);
+  const finalClassName = `h-[50px] px-4 py-2 rounded-md font-semibold transition  flex items-center justify-center gap-2 
+  ${hasBgClass ? "" : " bg-purple-light "} 
+  ${className} ${disabled ? " opacity-50 cursor-not-allowed " : ""} 
+  ${hasHovertextClass ? "" : " hover:text-white "}
+  ${hasHoverBgClass ? "" : " hover:bg-purple-primary "}
+  `;
 
   return (
     <button onClick={onClick} className={finalClassName} disabled={disabled}>

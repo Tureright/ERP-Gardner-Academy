@@ -31,8 +31,8 @@ export default function PayrollTemplateHeader({ payrollFullTemplate }: Props) {
           <p style={{ fontSize: '24px' }}>{mathUtils.formatMonthYear(localDate)}</p>
         </div>
         <img
-          src="/logo.png"
-          alt="Logo"
+          src="https://cdigardnermini.edu.ec/img/header/centro-infantil-gardner-mini-academy-quito-valle-de-los-chillos.png"
+          alt="Gardner Mini Academy Logo"
           style={{
             width: '150px',
             height: 'auto',

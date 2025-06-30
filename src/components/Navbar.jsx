@@ -19,7 +19,7 @@ export const Navbar = () => {
         {routes
           .filter((route) => {
             if (!route.showInMenu) return false;
-            if (!route.allowedOUs) return true; // público
+            if (!route.allowedOUs) return true;
             return userData && route.allowedOUs.includes(userData.ouPath);
           })
           .map((route) => (
