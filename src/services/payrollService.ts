@@ -1,3 +1,4 @@
+import { PayrollFullTemplate } from "@/types";
 import { handleResponse } from "@/utils/api";
 const API_URL =
   "https://script.google.com/macros/s/AKfycbxDBOfSUnhWKrcvVYN6WpJTEjBOHXfXYC_1wY91u2mufHPrV8FdAJKgf2lJF7rueA-K/exec"; // Reemplaza con la URL de tu API
@@ -22,9 +23,22 @@ export async function getAllPayrollsByEmployee(employeeId: string) {
   return handleResponse(res);
 }
 
+export async function getPayrollsByAdmin(adminId: string) {
+  const res = await fetch(
+    `${API_URL}?action=getPayrollsByAdmin&adminId=${adminId}`
+  );
+  return handleResponse(res);
+}
+
 export async function getLatestPayroll(employeeId: string) {
   const res = await fetch(
     `${API_URL}?action=getLatestPayroll&employeeId=${employeeId}`
+  );
+  return handleResponse(res);
+}
+export async function downloadPayroll(employeeId: string, payrollId: string) {
+  const res = await fetch(
+    `${API_URL}?action=downloadPayroll&employeeId=${employeeId}&payrollId=${payrollId}`
   );
   return handleResponse(res);
 }
@@ -67,6 +81,17 @@ export async function deletePayroll(employeeId: string, payrollId: string) {
       action: "deletePayroll",
       employeeId,
       payrollId,
+    })
+  );
+  return handleResponse(res);
+}
+
+export async function setPayrollTemplate(newPayroll: PayrollFullTemplate) {
+  const res = await fetch(
+    API_URL,
+    defaultPostOptions({
+      action: "setPayrollTemplate",
+      newPayroll,
     })
   );
   return handleResponse(res);

@@ -3,6 +3,10 @@ export interface PayrollBase {
   earnings: Array<{ description: string; amount: number }>;
   deductions: Array<{ description: string; amount: number }> | null;
   payrollDate: string;
+  payrollMonth?: string; // Opcional, si no se envía se calcula automáticamente
+  summary?: string;
+  volatile?: boolean;
+  driveId?: string;
 }
 
 // Payload para crear/actualizar
@@ -20,5 +24,4 @@ export interface PayrollFullTemplate extends PayrollResponse {
   nationalId: string;
   birthDate: string;
   jobPosition: string;
-  payrollMonth: string;
 }

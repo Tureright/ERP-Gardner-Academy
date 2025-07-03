@@ -1,12 +1,13 @@
 import { useMemo } from "react";
-import { useEmitFilter } from "../hooks/useEmitFilter";
+import PropTypes from "prop-types";
+import { useFilters } from "../hooks/useFilters";
 import { Table, Button } from "antd";
 import { getFilteredData } from "../utils/filterUtils";
 import schema from "../schemas/schemaViewTable";
-import ItemFilters from "./ItemFilters";
+import Filters from "./Filters";
 import useEmittedInvoices from "../hooks/useEmittedInvoices";
 import { customButtonStyle } from "../config/constants";
-import '../config/GeneralStyles.css';
+import "../config/GeneralStyles.css";
 //import { exportToExcel } from "../utils/exportToExcel";
 import { useExportToExcel } from "../utils/exportToExcel";
 
@@ -15,16 +16,25 @@ const cleanColumns = schema.fields.map(({ title, dataIndex }) => ({
   dataIndex,
 }));
 
-const ViewTab = () => {
-  const { filters, handleFilterChange, clearFilters } = useEmitFilter();
+const ViewTab = ({ highlightInvoiceId }) => {
+  const { filters, handleFilterChange, clearFilters } = useFilters();
   const { emittedInvoices, isLoading, pagination, handleTableChange } =
-    useEmittedInvoices();
+    useEmittedInvoices(highlightInvoiceId);
 
   const filteredData = useMemo(() => {
     return getFilteredData(emittedInvoices, filters, schema.filterSchema);
   }, [emittedInvoices, filters]);
-  const {isLoadingURL, fecthXLSXUrl} = useExportToExcel();
+  const { isLoadingURL, fecthXLSXUrl } = useExportToExcel();
 
+  const getRowClassName = (record) => {
+    if (
+      highlightInvoiceId &&
+      (record.id === highlightInvoiceId || record.numero === highlightInvoiceId)
+    ) {
+      return "highlighted-row";
+    }
+    return "";
+  };
 
   const tablePagination = {
     current: pagination.page,
@@ -43,17 +53,23 @@ const ViewTab = () => {
         <Button
           type="primary"
           loading={isLoading || isLoadingURL}
-          style={{...customButtonStyle}}
+          style={{ ...customButtonStyle }}
           className="border-none custom-button font-semibold"
-          onClick={() => {fecthXLSXUrl(filteredData,cleanColumns)}}
+          onClick={() => {
+            fecthXLSXUrl(filteredData, cleanColumns);
+          }}
         >
-          {isLoadingURL? 'Exportando...': isLoading ? 'Generar Reporte':'Generar Reporte'}
+          {isLoadingURL
+            ? "Exportando..."
+            : isLoading
+            ? "Generar Reporte"
+            : "Generar Reporte"}
         </Button>
       </div>
 
       {/* Filtros */}
       {schema.filterSchema && (
-        <ItemFilters
+        <Filters
           filters={filters}
           onFilterChange={handleFilterChange}
           onClearFilters={clearFilters}
@@ -66,12 +82,18 @@ const ViewTab = () => {
         dataSource={filteredData}
         loading={isLoading}
         rowKey={(record) => record.numero}
-        className="w-full"
+        className="border border-gray-200 rounded-lg w-full"
         pagination={tablePagination}
         onChange={handleTableChange}
+        rowClassName={getRowClassName}
+        bordered
       />
     </div>
   );
+};
+
+ViewTab.propTypes = {
+  highlightInvoiceId: PropTypes.string,
 };
 
 export default ViewTab;

@@ -1,20 +1,21 @@
 import { Table, Space, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import PropTypes from "prop-types";
 import schema from "../schemas/schemaItemTable";
-import ItemFilters from "./ItemFilters";
+import Filters from "./Filters";
 import ItemEditModal from "./ItemEditModal";
 import { getFilteredData } from "../utils/filterUtils";
 import { useItems } from "@/hooks/useItems";
 import { useMemo, useState, useCallback } from "react";
-import { useEmitFilter } from "../hooks/useEmitFilter";
+import { useFilters } from "../hooks/useFilters";
 import { customButtonStyle } from "../config/constants";
-import '../config/GeneralStyles.css';
+import "../config/GeneralStyles.css";
 
-const ItemTab = () => {
-  const { items, isLoading } = useItems();
-  const { filters, handleFilterChange, clearFilters } = useEmitFilter();
+const ItemTab = ({ onItemCreated, highlightItemId }) => {
+  const { items, isLoading, handleTableChange } = useItems();
+  const { filters, handleFilterChange, clearFilters } = useFilters();
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState(null); // 'create' o 'edit'
+  const [modalMode, setModalMode] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
 
   const handleCreateItem = useCallback(() => {
@@ -35,11 +36,30 @@ const ItemTab = () => {
     setSelectedItem(null);
   }, []);
 
+  const handleItemCreated = useCallback(
+    (result) => {
+      setModalOpen(false);
+      setModalMode(null);
+      setSelectedItem(null)
+
+      if (onItemCreated) {
+        onItemCreated(result);
+      }
+    },
+    [onItemCreated]
+  );
+
   const filteredData = useMemo(() => {
     return getFilteredData(items, filters, schema.filterSchema);
   }, [items, filters]);
 
-  // Columna para editar el item
+  const getRowClassName = (record) => {
+    if (highlightItemId && record.id == highlightItemId) {
+      return "highlighted-row";
+    }
+    return "";
+  };
+
   const columns = [
     ...schema.fields,
     {
@@ -82,7 +102,7 @@ const ItemTab = () => {
 
       {/* Filtros */}
       {schema.filterSchema && (
-        <ItemFilters
+        <Filters
           filters={filters}
           onFilterChange={handleFilterChange}
           onClearFilters={clearFilters}
@@ -96,7 +116,10 @@ const ItemTab = () => {
         dataSource={filteredData}
         loading={isLoading}
         rowKey="id"
-        className="w-full"
+        className="border border-gray-200 rounded-lg w-full"
+        rowClassName={getRowClassName}
+        bordered
+        onChange={handleTableChange}
       />
 
       {/* Modal */}
@@ -105,9 +128,15 @@ const ItemTab = () => {
         onClose={handleCloseModal}
         initialValues={selectedItem}
         mode={modalMode}
+        onItemCreated={handleItemCreated}
       />
     </div>
   );
+};
+
+ItemTab.propTypes = {
+  onItemCreated: PropTypes.func,
+  highlightItemId: PropTypes.string,
 };
 
 export default ItemTab;

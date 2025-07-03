@@ -11,35 +11,50 @@ type Props = {
 };
 
 function Calculations({ title, items }: Props) {
+  const total = items.reduce((acc, item) => acc + item.amount, 0);
+
   return (
-    <div className="flex flex-col justify-between gap-4 p-4 bg-gray-100 rounded-lg flex-1 min-w-[350px] text-base">
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      flexWrap: "wrap",
+      justifyContent: 'space-between',
+      gap: '16px',
+      padding: '16px',
+      backgroundColor: '#f2f2f2',
+      borderRadius: '8px',
+      flex: 1,
+      maxWidth: '418px',
+      fontSize: '16px',
+      outline: '2px solid #f2f2f2'
+    }}>
       <div>
-        <h3 className="text-xl mb-3">{title}</h3>
-        <ul className="flex flex-col gap-2">
+        <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>{title}</h3>
+        <ul style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {items.map((item, index) => (
             <li key={index}>
-              <div className="flex items-center justify-between gap-2">
-                <p className="flex-1 text-left ">{item.description}</p>
-                <p className="text-center w-4 font-semibold">$</p>
-                <p className="text-right w-16 text-gray-500">{item.amount.toFixed(2)}</p>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '8px'
+              }}>
+                <p style={{ flex: 1, textAlign: 'left' }}>{item.description}</p>
+                <p style={{ width: '16px', textAlign: 'center', fontWeight: 'bold' }}>$</p>
+                <p style={{ width: '64px', textAlign: 'right', color: '#666' }}>
+                  {item.amount.toFixed(2)}
+                </p>
               </div>
             </li>
           ))}
         </ul>
       </div>
-      <div>
-        <hr className="border-t border-black my-4" />
 
-        <div className="flex flex-row">
-          <p className="font-semibold flex-grow">Total {title}</p>
-          <p className="font-semibold">
-            $
-            {items
-              .reduce((acc, item) => {
-                return acc + item.amount;
-              }, 0)
-              .toFixed(2)}
-          </p>
+      <div>
+        <hr style={{ borderTop: '1px solid black', margin: '16px 0' }} />
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <p style={{ fontWeight: 'bold', flexGrow: 1 }}>Total {title}</p>
+          <p style={{ fontWeight: 'bold' }}>${total.toFixed(2)}</p>
         </div>
       </div>
     </div>

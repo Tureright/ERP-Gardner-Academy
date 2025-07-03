@@ -18,11 +18,22 @@ export async function getEmployeeById(employeeId: string) {
   );
   return handleResponse(res);
 }
+export async function getEmployeeByAdminId(adminId: string) {
+  const res = await fetch(
+    `${API_URL_EMP}?action=getEmployeeByAdminId&adminId=${adminId}`
+  );
+  return handleResponse(res);
+}
 
 export async function getProfilePicture(employeeId: string) {
   const res = await fetch(
     `${API_URL_EMP}?action=getProfilePicture&employeeId=${employeeId}`
   );
+  return handleResponse(res);
+}
+
+export async function getEmployees13erSueldo() {
+  const res = await fetch(`${API_URL_EMP}?action=getEmployees13erSueldo`);
   return handleResponse(res);
 }
 
@@ -65,6 +76,16 @@ export async function uploadProfilePicture(
       action: "setProfilePicture",
       employeeId,
       base64Data,
+    })
+  );
+  return handleResponse(res);
+}
+// --- NUEVA FUNCIÓN DE SINCRONIZACIÓN ---
+export async function syncNewDocentes() {
+  const res = await fetch(
+    API_URL_EMP,
+    defaultPostOpts({
+      action: "syncNewDocentes",
     })
   );
   return handleResponse(res);

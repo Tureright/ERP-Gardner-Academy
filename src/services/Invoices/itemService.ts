@@ -26,7 +26,7 @@ export const itemService = {
       }
       return data.data;
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching item:",error);
       throw error;
     }
   },
@@ -41,33 +41,27 @@ export const itemService = {
         }
       );
       const result = await response.json();
-      if (result.errorResponse) {
-        throw new Error(result.errorResponse.message);
-      }
+
       return result;
     } catch (error) {
-      console.log(error);
-      throw error;
+      console.error("Error creating item:",error);
     }
   },
 
   async updateItem(id: string, itemData) {
     try {
       const response = await fetch(
-        `https://script.google.com/macros/s/AKfycbx2odZBM133mu7Fafoe6A0D6M1EIpwZg5vL_wJNDe9MBHapRQGldtEzlQVgBs3I3MPHmA/exec?path=updateItem&method=PATCH&idItem=${id}`,
+        `${API_ENDPOINTS.UPDATE_ITEM}&idItem=${id}`,
         {
           method: "POST",
           body: JSON.stringify(itemData),
         }
       );
       const result = await response.json();
-      if (result.errorResponse) {
-        throw new Error(result.errorResponse.message);
-      }
+console.log("result desde EP update item:", result)
       return result;
     } catch (error) {
-      console.log(error);
-      throw error;
+      console.error("Error updating item:",error);
     }
   },
 };

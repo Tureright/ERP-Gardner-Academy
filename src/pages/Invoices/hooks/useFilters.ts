@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-export const useEmitFilter = () => {
+export const useFilters = () => {
   const [filters, setFilters] = useState({});
 
   const clearFilters = useCallback(() => {
@@ -21,4 +21,4 @@ export const useEmitFilter = () => {
   };
 };
 
-export default useEmitFilter;
+export default useFilters;

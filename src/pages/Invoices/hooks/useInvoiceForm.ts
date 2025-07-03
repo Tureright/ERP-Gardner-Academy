@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { useForm } from "antd/lib/form/Form";
 import { getInvoiceTableColumns } from "../config/invoiceTableConfig";
-import { TAX_RATES, TAX_CODES, DEFAULT_VALUES } from "../config/constants";
+import {
+  TAX_RATES,
+  TAX_CODES,
+  DEFAULT_VALUES,
+  API_ENDPOINTS,
+} from "../config/constants";
 
 export const useInvoiceForm = (initialData, selectedMonth) => {
   const [form] = useForm();
@@ -99,7 +104,8 @@ export const useInvoiceForm = (initialData, selectedMonth) => {
       newTotals.subtotalSinImpuestos +
       newTotals.iva15 +
       newTotals.ice +
-      newTotals.propina - newTotals.totalDescuento;
+      newTotals.propina -
+      newTotals.totalDescuento;
     setPaymentInfo({ otros: newTotals.valorTotal, plazo: 0 });
     return newTotals;
   };
@@ -151,7 +157,7 @@ export const useInvoiceForm = (initialData, selectedMonth) => {
           descuento: row.descuento,
           precioTotal: (
             row.cantidad * item.precioUnitario -
-            (row.descuento / 100) * item.precioUnitario
+            row.descuento
           ).toFixed(2),
         };
         newData.splice(index, 1, updatedItem);
@@ -192,13 +198,13 @@ export const useInvoiceForm = (initialData, selectedMonth) => {
     try {
       setLoading(true);
       const response = await fetch(
-        `https://script.google.com/macros/s/AKfycbzCYtgpGctnf2R61bMpy_mmrLTn6v0MjKTa0zgGMfzOij8kt882E_VHreWmy6XHpCvA2w/exec?path=getItem&itemCode=M001`
+        `${API_ENDPOINTS.GET_ITEM}&itemCode=${itemCode}`
       );
       const result = await response.json();
 
       if (result.success && result.data) {
         const itemData = result.data;
-        console.log("itemData",itemData);
+        console.log("itemData asociado al estudiante", itemData);
         const newItem = {
           id: itemData.id,
           codigoPrincipal: itemData.codigo_principal,
@@ -214,7 +220,7 @@ export const useInvoiceForm = (initialData, selectedMonth) => {
           descuento: initialData.discount || DEFAULT_VALUES.INITIAL_DISCOUNT,
           precioTotal:
             itemData.precio_unitario -
-            ((initialData.discount / 100) * itemData.precio_unitario || DEFAULT_VALUES.INITIAL_DISCOUNT), //!!Cambiar proximamente a solo la resta del precio con el descuento
+            (initialData?.discount || DEFAULT_VALUES.INITIAL_DISCOUNT), //!!Cambiar proximamente a solo la resta del precio con el descuento
           codigoIva: itemData.codigo_iva,
           codigoIce: itemData.codigo_ice,
           tarifaIva: itemData.tarifa_iva,
@@ -223,7 +229,6 @@ export const useInvoiceForm = (initialData, selectedMonth) => {
             lote: itemData.comportamiento.lote,
             fecha_caducidad: itemData.comportamiento.fecha_caducidad,
           },
-
         };
         setItems([newItem]);
       } else {

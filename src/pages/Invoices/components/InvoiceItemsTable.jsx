@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import EditableCell from "./EditableCellVF";
 
 const InvoiceItemsTable = ({ items, loading, mergedColumns }) => {
-  // Configurar los componentes de la tabla con EditableCell
+
   const tableComponents = {
     body: {
       cell: (props) => <EditableCell {...props} />,

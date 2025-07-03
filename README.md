@@ -1,3 +1,3 @@
-# CRUD app using React and Google Apps sCript
+# ERP Web App Gardner Academy school
 
 

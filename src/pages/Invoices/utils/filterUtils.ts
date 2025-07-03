@@ -1,15 +1,15 @@
 export const getFilteredData = (items, filters, filterSchema) => {
   const data = items.data;
-  console.log("data items:", data)
+  console.log("data items:", data);
   const filteredData = items.filter((record) => {
     return Object.entries(filters).every(([field, value]) => {
       if (!value) return true;
 
       const filterConfig = filterSchema[field];
-      
+
       // Función para obtener el valor de una propiedad anidada
       const getNestedValue = (obj: any, path: string) => {
-        return path.split('.').reduce((current, key) => current?.[key], obj);
+        return path.split(".").reduce((current, key) => current?.[key], obj);
       };
 
       // Obtener el valor del campo, manejando propiedades anidadas
@@ -17,7 +17,7 @@ export const getFilteredData = (items, filters, filterSchema) => {
 
       switch (filterConfig.type) {
         case "text":
-          return typeof recordValue === 'string' 
+          return typeof recordValue === "string"
             ? recordValue.toLowerCase().includes(value.toLowerCase())
             : false;
         case "select":
