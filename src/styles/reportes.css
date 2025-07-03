@@ -1,0 +1,10 @@
+.select-export-columns {
+  min-width: 250px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.select-dropdown {
+  max-height: 300px;
+  overflow: auto;
+}
