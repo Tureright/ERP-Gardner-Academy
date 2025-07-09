@@ -37,6 +37,20 @@ export async function getEmployees13erSueldo() {
   return handleResponse(res);
 }
 
+export async function get13erSueldoByEmployeeId(employeeId: string) {
+  const res = await fetch(
+    `${API_URL_EMP}?action=get13erSueldoByEmployeeId&employeeId=${employeeId}`
+  );
+  return handleResponse(res);
+}
+
+export async function getMonthsFor14Sueldo(employeeId: string) {
+  const res = await fetch(
+    `${API_URL_EMP}?action=getMonthsFor14Sueldo&employeeId=${employeeId}`
+  );
+  return handleResponse(res);
+}
+
 // --- DO POST ---
 export async function createEmployee(employeeData: any) {
   const res = await fetch(

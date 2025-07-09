@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import PayrollTemplate from "../components/molecules/PayrollTemplate/PayrollTemplate";
 import { PayrollFullTemplate } from "@/types";
 import Button from "@/components/molecules/Button";
 import { useLocation, useNavigate } from "react-router-dom";
+import MoreInfo from "@/components/atoms/MoreInfo";
 import { Download, Trash, Undo } from "lucide-react";
 import {
   useDeletePayroll,
@@ -14,43 +15,39 @@ type LocationState = {
   fullPayrollData: PayrollFullTemplate;
 };
 
-type Props = {};
-
-export default function NewPayroll_PayrollDetails({}: Props) {
-  // const { state } = useLocation();
-  // const { fullPayrollData } = state as LocationState;
+export default function NewPayroll_PayrollDetails() {
   const location = useLocation();
   const state = location.state as LocationState | null;
   const fullPayrollData = state?.fullPayrollData;
 
   const navigate = useNavigate();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+
+  const deletePayroll = useDeletePayroll();
+  const { data, isLoading } = useDownloadPayroll(
+    fullPayrollData?.employeeId,
+    fullPayrollData?.id
+  );
+
   useEffect(() => {
     if (!fullPayrollData) {
       navigate("/payrolls", { replace: true });
     }
   }, [fullPayrollData, navigate]);
+
   if (!fullPayrollData) {
     return null;
   }
-  const [loading, setLoading] = useState(false);
-  const deletePayroll = useDeletePayroll();
-
-  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
-  const { data, isLoading } = useDownloadPayroll(
-    fullPayrollData?.employeeId,
-    fullPayrollData?.id
-  );
-  const { mutate: generatePDF, isPending: isGenerating } =
-    useSetPayrollTemplate();
 
   return (
-    <div className="max-w-screen-xl mx-auto flex flex-col space-y-8 px-4">
+    <div className="max-w-screen-xl mx-auto flex flex-col space-y-8 p-4">
       <div>
         <Button
           icon={<Undo size={20} />}
           variant="icon"
           onClick={() => navigate("/payrolls")}
-          className="mb-2 "
+          className="mb-2"
         />
       </div>
 
@@ -59,28 +56,24 @@ export default function NewPayroll_PayrollDetails({}: Props) {
           Detalles del Rol de Pagos
         </h1>
       </header>
+
       <section className="bg-white p-6 rounded-lg shadow-md space-y-2 w-fit mx-auto">
         <div className="flex flex-row text-center justify-end text-gray-500 mt-4 gap-2">
-          <Button
-            text={
-              isLoading || loading
-                ? "Generando PDF..."
-                : "Descargar Rol de Pagos"
-            }
-            icon={<Download />}
-            variant="icon"
-            disabled={isLoading || !data?.data?.downloadUrl}
-            onClick={() => {
-              console.log(data?.data?.downloadUrl);
-              if (!data?.data?.downloadUrl) return;
-              setLoading(true);
-              setTimeout(() => {
-                window.open(data.data.downloadUrl, "_blank");
-                setLoading(false);
-              }, 200);
-            }}
-            className="bg-dark-cyan text-white"
-          />
+          <div className="flex flex-row justify-center items-center gap-2">
+            <MoreInfo message="Mientras carga el enlace de descarga, puedes encontrar el PDF en tu carpeta de Drive" />
+            <Button
+              icon={<Download />}
+              variant="text-icon"
+              disabled={isLoading}
+              onClick={() => {
+                if (!data?.data?.downloadUrl) return;
+                setTimeout(() => {
+                  window.open(data.data.downloadUrl, "_blank");
+                }, 200);
+              }}
+              className="bg-dark-cyan text-white"
+            />
+          </div>
 
           <Button
             text="Eliminar Rol de Pagos"
@@ -95,6 +88,8 @@ export default function NewPayroll_PayrollDetails({}: Props) {
 
         <PayrollTemplate payrollFullTemplate={fullPayrollData} />
       </section>
+
+      {/* Modal de confirmación de eliminación */}
       {showConfirmDeleteModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-md">
@@ -113,6 +108,8 @@ export default function NewPayroll_PayrollDetails({}: Props) {
                 text="Eliminar"
                 variant="text"
                 onClick={() => {
+                  setShowConfirmDeleteModal(false)
+                  setIsDeleting(true); // Inicia la animación de carga
                   deletePayroll.mutate(
                     {
                       employeeId: fullPayrollData.employeeId,
@@ -121,14 +118,13 @@ export default function NewPayroll_PayrollDetails({}: Props) {
                     {
                       onSuccess: () => {
                         console.log("Rol de pagos eliminado exitosamente");
+                        setIsDeleting(false);
                         navigate("/payrolls");
                       },
                       onError: (error) => {
-                        console.error(
-                          "Error al eliminar el rol de pagos:",
-                          error
-                        );
+                        console.error("Error al eliminar el rol de pagos:", error);
                         alert("Ocurrió un error al eliminar el rol de pagos.");
+                        setIsDeleting(false);
                       },
                     }
                   );
@@ -136,6 +132,35 @@ export default function NewPayroll_PayrollDetails({}: Props) {
                 className="bg-dark-cyan text-white"
               />
             </div>
+          </div>
+        </div>
+      )}
+      {isDeleting && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg flex items-center space-x-4">
+            <svg
+              className="animate-spin h-5 w-5 text-dark-cyan"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 11-8 8z"
+              />
+            </svg>
+            <span className="text-dark-cyan font-medium">
+              Eliminando rol de pagos...
+            </span>
           </div>
         </div>
       )}

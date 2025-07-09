@@ -6,24 +6,20 @@ import Button from "@/components/molecules/Button";
 import { EmployeeResponse } from "@/types";
 import { Undo } from "lucide-react";
 
-export default function NewPayroll_SelectTeacher() {
-  const navigate = useNavigate();
-  const [selectedTeacher, setSelectedTeacher] =
-    useState<EmployeeResponse | null>(null);
-  
-  const steps = [
-    "Selección de Profesor",
-    "Completar Rol de Pagos",
-    "Detalles de Rol de Pagos",
-  ];
+type Props = {}
 
-  const handleContinue = () => {
-    if (!selectedTeacher) return;
-    navigate("/payrolls/fillPayroll", { state: { teacher: selectedTeacher } });
-  };
+export default function SelectTeacherDetails({}: Props) {
 
+      const navigate = useNavigate();
+      const [selectedTeacher, setSelectedTeacher] =
+        useState<EmployeeResponse | null>(null);
+      const handleContinue = () => {
+        if (!selectedTeacher) return;
+        navigate("/payrolls/teachersDetails", { state: { teacher: selectedTeacher } });
+      };
+    
   return (
-    <div className="max-w-7xl mx-auto flex flex-col space-y-8 p-4">
+        <div className="max-w-7xl mx-auto flex flex-col space-y-8 p-4">
       <div>
         <Button
           icon={<Undo size={20} />}
@@ -34,8 +30,7 @@ export default function NewPayroll_SelectTeacher() {
       </div>
 
       <header className="space-y-4">
-        <h1 className="text-[2.5rem] mb-4 ">Nuevo rol de pagos</h1>
-        <ProgressBreadcrumb steps={steps} currentStep={0} />
+        <h1 className="text-[2.5rem] mb-4 ">Profesores</h1>
       </header>
 
       <CardPager
@@ -53,5 +48,5 @@ export default function NewPayroll_SelectTeacher() {
         onClick={handleContinue}
       />
     </div>
-  );
+  )
 }

@@ -15,6 +15,8 @@ import {
   syncNewDocentes,
   getEmployees13erSueldo,
   getEmployeeByAdminId,
+  get13erSueldoByEmployeeId,
+  getMonthsFor14Sueldo,
 } from "../services/employeeService";
 import { EmployeeData, EmployeeResponse } from "../types";
 export function useEmployees() {
@@ -48,6 +50,22 @@ export function useGetEmployees13erSueldo() {
   return useQuery({
     queryKey: ["employees13er"],
     queryFn: getEmployees13erSueldo,
+  });
+}
+
+export function useGet13erSueldoByEmployeeId(employeeId: string) {
+  return useQuery({
+    queryKey: ["employees13er", employeeId],
+    queryFn: () => get13erSueldoByEmployeeId(employeeId),
+    enabled: !!employeeId,
+  });
+}
+
+export function useGetMonthsFor14Sueldo(employeeId: string) {
+  return useQuery({
+    queryKey: ["employees14to", employeeId],
+    queryFn: () => getMonthsFor14Sueldo(employeeId),
+    enabled: !!employeeId,
   });
 }
 

@@ -42,6 +42,12 @@ export async function downloadPayroll(employeeId: string, payrollId: string) {
   );
   return handleResponse(res);
 }
+export async function payrollExists(employeeId: string, payrollMonth: string) {
+  const res = await fetch(
+    `${API_URL}?action=payrollExists&employeeId=${employeeId}&payrollMonth=${payrollMonth}`
+  );
+  return handleResponse(res);
+}
 
 // --- DO POST ---
 const defaultPostOptions = (body: any): RequestInit => ({

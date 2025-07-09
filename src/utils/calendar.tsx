@@ -1,5 +1,4 @@
 import { RecurringEventResponse } from "@/types";
-
 export const formatToCalendarDateTime = (input: string): string => {
   const date = new Date(input);
   const offset = -5; // Ecuador

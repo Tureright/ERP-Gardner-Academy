@@ -4,7 +4,6 @@ import { Eye, SearchIcon, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDeletePayroll } from "@/hooks/usePayroll";
 import Button from "@/components/molecules/Button";
-import SyncEmployees from "@/pages/Calendar/components/atoms/SyncEmployees/SyncEmployees";
 
 type Props = {
   payrolls?: PayrollFullTemplate[];
@@ -28,28 +27,17 @@ function Table({ payrolls = [] }: Props) {
     if (!query) return payrolls;
 
     return payrolls.filter((payroll) => {
-      const fullText =
-        `${payroll.firstName} ${payroll.lastName} ${payroll.payrollMonth}`.toLowerCase();
+      const fullText = `${payroll.firstName} ${payroll.lastName} ${payroll.payrollMonth} ${payroll.type ?? "Mensual"}`.toLowerCase();
       return fullText.includes(query);
     });
   }, [payrolls, searchQuery]);
 
   const totalPages = Math.ceil(filteredPayrolls.length / pageSize);
-
   const startIndex = (currentPage - 1) * pageSize;
-  const currentPayrolls = filteredPayrolls.slice(
-    startIndex,
-    startIndex + pageSize
-  );
+  const currentPayrolls = filteredPayrolls.slice(startIndex, startIndex + pageSize);
 
-  const handlePrevious = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
-
-  const handleNext = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  };
-
+  const handlePrevious = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNext = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     setCurrentPage(1);
@@ -78,11 +66,11 @@ function Table({ payrolls = [] }: Props) {
 
   return (
     <div className="flex flex-col w-full space-y-4">
-      <div className="flex flex-row flex-wrap gap-4  justify-between">
+      <div className="flex flex-row flex-wrap gap-4 justify-between">
         <div className="relative w-full max-w-md">
           <input
             type="text"
-            placeholder="Buscar rol de pagos por nombre o mes..."
+            placeholder="Buscar rol de pagos por nombre, mes o tipo..."
             value={searchQuery}
             onChange={handleSearchChange}
             className="w-full p-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -97,37 +85,30 @@ function Table({ payrolls = [] }: Props) {
           <thead>
             <tr className="bg-gray-200 text-left">
               <th className="p-3 text-sm font-semibold">Rol de Pagos</th>
-              <th className="p-3 text-sm font-semibold w-20 text-center">
-                Editar
-              </th>
-              <th className="p-3 text-sm font-semibold w-20 text-center">
-                Eliminar
-              </th>
+              <th className="p-3 text-sm font-semibold w-20 text-center">Tipo</th>
+              <th className="p-3 text-sm font-semibold w-20 text-center">Editar</th>
+              <th className="p-3 text-sm font-semibold w-20 text-center">Eliminar</th>
             </tr>
           </thead>
           <tbody>
             {currentPayrolls.map((payroll) => (
-              <tr
-                key={payroll.id}
-                className="border-t border-gray-300 hover:bg-gray-50"
-              >
+              <tr key={payroll.id} className="border-t border-gray-300 hover:bg-gray-50">
                 <td className="p-3 text-sm">
                   <div className="flex flex-row justify-between">
-                    <span>
-                      {payroll.firstName} {payroll.lastName}
-                    </span>
-                    <span className="text-gray-500">
-                      {payroll.payrollMonth}
-                    </span>
+                    <span className="pr-2">{payroll.firstName} {payroll.lastName}</span>
+                    <span className="text-gray-500">{payroll.payrollMonth}</span>
                   </div>
+                </td>
+                <td className="p-3 text-sm text-center capitalize">
+                  {payroll.type ?? "Mensual"}
                 </td>
                 <td className="p-3 text-center">
                   <button
-                    onClick={() => {
+                    onClick={() =>
                       navigate("/payrolls/payrollDetails", {
                         state: { fullPayrollData: payroll },
-                      });
-                    }}
+                      })
+                    }
                     className="text-pink-tertiary hover:text-dark-cyan transition-colors"
                     aria-label={`Ver rol de pago de ${payroll.firstName} ${payroll.lastName}`}
                   >
@@ -141,7 +122,7 @@ function Table({ payrolls = [] }: Props) {
                       setShowConfirmDeleteModal(true);
                     }}
                     className="text-pink-tertiary hover:text-dark-cyan transition-colors"
-                    aria-label={`Ver rol de pago de ${payroll.firstName} ${payroll.lastName}`}
+                    aria-label={`Eliminar rol de pago de ${payroll.firstName} ${payroll.lastName}`}
                   >
                     <Trash size={20} />
                   </button>
@@ -150,7 +131,7 @@ function Table({ payrolls = [] }: Props) {
             ))}
             {currentPayrolls.length === 0 && (
               <tr>
-                <td colSpan={2} className="p-3 text-center text-gray-500">
+                <td colSpan={4} className="p-3 text-center text-gray-500">
                   No hay roles de pago para mostrar.
                 </td>
               </tr>
@@ -189,7 +170,8 @@ function Table({ payrolls = [] }: Props) {
           </button>
         </div>
       )}
-      {/* Modal de confirmación de eliminación */}
+
+      {/* Modal confirmación eliminación */}
       {showConfirmDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg space-y-4">
@@ -197,8 +179,8 @@ function Table({ payrolls = [] }: Props) {
               ¿Estás seguro de que quieres eliminar este rol de pagos?
             </h2>
             <p>
-              {payrollToDelete.firstName} {payrollToDelete.lastName} -{" "}
-              {payrollToDelete.payrollMonth}
+              {payrollToDelete?.firstName} {payrollToDelete?.lastName} -{" "}
+              {payrollToDelete?.payrollMonth}
             </p>
             <div className="flex justify-end space-x-2">
               <Button
@@ -221,6 +203,7 @@ function Table({ payrolls = [] }: Props) {
         </div>
       )}
 
+      {/* Indicador de carga al eliminar */}
       {isDeleting && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg flex items-center space-x-4">

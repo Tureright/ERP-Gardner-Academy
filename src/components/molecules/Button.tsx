@@ -21,7 +21,7 @@ export default function Button({
   const hasBgClass = /\bbg-[\w-]+\b/.test(className);
   const hasHovertextClass = /\bhover:text-[\w-]+\b/.test(className);
   const hasHoverBgClass = /\bhover:bg-[\w-]+\b/.test(className);
-  const finalClassName = `h-[50px] px-4 py-2 rounded-md font-semibold transition  flex items-center justify-center gap-2 
+  const finalClassName = `h-[50px] px-4 py-2 rounded-md font-semibold transition flex items-center justify-center gap-2 group 
   ${hasBgClass ? "" : " bg-purple-light "} 
   ${className} ${disabled ? " opacity-50 cursor-not-allowed " : ""} 
   ${hasHovertextClass ? "" : " hover:text-white "}
@@ -35,3 +35,4 @@ export default function Button({
     </button>
   );
 }
+

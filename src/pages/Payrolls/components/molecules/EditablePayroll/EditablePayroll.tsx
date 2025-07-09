@@ -1,13 +1,16 @@
-// EditablePayroll.tsx
 import { useEffect, useState } from "react";
 import { EmployeeResponse, PayrollData } from "@/types";
 import { useLatestPayroll } from "@/hooks/usePayroll";
+import { useGet13erSueldoByEmployeeId } from "@/hooks/useEmployee";
 import EditableCalculations from "./EditableCalculations";
-import { mathUtils } from "@/utils/math";
 import EditableDates from "./EditableDates";
+import { mathUtils } from "@/utils/math";
+import CenteredSpinner from "@/components/atoms/CenteredSpinner";
 
 type Props = {
   teacher: EmployeeResponse;
+  editableType?: string;
+  total14?: number;
   onChange: (data: {
     earnings: PayrollData["earnings"];
     deductions: PayrollData["deductions"];
@@ -22,40 +25,77 @@ type Props = {
 const SPECIAL_EARNINGS = ["Sueldo", "Fondo de reserva"];
 const SPECIAL_DEDUCTIONS = ["Aporte personal"];
 
-export default function EditablePayroll({ teacher, onChange }: Props) {
-  const { data, isLoading } = useLatestPayroll(teacher.id);
-
+export default function EditablePayroll({
+  teacher,
+  editableType = "Mensual",
+  total14 = 0,
+  onChange,
+}: Props) {
+  const [isLoadingInitialData, setIsLoadingInitialData] = useState(true);
   const [mesAnio, setMesAnio] = useState(new Date());
   const [fechaPago, setFechaPago] = useState(new Date());
   const [jobPosition, setJobPosition] = useState<string>("");
-  const [nationalId, setNationalId] = useState<string>("");
+  const [nationalId, setNationalId] = useState<string>(
+    teacher.nationalId || ""
+  );
 
-  const [earnings, setEarnings] = useState<Array<{ description: string; amount: number }>>([]);
-  const [deductions, setDeductions] = useState<Array<{ description: string; amount: number }>>([]);
+  const [earnings, setEarnings] = useState<
+    Array<{ description: string; amount: number }>
+  >([]);
+  const [deductions, setDeductions] = useState<
+    Array<{ description: string; amount: number }>
+  >([]);
 
-  // Cargar y construir datos iniciales
+  const { data: latestPayroll, isLoading: isLoadingLatest } = useLatestPayroll(
+    teacher.id
+  );
+  const { data: data13er, isLoading: isLoading13er } =
+    useGet13erSueldoByEmployeeId(teacher.id);
+  // Cargar datos iniciales (según editableType)
   useEffect(() => {
-    if (!data) return;
+    if (editableType === "Decimotercer") {
+      const value = Object.values(data13er?.data || {})
+        .filter((v) => typeof v === "number")
+        .reduce((sum, num) => sum + num, 0);
+      setEarnings([
+        { description: "Decimotercer remuneración", amount: value },
+      ]);
+      setDeductions([]);
+      setJobPosition(latestPayroll?.data?.jobPosition || "Profesor titular");
+      setIsLoadingInitialData(false);
+      return;
+    }
+    if (editableType === "Decimocuarto") {
+      setEarnings([
+        { description: "Decimocuarta remuneración", amount: total14 },
+      ]);
+      setDeductions([]);
+      setJobPosition("Profesor titular");
+      setIsLoadingInitialData(false);
+      return;
+    }
 
-    const rawE = data.data.earnings || [];
-    const rawD = data.data.deductions || [];
+    if (!latestPayroll) return;
 
-    // Extraer valores especiales
+    const rawE = latestPayroll.data.earnings || [];
+    const rawD = latestPayroll.data.deductions || [];
+
     const rawSalary = rawE.find((it) => it.description === "Sueldo")?.amount;
     const hasFR = rawE.some((it) => it.description === "Fondo de reserva");
     const hasAP = rawD.some((it) => it.description === "Aporte personal");
 
-    // Determinar Sueldo
     let salary = rawSalary;
     if (salary === undefined && (hasFR || hasAP)) {
       salary = 460.0;
     }
 
-    // Base ordinary items (omit specials)
-    const baseEarnings = rawE.filter((it) => !SPECIAL_EARNINGS.includes(it.description));
-    const baseDeductions = rawD.filter((it) => !SPECIAL_DEDUCTIONS.includes(it.description));
+    const baseEarnings = rawE.filter(
+      (it) => !SPECIAL_EARNINGS.includes(it.description)
+    );
+    const baseDeductions = rawD.filter(
+      (it) => !SPECIAL_DEDUCTIONS.includes(it.description)
+    );
 
-    // Construir especiales
     const builtEarnings = [...baseEarnings];
     if (salary !== undefined) {
       builtEarnings.unshift({ description: "Sueldo", amount: salary });
@@ -77,12 +117,15 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
 
     setEarnings(builtEarnings);
     setDeductions(builtDeductions);
-    setJobPosition(data.data.jobPosition || "Profesor titular");
-    setNationalId(teacher.nationalId || "");
-  }, [data, teacher.nationalId]);
+    setJobPosition(latestPayroll.data.jobPosition || "Profesor titular");
+    setIsLoadingInitialData(false); // ⬅️ Listo
+  }, [editableType, latestPayroll, data13er]);
 
-  const totalEntregado = mathUtils.sumAmounts(earnings) - mathUtils.sumAmounts(deductions);
-  const summary = `Yo, ${teacher.firstName} ${teacher.lastName}, con la cédula de identidad N.° ${nationalId}, declaro haber recibido a conformidad la cantidad de ${mathUtils.numberToMoneyWords(
+  const totalEntregado =
+    mathUtils.sumAmounts(earnings) - mathUtils.sumAmounts(deductions);
+  const summary = `Yo, ${teacher.firstName} ${
+    teacher.lastName
+  }, con la cédula de identidad N.° ${nationalId}, declaro haber recibido a conformidad la cantidad de ${mathUtils.numberToMoneyWords(
     totalEntregado.toFixed(2)
   )}.`;
 
@@ -96,50 +139,96 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
       payrollDate: fechaPago,
       summary,
     });
-  }, [earnings, deductions, jobPosition, nationalId, mesAnio, fechaPago, summary, onChange]);
+  }, [
+    earnings,
+    deductions,
+    jobPosition,
+    nationalId,
+    mesAnio,
+    fechaPago,
+    summary,
+    onChange,
+  ]);
 
+  // Recalcular valores ligados al sueldo (solo si no es decimotercer)
   useEffect(() => {
-  const sueldoItem = earnings.find((e) => e.description === "Sueldo");
+    if (editableType === "Decimotercer") return;
 
-  if (!sueldoItem) return;
+    const sueldoItem = earnings.find((e) => e.description === "Sueldo");
+    if (!sueldoItem) return;
 
-  const updatedEarnings = earnings.map((item) => {
-    if (item.description === "Fondo de reserva") {
-      return {
-        ...item,
-        amount: parseFloat((sueldoItem.amount * 0.0833).toFixed(2)),
-      };
-    }
-    return item;
-  });
+    const updatedEarnings = earnings.map((item) =>
+      item.description === "Fondo de reserva"
+        ? {
+            ...item,
+            amount: parseFloat((sueldoItem.amount * 0.0833).toFixed(2)),
+          }
+        : item
+    );
 
-  const updatedDeductions = deductions.map((item) => {
-    if (item.description === "Aporte personal") {
-      return {
-        ...item,
-        amount: parseFloat((sueldoItem.amount * 0.0945).toFixed(2)),
-      };
-    }
-    return item;
-  });
+    const updatedDeductions = deductions.map((item) =>
+      item.description === "Aporte personal"
+        ? {
+            ...item,
+            amount: parseFloat((sueldoItem.amount * 0.0945).toFixed(2)),
+          }
+        : item
+    );
 
-  // Solo actualiza si hubo cambios reales
-  const frChanged = JSON.stringify(updatedEarnings) !== JSON.stringify(earnings);
-  const apChanged = JSON.stringify(updatedDeductions) !== JSON.stringify(deductions);
+    if (JSON.stringify(updatedEarnings) !== JSON.stringify(earnings))
+      setEarnings(updatedEarnings);
+    if (JSON.stringify(updatedDeductions) !== JSON.stringify(deductions))
+      setDeductions(updatedDeductions);
+  }, [earnings, deductions, editableType]);
 
-  if (frChanged) setEarnings(updatedEarnings);
-  if (apChanged) setDeductions(updatedDeductions);
-}, [earnings]);
+  if (
+    (editableType === "Decimotercer" && isLoading13er) ||
+    (!editableType && isLoadingLatest)
+  ) {
+    return <div>Cargando datos del rol de pagos...</div>;
+  }
 
-  if (isLoading) return <div>Cargando datos del rol de pagos...</div>;
+  const disableEdit = editableType === "Decimotercer";
 
   const specialConfig = {
-    "Sueldo": { lockDescription: true, lockAmount: false },
+    Sueldo: { lockDescription: true, lockAmount: false },
     "Fondo de reserva": { lockDescription: true, lockAmount: true },
   };
   const deductionConfig = {
     "Aporte personal": { lockDescription: true, lockAmount: true },
   };
+
+  if (isLoadingInitialData) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center space-x-3 text-gray-800 text-base font-medium pointer-events-none bg-white p-8">
+          <svg
+            className="animate-spin h-6 w-6 text-purple-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v2l3-3-3-3v2a10 10 0 100 20v-2l-3 3 3 3v-2a8 8 0 01-8-8z"
+            />
+          </svg>
+          <span className="text-purple-800">
+            Cargando datos del rol de pagos...
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 border border-black p-6 bg-gray-50">
@@ -174,6 +263,7 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
               className="border px-2 py-1 rounded"
               value={nationalId}
               onChange={(e) => setNationalId(e.target.value)}
+              disabled={disableEdit}
             />
           </div>
 
@@ -187,6 +277,7 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
               className="border px-2 py-1 rounded"
               value={jobPosition}
               onChange={(e) => setJobPosition(e.target.value)}
+              disabled={disableEdit}
             />
           </div>
         </div>
@@ -222,13 +313,7 @@ export default function EditablePayroll({ teacher, onChange }: Props) {
       </div>
 
       <div className="p-4">
-        <p>
-          {`Yo, ${teacher.firstName} ${teacher.lastName}, con la cédula de identidad N.° ${nationalId}, declaro haber recibido a conformidad la cantidad de `}
-          <span className="font-semibold text-gray-800 italic transition duration-300">
-            {mathUtils.numberToMoneyWords(totalEntregado.toFixed(2))}
-          </span>
-          .
-        </p>
+        <p>{summary}</p>
       </div>
     </div>
   );

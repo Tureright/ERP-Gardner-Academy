@@ -7,6 +7,7 @@ export interface PayrollBase {
   summary?: string;
   volatile?: boolean;
   driveId?: string;
+  type?: string;
 }
 
 // Payload para crear/actualizar

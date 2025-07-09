@@ -20,6 +20,11 @@ import Payrolls from "./pages/Payrolls/Pages/PayrollPage";
 import NewPayroll_SelectTeacher from "./pages/Payrolls/Pages/NewPayroll_SelectTeacher";
 import NewPayroll_FillPayroll from "./pages/Payrolls/Pages/NewPayroll_FillPayroll";
 import NewPayroll_PayrollDetails from "./pages/Payrolls/Pages/NewPayroll_PayrollDetails";
+import TeachersDetails from "./pages/Payrolls/Pages/TeachersDetails";
+import SelectTeacherDetails from "./pages/Payrolls/Pages/SelectTeacher";
+import EditTeacherInfo from "./pages/Payrolls/Pages/EditTeacherInfo";
+import DecimotercerPage from "./pages/Payrolls/Pages/DecimotercerPage";
+import DecimocuartoPage from "./pages/Payrolls/Pages/DecimocuartoPage";
 
 import CalendarManager from "./pages/Calendar/Pages/CalendarManager";
 import NewCalendar_Calendar from "./pages/Calendar/Pages/NewCalendar_Calendar";
@@ -137,6 +142,12 @@ function AppRoutes() {
               <Route path="/payrolls/selectTeacher" element={<NewPayroll_SelectTeacher />} />
               <Route path="/payrolls/fillPayroll" element={<NewPayroll_FillPayroll />} />
               <Route path="/payrolls/payrollDetails" element={<NewPayroll_PayrollDetails />} />
+              <Route path="/payrolls/teachersDetails" element={<TeachersDetails />} />
+              <Route path="/payrolls/selectTeacherDetails" element={<SelectTeacherDetails />} />
+              <Route path="/payrolls/editTeacherInfo" element={<EditTeacherInfo />} />
+              <Route path="/payrolls/decimotercerPage" element={<DecimotercerPage />} />
+              <Route path="/payrolls/decimocuartoPage" element={<DecimocuartoPage />} />
+              
             </>
           )}
           {allowedModules.includes("calendar") && (

@@ -1,4 +1,4 @@
-import { EmployeeResponse, PayrollData, PayrollFullTemplate } from "@/types";
+import { EmployeeResponse, PayrollData, PayrollFullTemplate, workPeriods } from "@/types";
 import { func } from "prop-types";
 
 // utils.tsx
@@ -53,12 +53,12 @@ export const mathUtils = {
     };
   }
 };
-function getCurrentJobPosition(workPeriods: any[]): string {
+export function getCurrentJobPosition(workPeriods: workPeriods[]): string {
   //Si el work period  tiene endDate como "Actualmente trabajando" entonces devuelve el jobPosition si no hay ninguno, entonces devuelve un string vacío
   const currentWorkPeriod = workPeriods.find(
     (period) => period.endDate === "Actualmente trabajando"
   );
-  return currentWorkPeriod ? currentWorkPeriod.jobPosition : "";
+  return currentWorkPeriod ? currentWorkPeriod.jobPosition : "No trabaja";
 
 }
 
@@ -201,4 +201,10 @@ export function convertirMesTextoAISO(fechaTexto) {
 
     const fecha = new Date(Date.UTC(anio, mesNumero, 1));
     return fecha.toISOString();
+}
+
+export function toUTCISOString(dateStr: string): string {
+  const date = new Date(dateStr);
+  const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  return utcDate.toISOString(); // "2024-12-25T00:00:00.000Z"
 }

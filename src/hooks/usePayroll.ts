@@ -10,6 +10,7 @@ import {
   setPayrollTemplate,
   downloadPayroll,
   getPayrollsByAdmin,
+  payrollExists,
 } from "../services/payrollService";
 import { PayrollData, PayrollFullTemplate, PayrollResponse } from "../types";
 
@@ -45,6 +46,14 @@ export function useLatestPayroll(employeeId: string) {
     queryKey: ["latestPayroll", employeeId],
     queryFn: () => getLatestPayroll(employeeId),
     enabled: !!employeeId,
+  });
+}
+
+export function usePayrollExists(employeeId: string, payrollMonth: string) {
+  return useQuery({
+    queryKey: ["payrollExists", employeeId, payrollMonth],
+    queryFn: () => payrollExists(employeeId, payrollMonth),
+    enabled: !!employeeId && !!payrollMonth,
   });
 }
 
@@ -158,8 +167,6 @@ export function useDeletePayroll() {
 }
 
 export function useSetPayrollTemplate() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: ({ newPayroll }: { newPayroll: PayrollFullTemplate }) =>
       setPayrollTemplate(newPayroll),

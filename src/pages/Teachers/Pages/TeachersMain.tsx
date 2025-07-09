@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { mathUtils } from "@/utils/math";
 import TeachersTable from "../components/molecules/TeachersTable";
 import { useAuth } from "@/context/AuthContext";
+import CenteredSpinner from "@/components/atoms/CenteredSpinner";
 type Props = {};
 
 export default function TeachersMain({}: Props) {
@@ -24,7 +25,7 @@ export default function TeachersMain({}: Props) {
   const {data: payrolls, isLoading: payrollsLoading, error: payrollsError,} = useGetPayrollsByAdmin(adminId);
   const {data:employee, isLoading: employeeIsLoading, error: employeeError,} = useGetEmployeeByAdminId(adminId);
 
-  if (payrollsLoading || employeeIsLoading) return <p>Cargando...</p>;
+  if (payrollsLoading || employeeIsLoading) return <CenteredSpinner text="Cargando Roles de Pago" />;
   if (payrollsError || employeeError)
     return <p>Error: {payrollsError?.message || employeeError?.message}</p>;
 

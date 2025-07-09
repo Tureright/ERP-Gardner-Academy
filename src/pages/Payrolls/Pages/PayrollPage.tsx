@@ -6,7 +6,7 @@ import {
 } from "@/hooks/usePayroll";
 import { PayrollResponse, PayrollData, PayrollFullTemplate } from "@/types";
 import Button from "@/components/molecules/Button";
-import { Plus, Users, TriangleAlert } from "lucide-react";
+import { Plus, Users, TriangleAlert, UserSearch, Undo } from "lucide-react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Table from "../components/atoms/Table/Table";
 import { useEmployee, useEmployees } from "@/hooks/useEmployee";
@@ -28,9 +28,9 @@ function PayrollMain() {
   const createPayroll = useCreatePayroll();
   const deletePayroll = useDeletePayroll();
   const navigate = useNavigate();
-  const [numEmployees, setNumEmployees] = useState("");
+ 
 
-  if (isLoading) return (<CenteredSpinner text="Cargando Roles de Pago"/>);
+  if (isLoading) return <CenteredSpinner text="Cargando Roles de Pago" />;
   if (error) return <p>Error: {error.message}</p>;
 
   const payrollFullTemplates = formatToFullTemplate(
@@ -63,72 +63,48 @@ function PayrollMain() {
         </div>
       </div>
       <hr className="border-t-2 border-gray-300 my-4" />
+
       <div className="space-y-4">
-        <div className="flex flex-row items-center gap-2">
-          <h2 className="text-[2rem]">Décimo Tercer Sueldo </h2>
-        </div>
+        <h1 className="text-[2.5rem] mb-4">Profesores</h1>
         <p>
-          Esta sección muestra el valor estimado del Décimo Tercer Sueldo para
-          cada docente que cumple con los requisitos para recibirlo.
+          Consulta toda la información relacionada con los profesores
+          registrados en la nómina de la institución.
         </p>
-        <div>
-          El décimo tercer sueldo se calcula tomando la doceava parte de todos
-          los ingresos registrados desde el{" "}
-          <strong>1 de diciembre de {endDate14to().lastYear}</strong> (año
-          anterior){" "}
-          <strong>
-            hasta el 30 de noviembre de {endDate14to().currentYear}
-          </strong>{" "}
-          (año actual).{" "}
-          <MoreInfo message="No se tomarán ingresos externos, como el Fondo de Reserva." />
-        </div>
-
-        <p>
-          <strong>Fecha límite de pago:</strong> 24 de diciembre de{" "}
-          {endDate14to().currentYear}.
-        </p>
-
-        <Table13er />
-      </div>
-              <hr className="border-t-2 border-gray-300 my-4" />
-      <div className="space-y-4">
-        <div className="flex flex-row items-center gap-2">
-          <h2 className="text-[2rem]">Décimo Cuarto Sueldo </h2>
-        </div>
-        <p>
-          Calcula aquí el valor aproximado del Décimo Cuarto Sueldo para los
-          docentes registrados. Este monto se basa en el{" "}
-          <strong>Sueldo Básico Unificado (SBU)</strong> vigente en Ecuador
-          hasta la fecha de pago.
-        </p>
-        <p>
-          <strong>Fecha límite de pago:</strong> 15 de agosto de{" "}
-          {endDate14to().currentYear}.
-        </p>
-        <div className="space-x-1">
-          <strong>Docentes registrados:</strong> {numEmployees}.
-          <MoreInfo message="Docentes registrados en Workspace para recibir un Rol de Pagos" />
-        </div>
-        <div className="flex items-start gap-4 bg-yellow-50 border border-yellow-500 rounded-2xl p-4 text-gray-700">
-          <div className="w-10 h-10 flex items-center justify-center">
-            <TriangleAlert className="text-yellow-600 w-6 h-6" />
-          </div>
-          <p>
-            Este es un valor aproximado, teniendo en cuenta que todos los
-            docentes asalariados han trabajado durante todo el año estipulado
-            para el régimen sierra:{" "}
-            <strong>
-              1 de agosto de {endDate14to().lastYear} al 31 de julio de{" "}
-              {endDate14to().currentYear}
-            </strong>
-            .
-          </p>
-        </div>
-
-        <Table14to
-          onNumEmployees={(numEmployees) => setNumEmployees(numEmployees)}
+        <Button
+          text="Perfiles de Profesores"
+          icon={<UserSearch size={20} strokeWidth={2} />}
+          variant="text-icon"
+          onClick={() => navigate("/payrolls/selectTeacherDetails")}
+          aria-label="Lleva a la pantalla de selección de profesor"
+          className="w-full"
         />
+        <Button
+          text="Decimotercer Remuneración"
+          icon={
+            <span className="w-7 h-7 flex items-center justify-center border-2 border-gray-700 text-gray-700 text-base font-bold rounded transition group-hover:bg-purple-primary group-hover:text-white group-hover:border-purple-primary">
+              13
+            </span>
+          }
+          variant="text-icon"
+          onClick={() => navigate("/payrolls/decimotercerPage")}
+          aria-label="Lleva a una página dedica a la decimotercera remuneración"
+          className="w-full"
+        />
+        <Button
+          text="Decimocuarta Remuneración"
+          icon={
+            <span className="w-7 h-7 flex items-center justify-center border-2 border-gray-700 text-gray-700 text-base font-bold rounded transition group-hover:bg-purple-primary group-hover:text-white group-hover:border-purple-primary">
+              14
+            </span>
+          }
+          variant="text-icon"
+          onClick={() => navigate("/payrolls/decimocuartoPage")}
+          aria-label="Lleva a una página dedica a la decimocuarta remuneración"
+          className="w-full"
+        />
+
       </div>
+
     </div>
   );
 }
