@@ -1,7 +1,7 @@
 import { handleResponse, defaultPostOpts } from "@/utils/api";
 
 const API_URL_CAL =
-  "https://script.google.com/macros/s/AKfycbxDBOfSUnhWKrcvVYN6WpJTEjBOHXfXYC_1wY91u2mufHPrV8FdAJKgf2lJF7rueA-K/exec"; // reemplaza esto
+  "INSERT_API_URL"; 
 
 // --- DO GET ---
 export async function listCalendars() {
