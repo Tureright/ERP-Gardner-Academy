@@ -4,7 +4,7 @@ import {
   handleBinaryResponse,
 } from "@/utils/api";
 const API_URL_EMP =
-  "https://script.google.com/macros/s/AKfycbxDBOfSUnhWKrcvVYN6WpJTEjBOHXfXYC_1wY91u2mufHPrV8FdAJKgf2lJF7rueA-K/exec";
+  "INSERT_API_URL";
 
 // --- DO GET ---
 export async function getAllEmployees() {
