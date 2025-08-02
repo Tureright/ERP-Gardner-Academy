@@ -1,18 +1,18 @@
 export const API_ENDPOINTS = {
   GET_STUDENTS_REPRESENTATIVES:
-    "https://script.google.com/macros/s/AKfycbzBX-pRQ432e9EWNHIMRK4Z12yKR_sAWjHhilL46kcCkVp1J-z-NuB6QQpDPkj_O0yKgw/exec?path=getRepStudents",
+    "INSERT_API_URL",
   GET_ITEMS:
-    "https://script.google.com/macros/s/AKfycbzCYtgpGctnf2R61bMpy_mmrLTn6v0MjKTa0zgGMfzOij8kt882E_VHreWmy6XHpCvA2w/exec?path=getItems",
+    "INSERT_API_URL",
   GET_ITEM:
-    "https://script.google.com/macros/s/AKfycbzCYtgpGctnf2R61bMpy_mmrLTn6v0MjKTa0zgGMfzOij8kt882E_VHreWmy6XHpCvA2w/exec?path=getItem",
+    "INSERT_API_URL",
   GET_BILLED_MONTHS:
-    "https://script.google.com/macros/s/AKfycbzjWMMqRREV0TAz-2_OkvKnzPZh3axHv8mMAmBThqFuTO0TEBOHIwtZkrjiawe_nG_8KA/exec?path=getBilledMonths",
+    "INSERT_API_URL",
   GET_EMITTED_INVOICES:
-    "https://script.google.com/macros/s/AKfycbx2odZBM133mu7Fafoe6A0D6M1EIpwZg5vL_wJNDe9MBHapRQGldtEzlQVgBs3I3MPHmA/exec?path=getInvoices",
+    "INSERT_API_URL",
   UPDATE_ITEM:
-    "https://script.google.com/macros/s/AKfycbx2odZBM133mu7Fafoe6A0D6M1EIpwZg5vL_wJNDe9MBHapRQGldtEzlQVgBs3I3MPHmA/exec?path=updateItem&method=PATCH",
+    "INSERT_API_URL",
   GET_XLSXURL:
-    "https://script.google.com/macros/s/AKfycbz0FfgxeIWUJrQKPu5B0GdxzwXIUhOMZA7VEPEBdF4FNblAtofrS5aqiBz3I__1AdRzDg/exec?path=getInvoiceSummaryURL"
+    "INSERT_API_URL"
   };
 
 export const EXCEL_TYPE = "application/octet-stream";
