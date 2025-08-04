@@ -1,12 +1,25 @@
-# 🚀 About This Project
+## 📂 Table of Contents
+
+* [🚀 About This Project](#about-this-project)
+* [📁 Project Structure](#project-structure)
+
+  * [📱 Services](#services)
+  * [🧠 Custom Hooks](#custom-hooks)
+  * [🎨 Interfaces](#interfaces)
+  * [🛍️ routes.js](#routesjs)
+  * [🧹 App.jsx](#appjsx)
+  * [📌 Navbar.jsx](#navbarjsx)
+* [🔐 Authentication and Authorization](#authentication-and-authorization)
+
+## 🚀 About This Project <a name="about-this-project"></a>
 
 This repository contains the **frontend code** for Gardner Academy’s ERP system, with a focus on the development and documentation of the **payrolls** and **calendar** modules.
 
 ---
 
-## 📁 Project Structure
+## 📁 Project Structure <a name="project-structure"></a>
 
-### 📡 Services
+### 📱 Services <a name="services"></a>
 
 The `services` directory contains the necessary services to consume the [API-Payroll](https://github.com/Tureright/API-Payrolls). First, you need to obtain the general endpoint provided by Google Apps Script to access a web application deployed on its platform. The URL provided by Google Apps Script looks like this:
 
@@ -39,7 +52,7 @@ export async function createEmployee(employeeData: any) {
 
 ---
 
-### 🧠 Custom Hooks
+### 🧠 Custom Hooks <a name="custom-hooks"></a>
 
 The `hooks` directory contains custom hooks designed to manage the data obtained through the services exposed by the [API-Payroll](https://github.com/Tureright/API-Payrolls). These hooks are implemented using the TanStack React Query library, which simplifies data management in React applications by automatically handling states (`loading`, `success`, `error`), caching, refetching, and synchronizing data between client and server.
 
@@ -57,7 +70,7 @@ By using `useEmployees` inside a component, you gain direct access to the data (
 
 ---
 
-### 🎨 Interfaces
+### 🎨 Interfaces <a name="interfaces"></a>
 
 The system’s interfaces were developed based on previously designed prototypes in Figma. You can access the prototype via the following link: [Prototype Link](https://www.figma.com/proto/Xj2fuzCF88ieMJCUBITzUB/Wireframes-DTIC?page-id=0%3A1&node-id=1-97&p=f&viewport=101%2C538%2C0.18&t=xUDkH9xECF4jqyf1-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=1%3A97).
 
@@ -69,7 +82,7 @@ The system’s interfaces were developed based on previously designed prototypes
 
 ---
 
-### 🧭 `routes.js`
+### 🛍️ `routes.js` <a name="routesjs"></a>
 
 This file defines the main routes of the application, specifying the URL, associated component, visibility in the menu (`showInMenu`), and the organizational units (`allowedOUs`) authorized to access each view.
 
@@ -91,7 +104,7 @@ This centralized approach facilitates navigation and authorization management, m
 
 ---
 
-### 🧩 `App.jsx`
+### 🧹 `App.jsx` <a name="appjsx"></a>
 
 The `App.jsx` file defines the main routing structure using `react-router-dom`. It sets up the routes that render different functional modules of the application, such as payroll roles, billing, enrollment, reports, calendars, and teacher profiles.
 
@@ -101,7 +114,7 @@ All routes are contained within the `AppRoutes` component, which loads initial u
 
 ---
 
-### 📌 `Navbar.jsx`
+### 📌 `Navbar.jsx` <a name="navbarjsx"></a>
 
 The `Navbar` component is responsible for rendering the app’s sidebar navigation menu. This menu is generated dynamically from the routes defined in `routes.js`, showing only those marked with `showInMenu: true`.
 
@@ -111,7 +124,7 @@ The list of visible routes is filtered according to the user’s information (`u
 
 ---
 
-## 🔐 Authentication and Authorization
+## 🔐 Authentication and Authorization <a name="authentication-and-authorization"></a>
 
 The ERP system is built as a web application deployed on Google Apps Script within an organization’s Google Workspace. Therefore, accessing the app’s features requires proper authentication with an email address belonging to one of the organizational units in the organization’s Admin Directory.
 
